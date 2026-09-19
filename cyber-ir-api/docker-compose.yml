@@ -1,0 +1,14 @@
+services:
+  cyber-ir:
+    build: .
+    container_name: cyber-ir-api
+    ports:
+      - "8099:8099"
+    env_file:
+      - .env
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
