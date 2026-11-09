@@ -129,7 +129,7 @@ export default function ExifPage() {
             className="px-4 py-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition-all"
           >
             <Sparkles size={14} className="text-rose-400" />
-            <span>Load Dummy Sample</span>
+            <span>Load Forensic Sample</span>
           </button>
         </div>
       </div>

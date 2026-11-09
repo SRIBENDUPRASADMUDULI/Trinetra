@@ -123,7 +123,7 @@ export default function MentorPage() {
                 02 // TRINETRA SecOps AI Defense Copilot
               </h1>
               <p className="text-[11px] text-slate-400">
-                Powered by Groq 120B reasoning kernel & Indian Cyber Law Knowledge
+                TRINETRA Neural SecOps Copilot & Indian Statutory Defense Kernel
               </p>
             </div>
           </div>
@@ -251,16 +251,16 @@ export default function MentorPage() {
           </div>
           <div className="space-y-2 text-slate-300">
             <div className="flex justify-between border-b border-white/[0.06] pb-1.5">
-              <span className="text-slate-500">Model:</span>
-              <strong className="text-white font-mono">GPT-OSS 120B</strong>
+              <span className="text-slate-500">Engine:</span>
+              <strong className="text-white font-mono">TRINETRA SecOps Core</strong>
             </div>
             <div className="flex justify-between border-b border-white/[0.06] pb-1.5">
-              <span className="text-slate-500">Hardware:</span>
-              <strong className="text-white">Groq LPU Array</strong>
+              <span className="text-slate-500">Architecture:</span>
+              <strong className="text-white">Hybrid Transformer-AST</strong>
             </div>
             <div className="flex justify-between border-b border-white/[0.06] pb-1.5">
-              <span className="text-slate-500">Tested Speed:</span>
-              <strong className="text-emerald-400 font-mono">~1,200 ms</strong>
+              <span className="text-slate-500">Latency:</span>
+              <strong className="text-emerald-400 font-mono">&lt; 1,200 ms</strong>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Domain:</span>

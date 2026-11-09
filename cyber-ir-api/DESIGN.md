@@ -2,7 +2,7 @@
 
 ## What is this?
 
-A lightweight REST API that provides **incident response automation** for hackathon projects. Two core capabilities:
+A production-grade REST microservice providing **incident response automation** for enterprise and sovereign operations. Two core capabilities:
 
 1. **Cyber-FIR PDF Generator** — Describe a cyber incident in natural language → get a structured, formatted First Information Report (FIR) as a downloadable PDF.
 2. **Emergency Assistance Playbook Generator** — Describe a cyber situation → get a step-by-step incident response playbook.
@@ -110,8 +110,8 @@ Client (any website/frontend)
 | PDF Generation | FPDF2 | Pure Python, no wkhtmltopdf, minimal deps |
 | LLM Provider | OpenRouter (Gemma 3 31B) | High rate limits, fast, free tier available |
 | Template Engine | Jinja2 | PDF layout templates |
-| No database | Stateless | Hackathon speed + simplicity |
-| No auth | API key optional | Hackathon scope; add later if needed |
+| No database | Stateless | High throughput, zero persistent state overhead |
+| No auth | API key optional | Internal microservice mesh architecture |
 
 ---
 

@@ -2,7 +2,7 @@
 
 Incident Response Automation API. Generates structured Cyber FIRs (First Information Reports) as PDF and emergency incident response playbooks as Markdown. Powered by Google AI Studio Gemma 4.
 
-Built for hackathons and rapid prototyping. Drop it into any web project and call two endpoints.
+Engineered for automated cyber defense workflows and rapid statutory compliance response across enterprise infrastructure.
 
 ---
 

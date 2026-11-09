@@ -169,7 +169,7 @@ export default function BreachPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-slate-400 font-medium">Test pre-loaded scenarios (1-click):</span>
-                  <span className="text-[11px] font-mono text-rose-400">Live Dummy Data</span>
+                  <span className="text-[11px] font-mono text-rose-400">Benchmark Hash Vector</span>
                 </div>
                 <div className="space-y-2">
                   {PRESET_CREDS.map((demo, idx) => (

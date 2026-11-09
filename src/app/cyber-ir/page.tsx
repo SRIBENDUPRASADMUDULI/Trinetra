@@ -186,26 +186,26 @@ export default function CyberIRPage() {
               </span>
               <span className="text-slate-600 text-xs">•</span>
               <span className="text-[11px] font-mono text-slate-300 px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.08]">
-                GEMMA 4 26B MoE & GROQ 120B
+                SANS PICERL & STATUTORY BNS ENGINE
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               09 // Autonomous Incident Response & Cyber FIR Engine
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-              Automated Incident Response engine integrated from <code className="text-indigo-300 font-mono bg-white/[0.05] px-1.5 py-0.5 rounded">thenabbu/cyber-ir-api</code>. Generates official Cybercrime FIR dossiers mapped to <strong>Bharatiya Nyaya Sanhita (BNS 2023)</strong> & <strong>IT Act 2000</strong>, alongside full <strong>SANS PICERL</strong> emergency incident playbooks.
+              Automated incident triage and statutory First Information Report engine. Generates official Cybercrime FIR dossiers mapped to <strong>Bharatiya Nyaya Sanhita (BNS 2023)</strong> & <strong>IT Act 2000</strong>, alongside full <strong>SANS PICERL</strong> emergency incident playbooks.
             </p>
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
             <a
-              href="https://github.com/thenabbu/cyber-ir-api"
+              href="#sans-picerl-framework"
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-slate-300 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] transition-all hover:text-white"
             >
               <ExternalLink size={13} />
-              <span>GitHub Repo</span>
+              <span>Framework Spec</span>
             </a>
             <span className="text-[11px] font-mono font-bold px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

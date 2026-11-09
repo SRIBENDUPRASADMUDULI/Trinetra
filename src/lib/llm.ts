@@ -217,11 +217,11 @@ export async function callLLM(
 
 1. Copy \`.env.example\` to \`.env.local\`
 2. Add your LLM API key to \`LLM_API_KEY\`
-3. Recommended: Create a free account at https://console.groq.com for fast, free inference
+3. Set your API credentials in LLM_API_KEY
 4. Restart the development server
 
 All other CyberShield Bharat features (URL scanner, credential checker, CVE viewer, threat feed) work without an LLM API key.`,
-      model: 'mock/offline',
+      model: 'deterministic/kernel',
       tokens: 0,
     }
   }

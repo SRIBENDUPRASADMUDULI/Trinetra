@@ -171,7 +171,7 @@ export default function NLPPage() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-slate-400 font-medium">Select a test scenario (1-click):</span>
-                    <span className="text-[11px] font-mono text-rose-400">Live Dummy Data</span>
+                    <span className="text-[11px] font-mono text-rose-400">Benchmark Threat Vectors</span>
                   </div>
                   <div className="space-y-2">
                     {SCAM_SAMPLES.map((sample, idx) => (

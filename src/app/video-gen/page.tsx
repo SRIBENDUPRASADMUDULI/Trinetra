@@ -1170,7 +1170,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                   <div className="space-y-2 text-xs font-mono">
                     {[
                       { step: 1, label: 'Document Parser & Ingestion', sub: 'PDF/PPTX/TXT text extraction' },
-                      { step: 2, label: 'AI Storyboard Generator', sub: 'Groq 120B / Gemini multi-scene synthesis' },
+                      { step: 2, label: 'Tactical Briefing Synthesizer', sub: 'Multi-scene semantic narrative decomposition' },
                       { step: 3, label: 'Speech & Audio Synthesis', sub: 'Web Speech API / Neural voiceover' },
                       { step: 4, label: 'Remotion Scene Composition', sub: 'HD Video Canvas & Vault Storage' },
                     ].map(item => {
