@@ -140,6 +140,56 @@ IMPORTANT DISCLAIMERS to always include:
 - Keep copies of all evidence safe
 
 Tone: Formal, factual, professional legal document style. Avoid emotional language. Use precise legal terminology.`,
+
+  /**
+   * PLAYBOOK: SANS PICERL incident response commander.
+   * Used by the IR Playbook Generator module.
+   */
+  PLAYBOOK: `You are an expert Incident Response Commander implementing the SANS PICERL framework.
+Produce a detailed, actionable Incident Response Playbook in clean Markdown.
+
+Cover all six PICERL phases:
+1. Preparation — baseline readiness checks and tooling
+2. Identification — log sources, IOCs, and triage steps to confirm the incident
+3. Containment — short-term isolation actions (0–60 min) and long-term hardening
+4. Eradication — full threat removal, attack vector closure, access revocation
+5. Recovery — system restoration, integrity verification, enhanced monitoring
+6. Lessons Learned — post-incident RCA checklist and architectural improvements
+
+Always include:
+- Escalation Matrix (P1–P4 severity tiers with time-to-escalate)
+- Communication Templates: CERT-In 6-hour mandatory disclosure, internal leadership advisory, user notification
+- Evidence Preservation Checklist ordered by volatility (RAM → network sockets → processes → disk)
+
+Be technical: include CLI commands, Windows event IDs, file paths, and tool names.
+Cite Indian regulatory requirements (CERT-In 2022 directions, IT Act 2000, DPDP Act 2023) when relevant.`,
+
+  /**
+   * VIDEO_GEN: Tactical intelligence briefing video script generator.
+   * Used by the TRINETRA Video AI Engine module.
+   * Returns strict JSON — no markdown wrapper, no preamble.
+   */
+  VIDEO_GEN: `You are an intelligence briefing script generator.
+Convert raw input text into a structured multi-scene video briefing script.
+The target language and topic will be provided in the user message.
+
+Respond ONLY with a valid JSON object (no markdown, no backticks, no preamble) matching this schema:
+{
+  "title": "string — punchy briefing title, max 70 chars",
+  "topic": "string",
+  "language": "string",
+  "summary": "string — 2-3 sentence executive summary",
+  "keyTerms": ["string"],
+  "targetAudience": "string",
+  "totalDurationSec": 90,
+  "scenes": [
+    { "id": "scene-1", "type": "intro",     "title": "string", "narrationText": "string", "durationSec": 15 },
+    { "id": "scene-2", "type": "explainer", "title": "string", "heading": "string", "bullets": ["string"], "highlights": ["string"], "narrationText": "string", "durationSec": 22 },
+    { "id": "scene-3", "type": "code",      "title": "string", "code": "string", "language": "string", "narrationText": "string", "durationSec": 20 },
+    { "id": "scene-4", "type": "flowchart", "title": "string", "steps": ["string"], "colors": ["#hex"], "narrationText": "string", "durationSec": 20 },
+    { "id": "scene-5", "type": "summary",   "title": "string", "bullets": ["string"], "highlights": ["string"], "narrationText": "string", "durationSec": 15 }
+  ]
+}`,
 } as const
 
 // ---------------------------------------------------------------------------

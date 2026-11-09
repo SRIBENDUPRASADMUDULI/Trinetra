@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { callLLM } from '@/lib/llm'
+import { callLLM, SYSTEM_PROMPTS } from '@/lib/llm'
 import { VideoScript, VideoScene } from '@/data/mock/video-vault-fixtures'
 
 export async function POST(req: NextRequest) {
@@ -10,70 +10,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Text must be at least 10 characters' }, { status: 400 })
     }
 
-    const systemPrompt = `You are TRINETRA Video AI Engine, an elite military & enterprise intelligence briefing generator.
-Convert raw input text (advisories, breach reports, forensic notes, regulatory policies) into an engaging, high-impact multi-scene video briefing script.
-The target language is: ${language}.
+    const systemPrompt = SYSTEM_PROMPTS.VIDEO_GEN
 
-You MUST respond strictly with a valid, parseable JSON object matching this schema:
-{
-  "title": "Clear punchy briefing title (max 70 chars)",
-  "topic": "${topic}",
-  "language": "${language}",
-  "summary": "2-3 sentence executive summary of the briefing",
-  "keyTerms": ["Term 1", "Term 2", "Term 3", "Term 4"],
-  "targetAudience": "SOC Responders, C-Level, Forensics",
-  "totalDurationSec": 90,
-  "scenes": [
-    {
-      "id": "scene-1",
-      "type": "intro",
-      "title": "Scene 1 title",
-      "narrationText": "Spoken voice narration for intro (3-4 sentences)",
-      "durationSec": 15
-    },
-    {
-      "id": "scene-2",
-      "type": "explainer",
-      "title": "Scene 2 title",
-      "heading": "Threat Mechanics",
-      "bullets": ["Bullet 1", "Bullet 2", "Bullet 3", "Bullet 4"],
-      "highlights": ["Keyword 1", "Keyword 2"],
-      "narrationText": "Voice narration explaining the concepts (4-5 sentences)",
-      "durationSec": 22
-    },
-    {
-      "id": "scene-3",
-      "type": "code",
-      "title": "Detection or Mitigation Syntax",
-      "code": "YARA / Snort / CLI command / Remediation snippet",
-      "language": "yara",
-      "narrationText": "Voice narration walking through the code/rule",
-      "durationSec": 20
-    },
-    {
-      "id": "scene-4",
-      "type": "flowchart",
-      "title": "Incident Containment Lifecycle",
-      "steps": ["Step 1", "Step 2", "Step 3", "Step 4"],
-      "colors": ["#ef4444", "#f59e0b", "#06b6d4", "#10b981"],
-      "narrationText": "Voice narration describing step-by-step lifecycle",
-      "durationSec": 20
-    },
-    {
-      "id": "scene-5",
-      "type": "summary",
-      "title": "Strategic Recommendations",
-      "bullets": ["Takeaway 1", "Takeaway 2", "Takeaway 3"],
-      "highlights": ["Key Takeaway"],
-      "narrationText": "Concluding summary narration",
-      "durationSec": 15
-    }
-  ]
-}
-
-DO NOT include markdown, backticks, or preamble. Return ONLY raw JSON.`
-
-    const userPrompt = `INPUT DOCUMENT / TEXT (${fileName}):\n${text.slice(0, 3500)}`
+    const userPrompt = `LANGUAGE: ${language}\nTOPIC: ${topic}\nINPUT DOCUMENT (${fileName}):\n${text.slice(0, 3500)}`
 
     let script: VideoScript | null = null
 

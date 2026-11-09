@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { callLLM } from '@/lib/llm'
+import { callLLM, SYSTEM_PROMPTS } from '@/lib/llm'
 
 export async function POST(request: Request) {
   try {
@@ -74,9 +74,10 @@ Your playbook MUST contain:
 Be technical, tactical, and specific with command line utilities, paths, and procedures.`
 
     try {
-      const llmResponse = await callLLM([
-        { role: 'user', content: prompt }
-      ], 'You are Cyber-IR Playbook Engine implementing SANS PICERL framework.')
+      const llmResponse = await callLLM(
+        [{ role: 'user', content: userMessage }],
+        SYSTEM_PROMPTS.PLAYBOOK
+      )
 
       return NextResponse.json({
         success: true,

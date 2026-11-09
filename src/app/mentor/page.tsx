@@ -17,15 +17,15 @@ const INITIAL_CONVERSATION: Message[] = [
     id: 'msg-0',
     role: 'agent',
     ts: '02:10:14',
-    content: `TRINETRA_AI // SEC-OPS DEFENSE KERNEL
-Connected to 120B Tactical Reasoning Engine (Groq Hardware Accelerated LPU).
+    content: `TRINETRA — Cyber Defense AI
+Operational. Ready to assist.
 
-I am your sovereign cyber defense copilot specialized in:
-• Live Incident Triage: Ransomware containment, unauthorized UPI / bank transfer freezes, account takeover.
-• Indian Cyber Law: Bharatiya Nyaya Sanhita (BNS) 2023, Information Technology Act 2000, CERT-In 6-Hour reporting directions.
-• Threat Intelligence: MITRE ATT&CK TTP mapping, CVE research, malware disassembly triage.
+Areas of expertise:
+• Incident Triage — Ransomware containment, UPI fraud freezes, account takeover response
+• Indian Cyber Law — BNS 2023, IT Act 2000, CERT-In 6-hour reporting directives
+• Threat Intelligence — MITRE ATT&CK TTP mapping, CVE analysis, IOC correlation
 
-Click any question prompt below or describe your emergency situation.`,
+Type your question or select a prompt below to begin.`,
   },
 ]
 
