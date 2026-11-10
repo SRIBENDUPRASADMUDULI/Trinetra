@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
@@ -9,10 +9,9 @@ import {
   PhoneCall,
   Shield,
   X,
-  Bell,
-  ChevronRight,
 } from 'lucide-react'
 import { AIHarnessBar } from '@/components/shell/AIHarnessBar'
+import { CommandPalette } from '@/components/ui/CommandPalette'
 
 interface TopNavTab {
   id: string
@@ -33,7 +32,19 @@ const TOP_NAV_TABS: TopNavTab[] = [
 export function TopBar() {
   const pathname = usePathname()
   const [showHelp, setShowHelp] = useState(false)
-  const [searchFocused, setSearchFocused] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
+
+  // Listen for global Cmd+K / Ctrl+K keyboard shortcut
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setPaletteOpen(prev => !prev)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   return (
     <>
@@ -72,38 +83,38 @@ export function TopBar() {
 
         {/* RIGHT: Search, AI Harness, 1930 Helpline, Guide & Circular Coral-Pink '+' CTA */}
         <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
-          {/* Minimalist Search Pill */}
-          <Link
-            href="/intel"
-            className={`hidden md:flex items-center gap-2 h-9 px-3.5 rounded-xl bg-[#262B40] border border-white/[0.07] hover:border-white/15 text-slate-300 text-xs transition-all ${
-              searchFocused ? 'w-56' : 'w-44 lg:w-48'
-            }`}
-            title="Search IOC, IP, CVE..."
+          {/* Interactive Search Pill opening Command Palette */}
+          <button
+            onClick={() => setPaletteOpen(true)}
+            className="hidden md:flex items-center gap-2 h-9 px-3.5 rounded-xl bg-[#262B40] hover:bg-[#2E344E] border border-white/[0.07] hover:border-white/15 text-slate-300 text-xs transition-all w-44 lg:w-48 cursor-pointer select-none text-left"
+            title="Search modules & IOCs (⌘K / Ctrl+K)"
           >
             <Search size={14} className="text-slate-400 shrink-0" />
             <span className="text-slate-400 truncate text-[11px]">Search IOC, IP...</span>
             <span className="ml-auto text-[9px] font-mono text-slate-400 px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.06]">
               ⌘K
             </span>
-          </Link>
+          </button>
 
           {/* AI Harness Live Status Capsule */}
           <AIHarnessBar />
 
-          {/* National Cyber Helpline 1930 Solid Badge */}
+          {/* National Cyber Helpline 1930 Official Portal Link (Fixed) */}
           <a
-            href="tel:1930"
-            className="hidden sm:flex items-center gap-1.5 h-9 px-3 rounded-xl text-xs font-semibold text-amber-300 bg-[#262B40] hover:bg-[#2e344e] border border-amber-500/25 transition-all shrink-0"
-            title="National Cyber Crime Reporting Helpline (Govt of India)"
+            href="https://cybercrime.gov.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-1.5 h-9 px-3 rounded-xl text-xs font-semibold text-amber-300 bg-[#262B40] hover:bg-[#2E344E] border border-amber-500/25 transition-all shrink-0 cursor-pointer"
+            title="National Cyber Crime Reporting Portal & 1930 Helpline (Govt of India)"
           >
             <PhoneCall size={12} className="text-amber-400" />
-            <span className="text-[11px] font-mono">1930</span>
+            <span className="text-[11px] font-mono">1930 Helpline</span>
           </a>
 
           {/* Platform Guide Trigger */}
           <button
             onClick={() => setShowHelp(true)}
-            className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-white bg-[#262B40] hover:bg-[#2e344e] border border-white/[0.08] transition-all cursor-pointer shrink-0"
+            className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-white bg-[#262B40] hover:bg-[#2E344E] border border-white/[0.08] transition-all cursor-pointer shrink-0"
             title="Platform Guide & Architecture"
           >
             <HelpCircle size={16} />
@@ -112,7 +123,7 @@ export function TopBar() {
           {/* PRIMARY ACCENT CTA: Circular Coral-Pink '+' Button */}
           <Link
             href="/incident"
-            className="w-9 h-9 rounded-full bg-[#FF5A79] hover:bg-[#ff4065] text-white flex items-center justify-center shadow-lg shadow-[#FF5A79]/30 transition-all hover:scale-105 active:scale-95 shrink-0 group relative cursor-pointer"
+            className="w-9 h-9 rounded-full bg-[#FF5A79] hover:bg-[#FF4065] text-white flex items-center justify-center shadow-lg shadow-[#FF5A79]/30 transition-all hover:scale-105 active:scale-95 shrink-0 group relative cursor-pointer"
             title="New Incident / Generate Statutory BNS 2023 FIR"
           >
             <Plus size={18} strokeWidth={2.5} className="transition-transform group-hover:rotate-90 duration-200" />
@@ -125,6 +136,9 @@ export function TopBar() {
           </Link>
         </div>
       </header>
+
+      {/* Global Command Palette */}
+      <CommandPalette isOpen={paletteOpen} onClose={() => setPaletteOpen(false)} />
 
       {/* Modern Platform Guide Modal */}
       {showHelp && (
@@ -143,7 +157,7 @@ export function TopBar() {
               </div>
               <button
                 onClick={() => setShowHelp(false)}
-                className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors"
+                className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors cursor-pointer"
               >
                 <X size={18} />
               </button>
