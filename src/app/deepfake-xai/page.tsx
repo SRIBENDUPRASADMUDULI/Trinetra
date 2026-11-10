@@ -36,6 +36,8 @@ interface ApiOverviewResponse {
   success: boolean
   pythonAvailable: boolean
   pythonVersion: string | null
+  bharatcodeEnabled?: boolean
+  bharatcodeModel?: string
   perGenerator: PerGeneratorRow[]
   pairwise: PairwiseRow[]
   summaryText: string
@@ -137,6 +139,15 @@ export default function DeepfakeXaiPage() {
   const [imageError, setImageError] = useState<string | null>(null)
   const [analysisDurationMs, setAnalysisDurationMs] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // BharatCode AI Forensic Brief state
+  const [explaining, setExplaining] = useState(false)
+  const [aiBrief, setAiBrief] = useState<{
+    brief: string
+    provider: string
+    model?: string
+    note?: string
+  } | null>(null)
 
   async function fetchOverview() {
     setLoading(true)
@@ -260,10 +271,35 @@ export default function DeepfakeXaiPage() {
       }
       setImageAnalysis(json.analysis)
       setAnalysisDurationMs(json.durationMs ?? null)
+      setAiBrief(null)
     } catch (err: unknown) {
       setImageError(err instanceof Error ? err.message : 'Failed to inspect image')
     } finally {
       setAnalyzingImage(false)
+    }
+  }
+
+  async function handleGenerateBharatCodeBrief(kind: 'single_image' | 'shift_pair', payloadData: Record<string, unknown>) {
+    setExplaining(true)
+    try {
+      const res = await fetch('/api/deepfake-xai/explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kind, data: payloadData }),
+      })
+      const json = await res.json()
+      if (json.success) {
+        setAiBrief({
+          brief: json.brief,
+          provider: json.provider,
+          model: json.model,
+          note: json.note,
+        })
+      }
+    } catch {
+      // handled silently
+    } finally {
+      setExplaining(false)
     }
   }
 
@@ -327,6 +363,14 @@ export default function DeepfakeXaiPage() {
               blink={data?.pythonAvailable}
             />
             <StatusBadge label="3 GENERATORS · 900 IMAGES" variant="info" />
+            <StatusBadge
+              label={
+                data?.bharatcodeEnabled
+                  ? `BHARATCODE · ${data.bharatcodeModel ?? 'qwen-3.8-27b'}`
+                  : 'BHARATCODE · NOT CONFIGURED'
+              }
+              variant={data?.bharatcodeEnabled ? 'ok' : 'neutral'}
+            />
           </div>
           <button
             onClick={fetchOverview}
@@ -980,6 +1024,46 @@ export default function DeepfakeXaiPage() {
                       deletionAuc={imageAnalysis.deletion_auc}
                       insertionAuc={imageAnalysis.insertion_auc}
                     />
+
+                    {/* BharatCode AI Forensic Brief */}
+                    <div className="p-4 rounded-xl bg-indigo-950/30 border border-indigo-500/25 space-y-3">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="text-xs font-bold text-indigo-200 flex items-center gap-2">
+                          <Sparkles size={14} className="text-sky-400" />
+                          <span>BharatCode AI Forensic Triage (BSA 2023 / IT Act 66D)</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleGenerateBharatCodeBrief('single_image', {
+                              source_model: imageAnalysis.source_model,
+                              backbone: imageAnalysis.backbone,
+                              prediction: imageAnalysis.prediction,
+                              confidence: imageAnalysis.confidence,
+                              composite_faithfulness: imageAnalysis.composite_faithfulness,
+                              deletion_auc: imageAnalysis.deletion_auc,
+                              insertion_auc: imageAnalysis.insertion_auc,
+                              cam_stats: imageAnalysis.cam_stats,
+                            })
+                          }
+                          disabled={explaining}
+                          className="px-3 py-1.5 rounded-full bg-indigo-500/25 hover:bg-indigo-500/40 border border-indigo-400/40 text-xs font-semibold text-white transition-all cursor-pointer disabled:opacity-50"
+                        >
+                          {explaining ? 'Querying BharatCode...' : 'Generate BharatCode Brief'}
+                        </button>
+                      </div>
+                      {aiBrief && (
+                        <div className="space-y-2">
+                          <pre className="whitespace-pre-wrap text-xs text-slate-200 font-sans leading-relaxed bg-black/30 p-3 rounded-lg border border-white/[0.06]">
+                            {aiBrief.brief}
+                          </pre>
+                          <div className="text-[10px] font-mono text-slate-400">
+                            Engine: {aiBrief.provider} {aiBrief.model ? `(${aiBrief.model})` : ''}
+                            {aiBrief.note ? ` · ${aiBrief.note}` : ''}
+                          </div>
+                        </div>
+                      )}
+                    </div>
 
                     <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-400 pt-1 border-t border-white/[0.07]">
                       <span>

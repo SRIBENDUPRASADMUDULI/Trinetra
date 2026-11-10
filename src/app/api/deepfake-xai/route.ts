@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { execFile } from 'child_process'
 import { promisify } from 'util'
 import { loadDeepfakeXaiResults } from '@/lib/deepfake-xai'
+import { env, features } from '@/lib/env'
 
 const execFileAsync = promisify(execFile)
 
@@ -25,6 +26,8 @@ export async function GET() {
       success: true,
       pythonAvailable: runtime.available,
       pythonVersion: runtime.version ?? null,
+      bharatcodeEnabled: features.bharatcodeEnabled,
+      bharatcodeModel: env.BHARATCODE_MODEL,
       ...data,
     })
   } catch (err: unknown) {
