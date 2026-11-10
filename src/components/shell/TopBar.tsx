@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import Link from 'next/link'
 import { Siren, HelpCircle, X, Shield, PhoneCall, Search, Activity } from 'lucide-react'
 import { TelemetryTicker } from '@/components/ui/telemetry-ticker'
+import { AIHarnessBar } from '@/components/shell/AIHarnessBar'
 
 export function TopBar() {
   const [showHelp, setShowHelp] = useState(false)
@@ -10,76 +11,80 @@ export function TopBar() {
   return (
     <>
       <header
-        className="sticky top-0 z-40 h-16 w-full flex items-center justify-between px-6 select-none bg-[#0A0E17]/90 backdrop-blur-xl border-b border-white/[0.07]"
+        className="sticky top-0 z-40 h-16 w-full flex items-center justify-between px-4 sm:px-6 select-none bg-[#0A0E17]/95 backdrop-blur-xl border-b border-white/[0.07] gap-3"
       >
-        {/* LEFT: Quick Search / Command Pill */}
-        <div className="flex items-center gap-3 w-72">
+        {/* LEFT: Quick Search / Command Pill & Node Tag */}
+        <div className="flex items-center gap-2.5 min-w-0 max-w-xs flex-1">
           <Link
             href="/intel"
-            className="flex items-center gap-2.5 w-full h-9 px-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] text-slate-300 text-xs transition-all group"
+            className="flex items-center gap-2 w-full max-w-[240px] h-9 px-3 rounded-full bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] text-slate-300 text-xs transition-all group shrink-0"
           >
-            <Search size={14} className="text-slate-400 group-hover:text-indigo-400 transition-colors" />
-            <span className="text-slate-400 truncate text-[11px]">Search IOC, IP, or CVE...</span>
-            <span className="ml-auto text-[10px] font-mono text-slate-400 px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.06]">
+            <Search size={13} className="text-slate-400 group-hover:text-indigo-400 transition-colors" />
+            <span className="text-slate-400 truncate text-[11px]">Search IOC, IP, CVE...</span>
+            <span className="ml-auto text-[9px] font-mono text-slate-500 px-1 py-0.2 rounded bg-white/[0.05] border border-white/[0.06]">
               ⌘K
             </span>
           </Link>
         </div>
 
-        {/* CENTER: Clean Symmetrical Telemetry Capsule */}
-        <div className="hidden lg:flex items-center gap-4">
-          <div className="flex items-center h-9 px-4 rounded-full bg-white/[0.02] border border-white/[0.08] text-xs font-mono text-slate-300 gap-4">
+        {/* CENTER: AI Harness Bar + Telemetry Capsule */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
+          {/* Live AI Harness Engine Capsule */}
+          <AIHarnessBar />
+
+          {/* Clean Symmetrical Telemetry Capsule */}
+          <div className="hidden xl:flex items-center h-8 px-3.5 rounded-full bg-white/[0.02] border border-white/[0.08] text-xs font-mono text-slate-300 gap-3.5">
             <TelemetryTicker />
 
-            <div className="h-3.5 w-px bg-white/[0.1]" />
+            <div className="h-3 w-px bg-white/[0.1]" />
 
             {/* Symmetrical DEFCON Badge */}
             <div
-              className="flex items-center gap-1.5 text-amber-300 font-sans font-medium text-xs whitespace-nowrap cursor-help"
+              className="flex items-center gap-1.5 text-amber-300 font-sans font-medium text-[11px] whitespace-nowrap cursor-help"
               title="DEFCON 3: Elevated Readiness. Monitoring all national critical infrastructure sectors."
             >
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-              <span>DEFCON 3 · Elevated</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span>DEFCON 3</span>
             </div>
 
-            <div className="h-3.5 w-px bg-white/[0.1]" />
+            <div className="h-3 w-px bg-white/[0.1]" />
 
             {/* Posture Score */}
-            <div className="flex items-center gap-1.5 text-emerald-400 font-sans font-medium text-xs whitespace-nowrap">
-              <span className="text-slate-500 font-mono text-[10px]">HEALTH</span>
+            <div className="flex items-center gap-1 text-emerald-400 font-sans font-medium text-[11px] whitespace-nowrap">
+              <span className="text-slate-500 font-mono text-[9px]">HEALTH</span>
               <span>84%</span>
             </div>
           </div>
         </div>
 
-        {/* RIGHT: Actions */}
-        <div className="flex items-center gap-3 w-72 justify-end">
+        {/* RIGHT: Actions (Guaranteed No-Clip & No Collision) */}
+        <div className="flex items-center gap-2 shrink-0">
           {/* Platform Guide */}
           <button
             onClick={() => setShowHelp(true)}
-            className="flex items-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-medium text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-all"
+            className="flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-medium text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-all cursor-pointer shrink-0"
             title="Open Platform Guide & Overview"
           >
-            <HelpCircle size={14} className="text-slate-400" />
-            <span className="hidden sm:inline">Guide</span>
+            <HelpCircle size={13} className="text-slate-400" />
+            <span className="hidden sm:inline text-[11px]">Guide</span>
           </button>
 
           {/* Helpline 1930 */}
           <a
             href="tel:1930"
-            className="hidden sm:flex items-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-medium text-amber-300 bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 transition-all"
+            className="hidden sm:flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-mono font-medium text-amber-300 bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 transition-all shrink-0"
             title="National Cyber Crime Reporting Helpline (Govt of India)"
           >
-            <PhoneCall size={13} className="text-amber-400" />
-            <span>1930</span>
+            <PhoneCall size={12} className="text-amber-400" />
+            <span className="text-[11px]">1930</span>
           </a>
 
-          {/* Emergency SOS CTA */}
+          {/* Emergency SOS CTA - Guaranteed Never Clipped */}
           <Link
             href="/incident"
-            className="flex items-center gap-2 h-9 px-4 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 border border-indigo-400/30 shadow-md shadow-indigo-950/40 transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
+            className="flex items-center gap-1.5 h-8 px-3.5 rounded-full text-[11px] font-semibold text-white bg-gradient-to-r from-rose-600 via-rose-500 to-indigo-600 hover:from-rose-500 hover:to-indigo-500 border border-rose-400/30 shadow-md shadow-rose-950/40 transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap shrink-0"
           >
-            <Siren size={14} className="text-indigo-200" />
+            <Siren size={13} className="text-rose-200" />
             <span>Report Incident</span>
           </Link>
         </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { env, features } from '@/lib/env'
+import { callAIHarness } from '@/lib/ai-harness'
 
 interface ExplainPayload {
   kind: 'single_image' | 'shift_pair'
@@ -50,66 +51,35 @@ export async function POST(req: NextRequest) {
     const body = (await req.json()) as ExplainPayload
     const fallbackBrief = buildDeterministicBrief(body)
 
-    if (!features.bharatcodeEnabled) {
-      return NextResponse.json({
-        success: true,
-        provider: 'deterministic-fallback',
-        bharatcodeConnected: false,
-        brief: fallbackBrief,
-        note: 'BHARATCODE_API_KEY not configured in .env.local',
-      })
-    }
-
     const systemPrompt =
       'You are TRINETRA Deepfake XAI Forensic Analyst. Summarize Grad-CAM, Deletion/Insertion AUC, CGFD, and FADI metrics concisely in 3 numbered points including Indian statutory admissibility (BSA 2023 Section 63 / IT Act 66D) without inventing metrics.'
 
     const userPrompt = `Analyze this ${body.kind} deepfake XAI telemetry JSON and provide a crisp 3-point forensic briefing:\n${JSON.stringify(body.data, null, 2)}`
 
-    const upstream = await fetch(`${env.BHARATCODE_BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${env.BHARATCODE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: env.BHARATCODE_MODEL,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
+    const harnessRes = await callAIHarness(
+      [{ role: 'user', content: userPrompt }],
+      {
+        systemPrompt,
+        model: env.BHARATCODE_MODEL || 'qwen-3.8-27b',
         temperature: 0.25,
-        max_tokens: 512,
-      }),
-    })
+        maxTokens: 512,
+        fastTriage: true,
+      }
+    )
 
-    if (!upstream.ok) {
-      const errText = await upstream.text().catch(() => '')
-      return NextResponse.json({
-        success: true,
-        provider: 'deterministic-fallback',
-        bharatcodeConnected: true,
-        bharatcodeStatus: upstream.status,
-        model: env.BHARATCODE_MODEL,
-        brief: fallbackBrief,
-        note: `BharatCode API responded HTTP ${upstream.status}${
-          upstream.status === 402 ? ' (Account credits/plan required on bharatcode.ai)' : ''
-        }. Showing deterministic forensic brief.${errText ? ` [${errText.slice(0, 120)}]` : ''}`,
-      })
-    }
-
-    const json = (await upstream.json()) as {
-      model?: string
-      choices?: Array<{ message?: { content?: string } }>
-    }
-    const brief = json.choices?.[0]?.message?.content?.trim() || fallbackBrief
+    const brief = harnessRes.content && !harnessRes.content.includes('[LLM_OFFLINE]')
+      ? harnessRes.content
+      : fallbackBrief
 
     return NextResponse.json({
       success: true,
-      provider: 'bharatcode',
-      bharatcodeConnected: true,
+      provider: harnessRes.provider,
+      bharatcodeConnected: harnessRes.provider === 'bharatcode' || harnessRes.provider === 'fallback-model',
       bharatcodeStatus: 200,
-      model: json.model ?? env.BHARATCODE_MODEL,
+      model: harnessRes.model,
       brief,
+      latencyMs: harnessRes.latencyMs,
+      requestId: harnessRes.requestId,
     })
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Explain request failed'

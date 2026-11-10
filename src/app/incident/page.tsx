@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { TerminalCard } from '@/components/ui/terminal-card'
 import { StatusBadge } from '@/components/ui/status-badge'
-import { FileText, Download, AlertCircle, Clock, Shield, Sparkles, CheckCircle2, PhoneCall, HelpCircle } from 'lucide-react'
+import { FileText, Download, AlertCircle, Clock, Shield, Sparkles, CheckCircle2, PhoneCall, HelpCircle, ChevronRight, Check } from 'lucide-react'
 
 interface FIRFormData {
   complainantName: string
@@ -180,13 +180,17 @@ Official Reference: ${firNo} | Portal: cybercrime.gov.in | Helpline: 1930`
 export default function IncidentPage() {
   const [tab, setTab] = useState<'runbooks' | 'fir'>('fir')
   const [firText, setFirText] = useState<string | null>(null)
-  const { register, handleSubmit, setValue, formState: { isSubmitting } } = useForm<FIRFormData>({
+  const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<FIRFormData>({
     defaultValues: {
       itActSections: ['43', '66', '66D'],
       bnsSections: ['318_4', '319_2'],
       bsaSections: ['63_4'],
     },
   })
+
+  const selectedBns = watch('bnsSections') || []
+  const selectedIt = watch('itActSections') || []
+  const selectedBsa = watch('bsaSections') || []
 
   function fillDemo() {
     setValue('complainantName', 'Ramesh Kumar Sharma')
@@ -320,7 +324,7 @@ export default function IncidentPage() {
                       <input
                         {...register('complainantName', { required: true })}
                         placeholder="e.g. Ramesh Kumar Sharma"
-                        className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-cyan-500 font-mono text-xs"
+                        className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-cyan-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
                       />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -329,7 +333,7 @@ export default function IncidentPage() {
                         <input
                           {...register('complainantPhone', { required: true })}
                           placeholder="+91-XXXXXXXXXX"
-                          className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-cyan-500 font-mono text-xs"
+                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-cyan-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
                         />
                       </div>
                       <div>
@@ -337,7 +341,7 @@ export default function IncidentPage() {
                         <input
                           {...register('complainantEmail', { required: true })}
                           placeholder="victim@email.com"
-                          className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-cyan-500 font-mono text-xs"
+                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-cyan-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
                         />
                       </div>
                     </div>
@@ -347,7 +351,7 @@ export default function IncidentPage() {
                         {...register('aadhaarLast4')}
                         placeholder="e.g. 8492 (Optional for identity verification)"
                         maxLength={4}
-                        className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-cyan-500 font-mono text-xs"
+                        className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-cyan-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
                       />
                     </div>
                   </div>
@@ -362,7 +366,7 @@ export default function IncidentPage() {
                         <input
                           {...register('victimBank', { required: true })}
                           placeholder="e.g. State Bank of India / Paytm"
-                          className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-red-500 font-mono text-xs"
+                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
                         />
                       </div>
                       <div>
@@ -370,7 +374,7 @@ export default function IncidentPage() {
                         <input
                           {...register('lossAmount', { required: true })}
                           placeholder="e.g. 48500"
-                          className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-red-500 font-mono text-xs"
+                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
                         />
                       </div>
                     </div>
@@ -380,7 +384,7 @@ export default function IncidentPage() {
                         <input
                           {...register('accountNumber')}
                           placeholder="XXXX-XXXX-XXXX"
-                          className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-red-500 font-mono text-xs"
+                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
                         />
                       </div>
                       <div>
@@ -388,7 +392,7 @@ export default function IncidentPage() {
                         <input
                           {...register('transactionId')}
                           placeholder="e.g. UPI/1234567890/..."
-                          className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-sm text-slate-200 placeholder:text-slate-600 outline-none focus:border-red-500 font-mono text-xs"
+                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
                         />
                       </div>
                     </div>
@@ -398,7 +402,7 @@ export default function IncidentPage() {
                         <input
                           {...register('incidentDate', { required: true })}
                           type="date"
-                          className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-sm text-slate-200 outline-none font-mono text-xs color-scheme-dark"
+                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 outline-none font-mono text-xs color-scheme-dark transition-colors"
                         />
                       </div>
                       <div>
@@ -406,7 +410,7 @@ export default function IncidentPage() {
                         <input
                           {...register('incidentTime', { required: true })}
                           type="time"
-                          className="w-full p-2.5 bg-slate-950 border border-slate-700 rounded-sm text-slate-200 outline-none font-mono text-xs color-scheme-dark"
+                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 outline-none font-mono text-xs color-scheme-dark transition-colors"
                         />
                       </div>
                     </div>
@@ -415,14 +419,14 @@ export default function IncidentPage() {
               </div>
 
               {/* Legal Sections & Narrative */}
-              <TerminalCard title="Step 3: Incident Narrative & Legal Classification" labelColor="red">
+              <TerminalCard title="Step 3: Incident Narrative & Statutory Classification" labelColor="red">
                 <div className="space-y-4 text-xs">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
                       <label className="text-slate-300 font-medium block mb-1">Cybercrime Category *</label>
                       <select
                         {...register('attackType', { required: true })}
-                        className="w-full p-2.5 bg-[#12151F] border border-white/[0.08] rounded-xl text-slate-200 outline-none text-xs focus:border-indigo-500 transition-colors"
+                        className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] rounded-xl text-slate-200 outline-none text-xs focus:border-indigo-500 transition-colors font-mono"
                       >
                         <option value="">Select crime type...</option>
                         <option value="Financial Fraud / UPI Fraud">Financial Fraud / UPI Fraud</option>
@@ -440,17 +444,17 @@ export default function IncidentPage() {
                       <input
                         {...register('attackerIp')}
                         placeholder="e.g. +91-9876543210 or fake URL"
-                        className="w-full p-2.5 bg-white/[0.04] border border-white/[0.08] rounded-xl text-slate-200 placeholder:text-slate-500 outline-none text-xs focus:border-indigo-500 transition-colors"
+                        className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] rounded-xl text-slate-200 placeholder:text-slate-500 outline-none text-xs focus:border-indigo-500 transition-colors font-mono"
                       />
                     </div>
                   </div>
 
-                  {/* Statutory Classification Frameworks */}
+                  {/* Statutory Classification Frameworks with Tactical Chips */}
                   <div className="space-y-4 pt-1">
                     {/* BNS 2023 Section */}
-                    <div className="p-3.5 rounded-xl bg-indigo-950/20 border border-indigo-500/20 space-y-2">
+                    <div className="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/20 space-y-2.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-indigo-300 font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                        <label className="text-indigo-300 font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5 font-mono">
                           <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
                           Bharatiya Nyaya Sanhita (BNS 2023 — Substantive Criminal Code)
                         </label>
@@ -459,19 +463,42 @@ export default function IncidentPage() {
                         </span>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                        {BNS_SECTIONS.map(s => (
-                          <label key={s.id} className="flex items-start gap-2.5 p-2 bg-white/[0.02] border border-white/[0.06] rounded-lg cursor-pointer hover:border-indigo-500/40 hover:bg-white/[0.04] transition-all">
-                            <input type="checkbox" value={s.id} {...register('bnsSections')} className="mt-0.5 accent-indigo-500" />
-                            <span className="text-slate-300 text-[11px] leading-snug">{s.label}</span>
-                          </label>
-                        ))}
+                        {BNS_SECTIONS.map(s => {
+                          const isChecked = selectedBns.includes(s.id)
+                          const parts = s.label.split(' — ')
+                          return (
+                            <label
+                              key={s.id}
+                              className={`flex items-start gap-2.5 p-3 rounded-xl border transition-all cursor-pointer select-none ${
+                                isChecked
+                                  ? 'bg-indigo-950/40 border-indigo-500/60 shadow-[0_0_12px_rgba(99,102,241,0.2)] text-white'
+                                  : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04] text-slate-300'
+                              }`}
+                            >
+                              <div className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center border transition-all flex-shrink-0 ${
+                                isChecked ? 'bg-indigo-500 border-indigo-400 text-white' : 'border-white/[0.2] bg-white/[0.04]'
+                              }`}>
+                                {isChecked && <Check size={11} strokeWidth={3} />}
+                              </div>
+                              <input type="checkbox" value={s.id} {...register('bnsSections')} className="sr-only" />
+                              <div className="space-y-0.5">
+                                <span className="font-mono text-[11px] font-bold text-indigo-300 block">
+                                  {parts[0]}
+                                </span>
+                                <span className="text-[11px] text-slate-300 leading-snug block font-sans">
+                                  {parts[1] || s.label}
+                                </span>
+                              </div>
+                            </label>
+                          )
+                        })}
                       </div>
                     </div>
 
                     {/* IT Act 2000 Section */}
-                    <div className="p-3.5 rounded-xl bg-cyan-950/15 border border-cyan-500/20 space-y-2">
+                    <div className="p-4 rounded-xl bg-cyan-950/15 border border-cyan-500/20 space-y-2.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-cyan-300 font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                        <label className="text-cyan-300 font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5 font-mono">
                           <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
                           Information Technology Act, 2000 (Amended 2008 — Cyber Law)
                         </label>
@@ -480,19 +507,42 @@ export default function IncidentPage() {
                         </span>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                        {IT_ACT_SECTIONS.map(s => (
-                          <label key={s.id} className="flex items-start gap-2.5 p-2 bg-white/[0.02] border border-white/[0.06] rounded-lg cursor-pointer hover:border-cyan-500/40 hover:bg-white/[0.04] transition-all">
-                            <input type="checkbox" value={s.id} {...register('itActSections')} className="mt-0.5 accent-cyan-500" />
-                            <span className="text-slate-300 text-[11px] leading-snug">{s.label}</span>
-                          </label>
-                        ))}
+                        {IT_ACT_SECTIONS.map(s => {
+                          const isChecked = selectedIt.includes(s.id)
+                          const parts = s.label.split(' — ')
+                          return (
+                            <label
+                              key={s.id}
+                              className={`flex items-start gap-2.5 p-3 rounded-xl border transition-all cursor-pointer select-none ${
+                                isChecked
+                                  ? 'bg-cyan-950/40 border-cyan-500/60 shadow-[0_0_12px_rgba(6,182,212,0.2)] text-white'
+                                  : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04] text-slate-300'
+                              }`}
+                            >
+                              <div className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center border transition-all flex-shrink-0 ${
+                                isChecked ? 'bg-cyan-500 border-cyan-400 text-white' : 'border-white/[0.2] bg-white/[0.04]'
+                              }`}>
+                                {isChecked && <Check size={11} strokeWidth={3} />}
+                              </div>
+                              <input type="checkbox" value={s.id} {...register('itActSections')} className="sr-only" />
+                              <div className="space-y-0.5">
+                                <span className="font-mono text-[11px] font-bold text-cyan-300 block">
+                                  {parts[0]}
+                                </span>
+                                <span className="text-[11px] text-slate-300 leading-snug block font-sans">
+                                  {parts[1] || s.label}
+                                </span>
+                              </div>
+                            </label>
+                          )
+                        })}
                       </div>
                     </div>
 
                     {/* BSA 2023 Electronic Evidence Section */}
-                    <div className="p-3.5 rounded-xl bg-amber-950/15 border border-amber-500/20 space-y-2">
+                    <div className="p-4 rounded-xl bg-amber-950/15 border border-amber-500/20 space-y-2.5">
                       <div className="flex items-center justify-between">
-                        <label className="text-amber-300 font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                        <label className="text-amber-300 font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5 font-mono">
                           <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                           Bharatiya Sakshya Adhiniyam (BSA 2023 — Digital Evidence Admissibility)
                         </label>
@@ -501,12 +551,35 @@ export default function IncidentPage() {
                         </span>
                       </div>
                       <div className="text-xs">
-                        {BSA_SECTIONS.map(s => (
-                          <label key={s.id} className="flex items-start gap-2.5 p-2 bg-white/[0.02] border border-white/[0.06] rounded-lg cursor-pointer hover:border-amber-500/40 hover:bg-white/[0.04] transition-all">
-                            <input type="checkbox" value={s.id} {...register('bsaSections')} className="mt-0.5 accent-amber-500" />
-                            <span className="text-slate-300 text-[11px] leading-snug">{s.label}</span>
-                          </label>
-                        ))}
+                        {BSA_SECTIONS.map(s => {
+                          const isChecked = selectedBsa.includes(s.id)
+                          const parts = s.label.split(' — ')
+                          return (
+                            <label
+                              key={s.id}
+                              className={`flex items-start gap-2.5 p-3 rounded-xl border transition-all cursor-pointer select-none ${
+                                isChecked
+                                  ? 'bg-amber-950/40 border-amber-500/60 shadow-[0_0_12px_rgba(245,158,11,0.2)] text-white'
+                                  : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04] text-slate-300'
+                              }`}
+                            >
+                              <div className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center border transition-all flex-shrink-0 ${
+                                isChecked ? 'bg-amber-500 border-amber-400 text-white' : 'border-white/[0.2] bg-white/[0.04]'
+                              }`}>
+                                {isChecked && <Check size={11} strokeWidth={3} />}
+                              </div>
+                              <input type="checkbox" value={s.id} {...register('bsaSections')} className="sr-only" />
+                              <div className="space-y-0.5">
+                                <span className="font-mono text-[11px] font-bold text-amber-300 block">
+                                  {parts[0]}
+                                </span>
+                                <span className="text-[11px] text-slate-300 leading-snug block font-sans">
+                                  {parts[1] || s.label}
+                                </span>
+                              </div>
+                            </label>
+                          )
+                        })}
                       </div>
                     </div>
                   </div>
@@ -519,20 +592,36 @@ export default function IncidentPage() {
                       {...register('evidenceDescription', { required: true })}
                       placeholder="Explain step-by-step: how you were contacted, what link was clicked, what OTP was shared, and the exact debit amounts..."
                       rows={4}
-                      className="w-full p-3 bg-white/[0.04] border border-white/[0.08] rounded-xl text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-500 text-xs transition-colors"
+                      className="w-full p-3 bg-[#090D16] border border-white/[0.08] rounded-xl text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-500 text-xs transition-colors font-mono"
                     />
                   </div>
                 </div>
               </TerminalCard>
 
-              {/* Submit Button */}
+              {/* Tactical Defense Command Action Button (Palantir Gotham Style) */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-xs rounded-full transition-all shadow-xl shadow-indigo-950/40 flex items-center justify-center gap-2 tracking-wide"
+                className="w-full py-4 px-6 bg-[#0E1424] hover:bg-[#141C32] border border-indigo-500/40 hover:border-indigo-400 text-white rounded-2xl shadow-xl shadow-indigo-950/50 transition-all flex flex-col sm:flex-row items-center justify-between gap-3 group cursor-pointer"
               >
-                <FileText size={16} />
-                <span>GENERATE FORMAL LEGAL FIR & EVIDENCE DOSSIER (PDF)</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 group-hover:scale-105 transition-transform">
+                    <FileText size={18} />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-mono text-xs font-bold text-white tracking-wide flex items-center gap-2">
+                      <span>[EXECUTE_STATUTORY_FIR_SYNTHESIS]</span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    </div>
+                    <div className="text-[11px] text-slate-400 font-sans">
+                      Generates court-admissible PDF under Sec. 173 BNSS 2023 &amp; Sec. 63 BSA 2023
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-indigo-500/20 border border-indigo-500/30 font-mono text-[11px] text-indigo-200">
+                  <span>COMPOSE DOSSIER</span>
+                  <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                </div>
               </button>
             </form>
           ) : (

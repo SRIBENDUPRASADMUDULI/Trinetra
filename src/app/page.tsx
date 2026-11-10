@@ -7,8 +7,91 @@ import { TerminalCard } from '@/components/ui/terminal-card'
 import {
   AlertTriangle, Shield, Activity, Server,
   ChevronRight, ArrowUpRight, Search, Siren,
-  PhoneCall, Sparkles, Lock, Eye, Cpu, Radio, ShieldCheck, CheckCircle2
+  PhoneCall, Sparkles, Lock, Eye, Cpu, Radio, ShieldCheck,
+  CheckCircle2, Zap, Globe, Radar, Terminal, RefreshCw
 } from 'lucide-react'
+
+// NCIIPC Designated 6 Critical Information Infrastructure (CII) Sectors
+interface NCIIPCSector {
+  id: string
+  name: string
+  sub: string
+  status: 'NOMINAL' | 'ELEVATED' | 'CRITICAL'
+  latency: number
+  jitter: string
+  activeVector: string
+  health: number
+  ttp: string
+}
+
+const NCIIPC_SECTORS: NCIIPCSector[] = [
+  {
+    id: 'power',
+    name: 'Power & Energy',
+    sub: 'National Load Despatch (NLDC) · SCADA 400kV',
+    status: 'NOMINAL',
+    latency: 18,
+    jitter: '0.02ms',
+    activeVector: 'IEC 60870-5-104 Telemetry Sync',
+    health: 96,
+    ttp: 'T1059.001',
+  },
+  {
+    id: 'bfsi',
+    name: 'Banking & Finance (BFSI)',
+    sub: 'NPCI UPI Switch · RBI RTGS & NEFT Core',
+    status: 'ELEVATED',
+    latency: 24,
+    jitter: '0.14ms',
+    activeVector: 'Automated Credential Stuffing on API VPA',
+    health: 82,
+    ttp: 'T1110.004',
+  },
+  {
+    id: 'telecom',
+    name: 'Telecom & Satellite',
+    sub: 'SS7 / Diameter Core · Subsea Cable Landings',
+    status: 'NOMINAL',
+    latency: 14,
+    jitter: '0.01ms',
+    activeVector: 'GTP-C Tunneling Filter Active',
+    health: 94,
+    ttp: 'T1557.001',
+  },
+  {
+    id: 'transport',
+    name: 'Transport & Aviation',
+    sub: 'Airports Authority ATC · Railways UTS / CRIS',
+    status: 'NOMINAL',
+    latency: 29,
+    jitter: '0.05ms',
+    activeVector: 'Signaling Microsegmentation Nominal',
+    health: 91,
+    ttp: 'T1071.001',
+  },
+  {
+    id: 'government',
+    name: 'Govt & Public Services',
+    sub: 'UIDAI Aadhaar Auth · DigiLocker · NIC Cloud',
+    status: 'ELEVATED',
+    latency: 38,
+    jitter: '0.22ms',
+    activeVector: 'DDoS Scrapes on e-Governance Gateways',
+    health: 79,
+    ttp: 'T1498.001',
+  },
+  {
+    id: 'strategic',
+    name: 'Strategic & Healthcare',
+    sub: 'AIIMS Health Network · Atomic Energy Grid',
+    status: 'NOMINAL',
+    latency: 21,
+    jitter: '0.03ms',
+    activeVector: 'Air-Gapped Telemetry Verification Pass',
+    health: 98,
+    ttp: 'T1190',
+  },
+]
 
 function SeverityPill({ s }: { s: string }) {
   const map: Record<string, { bg: string; text: string; border: string }> = {
@@ -25,82 +108,75 @@ function SeverityPill({ s }: { s: string }) {
   )
 }
 
-function SovereignQuantumShield() {
-  return (
-    <div className="relative w-full max-w-[420px] aspect-square flex items-center justify-center select-none">
-      {/* Soft Ethereal Indigo & Cyan Ambient Aura */}
-      <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-600/15 via-sky-600/10 to-transparent blur-3xl opacity-80" />
-      <div className="absolute w-64 h-64 rounded-full bg-indigo-500/10 blur-2xl" />
+function InteractiveQuantumRadar() {
+  const [lockedTarget, setLockedTarget] = useState<string | null>('APT-36 (RedFox)')
 
-      {/* SVG Concentric Radar Rings & Orbital Geometry */}
-      <svg className="w-full h-full relative z-10 overflow-visible" viewBox="0 0 400 400" fill="none">
+  return (
+    <div className="relative w-full aspect-square max-w-[380px] mx-auto flex items-center justify-center select-none font-mono">
+      {/* Background Glow */}
+      <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-600/15 via-cyan-600/10 to-transparent blur-3xl opacity-75" />
+      <div className="absolute w-52 h-52 rounded-full bg-indigo-500/10 blur-xl" />
+
+      {/* SVG Radar Surface */}
+      <svg className="w-full h-full relative z-10 overflow-visible" viewBox="0 0 360 360" fill="none">
         <defs>
-          <radialGradient id="sphereGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#6366F1" stopOpacity="0.85" />
-            <stop offset="50%" stopColor="#4F46E5" stopOpacity="0.4" />
-            <stop offset="85%" stopColor="#1E1B4B" stopOpacity="0.2" />
+          <radialGradient id="radarSweep" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#6366F1" stopOpacity="0.8" />
+            <stop offset="50%" stopColor="#0EA5E9" stopOpacity="0.3" />
             <stop offset="100%" stopColor="#0A0E17" stopOpacity="0" />
           </radialGradient>
-          <linearGradient id="orbitalTrace" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#818CF8" stopOpacity="0.1" />
-          </linearGradient>
         </defs>
 
-        {/* Outer Orbital Ring 1 - Dashed */}
-        <circle cx="200" cy="200" r="180" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="1" strokeDasharray="6 8" />
+        {/* Concentric Range Rings */}
+        <circle cx="180" cy="180" r="160" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="1" strokeDasharray="4 6" />
+        <circle cx="180" cy="180" r="120" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="1" />
+        <circle cx="180" cy="180" r="80" stroke="rgba(14, 165, 233, 0.25)" strokeWidth="1" strokeDasharray="6 8" />
+        <circle cx="180" cy="180" r="40" stroke="rgba(16, 185, 129, 0.3)" strokeWidth="1" />
 
-        {/* Outer Ring 2 - Hairline Solid */}
-        <circle cx="200" cy="200" r="158" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="1" />
+        {/* Crosshair Grids */}
+        <line x1="20" y1="180" x2="340" y2="180" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1" />
+        <line x1="180" y1="20" x2="180" y2="340" stroke="rgba(255, 255, 255, 0.1)" strokeWidth="1" />
 
-        {/* Rotating Orbital Segment */}
+        {/* Rotating Radar Sweep Cone */}
         <g className="orbit-slow-anim">
-          <circle cx="200" cy="200" r="135" stroke="rgba(56, 189, 248, 0.4)" strokeWidth="1.5" strokeDasharray="40 80 20 60" />
-          <circle cx="335" cy="200" r="4" fill="#38BDF8" />
-          <circle cx="65" cy="200" r="3" fill="#818CF8" />
+          <path
+            d="M 180 180 L 180 20 A 160 160 0 0 1 330 130 Z"
+            fill="url(#radarSweep)"
+            opacity="0.45"
+          />
+          <line x1="180" y1="180" x2="330" y2="130" stroke="#38BDF8" strokeWidth="1.5" />
         </g>
 
-        {/* Reverse Orbital Segment */}
-        <g className="orbit-reverse-anim">
-          <circle cx="200" cy="200" r="112" stroke="rgba(129, 140, 248, 0.35)" strokeWidth="1.5" strokeDasharray="30 50 15 45" />
-          <circle cx="200" cy="88" r="3.5" fill="#38BDF8" />
+        {/* Target Blips */}
+        <g className="cursor-pointer" onClick={() => setLockedTarget('APT-36 (RedFox)')}>
+          <circle cx="235" cy="110" r="4" fill="#F43F5E" className="animate-ping" opacity="0.6" />
+          <circle cx="235" cy="110" r="3.5" fill="#F43F5E" />
+          <text x="245" y="114" fill="#FDA4AF" fontSize="9" fontFamily="monospace">APT-36 [SCADA]</text>
         </g>
 
-        {/* Inner Solid Indigo Ring */}
-        <circle cx="200" cy="200" r="88" stroke="rgba(99, 102, 241, 0.5)" strokeWidth="1.5" />
+        <g className="cursor-pointer" onClick={() => setLockedTarget('Mirai Botnet Wave')}>
+          <circle cx="115" cy="240" r="3" fill="#F59E0B" />
+          <text x="70" y="255" fill="#FCD34D" fontSize="9" fontFamily="monospace">BOTNET: 12k IP</text>
+        </g>
 
-        {/* Central Luminous Sphere Core */}
-        <circle cx="200" cy="200" r="68" fill="url(#sphereGrad)" />
+        <g className="cursor-pointer" onClick={() => setLockedTarget('LockBit 3.0 Node')}>
+          <circle cx="260" cy="220" r="3" fill="#0EA5E9" />
+          <text x="268" y="224" fill="#7DD3FC" fontSize="9" fontFamily="monospace">C2 BEACON</text>
+        </g>
 
-        {/* Tactical Shield Geometries */}
-        <path
-          d="M 200 158 L 228 172 V 205 C 228 226 216 238 200 245 C 184 238 172 226 172 205 V 172 Z"
-          stroke="rgba(255, 255, 255, 0.85)"
-          strokeWidth="1.5"
-          fill="rgba(99, 102, 241, 0.15)"
-          strokeLinejoin="round"
-        />
-
-        {/* Inner Shield Trinetra Third Eye Accents */}
-        <path d="M 186 200 Q 200 188 214 200 Q 200 212 186 200 Z" stroke="#38BDF8" strokeWidth="1.5" fill="none" />
-        <circle cx="200" cy="200" r="3.5" fill="#FFFFFF" />
-
-        {/* Clean geometric coordinate crosshairs */}
-        <line x1="135" y1="200" x2="160" y2="200" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1" />
-        <line x1="240" y1="200" x2="265" y2="200" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1" />
-        <line x1="200" y1="135" x2="200" y2="150" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1" />
-        <line x1="200" y1="250" x2="200" y2="265" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1" />
+        {/* Radar Center Eye Hub */}
+        <circle cx="180" cy="180" r="14" fill="#0F1523" stroke="#6366F1" strokeWidth="1.5" />
+        <path d="M 172 180 Q 180 172 188 180 Q 180 188 172 180 Z" stroke="#38BDF8" strokeWidth="1.5" fill="none" />
+        <circle cx="180" cy="180" r="2.5" fill="#FFFFFF" />
       </svg>
 
-      {/* Orbiting Live Telemetry Badges */}
-      <div className="absolute -top-2 right-4 px-3.5 py-1.5 rounded-full bg-[#0F1523]/90 border border-indigo-500/30 text-[10px] font-mono text-indigo-200 backdrop-blur-md shadow-lg flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
-        <span>IR-TRIAGE // 120B ACTIVE</span>
+      {/* Real-Time Radar HUD Overlay */}
+      <div className="absolute top-2 left-2 px-2.5 py-1 rounded bg-[#0A0E17]/90 border border-white/[0.08] text-[9px] text-slate-400">
+        SCAN: 360° · AZ: 042°
       </div>
 
-      <div className="absolute -bottom-2 left-4 px-3.5 py-1.5 rounded-full bg-[#0F1523]/90 border border-emerald-500/30 text-[10px] font-mono text-emerald-300 backdrop-blur-md shadow-lg flex items-center gap-1.5">
-        <ShieldCheck size={13} className="text-emerald-400" />
-        <span>BNS 2023 · VERIFIED</span>
+      <div className="absolute bottom-2 right-2 px-2.5 py-1 rounded bg-[#0A0E17]/90 border border-indigo-500/30 text-[9px] text-indigo-300">
+        TARGET: {lockedTarget}
       </div>
     </div>
   )
@@ -110,17 +186,29 @@ export default function DashboardPage() {
   const [feed, setFeed] = useState<ThreatEvent[]>(THREAT_FEED.slice(0, 8))
   const [filterSector, setFilterSector] = useState<string>('ALL')
   const [searchQuery, setSearchQuery] = useState('')
-  const [now, setNow] = useState('')
+  const [utcTime, setUtcTime] = useState('')
+  const [istTime, setIstTime] = useState('')
 
   useEffect(() => {
-    setNow(new Date().toISOString().replace('T', ' ').slice(0, 19) + ' IST')
-    const id = setInterval(() => {
+    function updateClocks() {
+      const d = new Date()
+      setUtcTime(d.toISOString().slice(11, 19) + ' UTC')
+      setIstTime(d.toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false }) + ' IST')
+    }
+    updateClocks()
+    const clockId = setInterval(updateClocks, 1000)
+
+    const feedId = setInterval(() => {
       setFeed(prev => {
         const next = THREAT_FEED[Math.floor(Math.random() * THREAT_FEED.length)]
         return [next, ...prev.slice(0, 9)]
       })
-    }, 6000)
-    return () => clearInterval(id)
+    }, 5000)
+
+    return () => {
+      clearInterval(clockId)
+      clearInterval(feedId)
+    }
   }, [])
 
   const criticalCount = THREAT_FEED.filter(e => e.severity === 'CRITICAL').length
@@ -136,367 +224,156 @@ export default function DashboardPage() {
   })
 
   return (
-    <div className="p-6 md:p-8 space-y-12 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1600px] mx-auto select-none">
       {/* ============================================================ */}
-      {/* 1. HERO SECTION                                              */}
+      {/* 1. HIGH-DENSITY SOVEREIGN SOC CONTROL HUD                    */}
       {/* ============================================================ */}
-      <section className="relative pt-4 pb-8 overflow-hidden">
-        {/* Soft Ambient Mesh Background */}
-        <div className="absolute top-1/2 left-3/4 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full bg-indigo-600/10 blur-[130px] pointer-events-none" />
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          {/* Left Column: Headline & Action */}
-          <div className="lg:col-span-7 space-y-6">
-            {/* Pill Tag */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 text-xs font-medium tracking-wide shadow-sm">
-              <Sparkles size={13} className="text-indigo-400" />
-              <span>Sovereign Cyber Intelligence & Threat Operations</span>
-            </div>
-
-            {/* Display Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
-              Protect Your Digital{' '}
-              <span className="bg-gradient-to-r from-indigo-300 via-sky-300 to-teal-200 bg-clip-text text-transparent">
-                Security Operations
-              </span>
+      <div className="p-4 sm:p-5 rounded-2xl bg-[#0F1523]/90 border border-white/[0.08] backdrop-blur-2xl shadow-xl flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+        {/* Designation & Status */}
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-mono text-[11px] font-bold">
+              00 // SOVEREIGN CYBER SOC CONSOLE
+            </span>
+            <span className="text-slate-600 text-xs">•</span>
+            <span className="text-[11px] font-mono text-slate-400">
+              NCIIPC SEC. 70 IT ACT · CERT-IN 6-HR MANDATE · BNS 2023
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight font-sans">
+              National Cyber Defense Operations Center
             </h1>
-
-            {/* Descriptive Body */}
-            <p className="text-base sm:text-lg text-slate-300 max-w-xl font-normal leading-relaxed">
-              Equipped with real-time critical infrastructure telemetry, automated Bharatiya Nyaya Sanhita (BNS) 2023 legal FIR dossiers, and ultra-fast incident response triage for Bharat.
-            </p>
-
-            {/* CTA Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Link
-                href="/cyber-ir"
-                className="px-7 py-3.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-xl shadow-indigo-950/40 border border-indigo-400/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
-              >
-                <span>Launch Cyber-IR Engine</span>
-                <ChevronRight size={16} />
-              </Link>
-              <Link
-                href="/incident"
-                className="px-6 py-3.5 rounded-full text-sm font-semibold text-slate-200 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] backdrop-blur-md transition-all hover:text-white flex items-center gap-2"
-              >
-                <Siren size={16} className="text-indigo-400" />
-                <span>Report Incident (FIR)</span>
-              </Link>
-            </div>
-
-            {/* Trust Badges / Agencies Ticker */}
-            <div className="pt-6 border-t border-white/[0.08]">
-              <p className="text-[11px] font-mono uppercase tracking-widest text-slate-500 mb-3">
-                INTEGRATED WITH SOVEREIGN FRAMEWORKS & AGENCIES
-              </p>
-              <div className="flex flex-wrap items-center gap-6 text-xs text-slate-400 font-medium">
-                <span className="flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" /> CERT-In
-                </span>
-                <span className="flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-indigo-400" /> NCIIPC
-                </span>
-                <span className="flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-sky-400" /> NPCI UPI
-                </span>
-                <span className="flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-amber-400" /> I4C MHA
-                </span>
-                <span className="flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-violet-400" /> BNS 2023
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Sovereign Quantum Shield */}
-          <div className="lg:col-span-5 flex items-center justify-center">
-            <SovereignQuantumShield />
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 2. THREE FEATURE CARDS                                       */}
-      {/* ============================================================ */}
-      <section className="space-y-4">
-        <div className="max-w-2xl">
-          <p className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold mb-1">
-            DEFENSE ARCHITECTURE
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            From our roots in cybersecurity innovation to becoming a trusted guardian of safety
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-3">
-          {/* Card 1: Robust Protection */}
-          <div className="p-6 rounded-2xl glass-card flex flex-col justify-between group">
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 mb-5 shadow-sm group-hover:scale-105 transition-transform">
-                <Lock size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">
-                Robust Legal Protection
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Instant statutory mapping under the newly enacted Bharatiya Nyaya Sanhita (BNS) 2023 and IT Act 2000. Generates legally sound, court-ready FIR dossiers with PDF downloads.
-              </p>
-            </div>
-            <Link
-              href="/incident"
-              className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-emerald-400 group-hover:text-emerald-300"
-            >
-              <span>Draft FIR Dossier</span>
-              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Card 2: Proactive Defense */}
-          <div className="p-6 rounded-2xl glass-card flex flex-col justify-between group">
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center text-indigo-400 mb-5 shadow-sm group-hover:scale-105 transition-transform">
-                <Cpu size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
-                Proactive SOC Triage
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Sub-second 120B reasoning model identifies exact MITRE ATT&CK techniques (T1566, T1003) and drafts tactical SANS PICERL playbooks to contain ransomware and intrusion chains.
-              </p>
-            </div>
-            <Link
-              href="/cyber-ir"
-              className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-indigo-400 group-hover:text-indigo-300"
-            >
-              <span>Generate Playbook</span>
-              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Card 3: 24/7 Monitoring */}
-          <div className="p-6 rounded-2xl glass-card flex flex-col justify-between group">
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 mb-5 shadow-sm group-hover:scale-105 transition-transform">
-                <Radio size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
-                24/7 National Monitoring
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Real-time threat feeds analyzing banking switches, state electricity load dispatch SCADA networks, and telecom SS7 routing against active global APT campaigns.
-              </p>
-            </div>
-            <Link
-              href="/intel"
-              className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:text-amber-300"
-            >
-              <span>View Threat Stream</span>
-              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 3. OPERATIONAL METRICS                                        */}
-      {/* ============================================================ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl glass-card flex items-center justify-between">
-          <div>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">Active Threats</p>
-            <p className="text-3xl font-extrabold text-white mt-1">{activeCount}</p>
-            <p className="text-[11px] text-rose-300 mt-1 font-mono">SEV 1 CRITICAL: {criticalCount}</p>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-            <AlertTriangle size={20} />
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl glass-card flex items-center justify-between">
-          <div>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">Sectors Watched</p>
-            <p className="text-3xl font-extrabold text-white mt-1">8</p>
-            <p className="text-[11px] text-emerald-300 mt-1 font-mono">ALL NOMINAL</p>
+        {/* Real-time Telemetry Indicators */}
+        <div className="flex flex-wrap items-center gap-3 font-mono text-xs">
+          {/* Synchronized Clocks */}
+          <div className="px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/[0.07] flex items-center gap-2 text-slate-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-white font-semibold">{istTime || '12:00:00 IST'}</span>
+            <span className="text-slate-600">|</span>
+            <span className="text-slate-400">{utcTime || '06:30:00 UTC'}</span>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-            <Shield size={20} />
-          </div>
-        </div>
 
-        <div className="p-5 rounded-2xl glass-card flex items-center justify-between">
-          <div>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">Tracked CVEs</p>
-            <p className="text-3xl font-extrabold text-white mt-1">{CVE_FIXTURES.length}</p>
-            <p className="text-[11px] text-amber-300 mt-1 font-mono">9 ACTIVE ZERO-DAYS</p>
+          {/* DEFCON Pill */}
+          <div className="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-300 flex items-center gap-1.5 font-semibold">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+            <span>DEFCON 3 · ELEVATED</span>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-            <Activity size={20} />
-          </div>
-        </div>
 
-        <div className="p-5 rounded-2xl glass-card flex items-center justify-between">
-          <div>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">National Posture</p>
-            <p className="text-3xl font-extrabold text-white mt-1">84 / 100</p>
-            <p className="text-[11px] text-sky-300 mt-1 font-mono">DEFCON 3 STATUS</p>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-            <Server size={20} />
+          {/* National Posture Score */}
+          <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 flex items-center gap-1.5 font-semibold">
+            <ShieldCheck size={14} className="text-emerald-400" />
+            <span>POSTURE: 84/100</span>
           </div>
         </div>
       </div>
 
       {/* ============================================================ */}
-      {/* 4. MAIN OPERATIONS GRID: LIVE FEED & SECTOR HEATMAP          */}
+      {/* 2. SPLIT WORKBENCH: NCIIPC 6-SECTOR GRID + QUANTUM RADAR     */}
       {/* ============================================================ */}
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-        {/* Live Threat Feed with Search & Filter */}
-        <div className="xl:col-span-3">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        {/* Left: NCIIPC 6-Sector Critical Infrastructure Grid (7 Cols) */}
+        <div className="xl:col-span-7">
           <TerminalCard
-            title="Live Infrastructure Threat Stream"
-            label="REAL-TIME"
+            title="NCIIPC Critical Information Infrastructure (CII) Status Grid"
+            label="SEC 70 IT ACT"
             labelColor="cyan"
-            noPadding
             headerRight={
-              <span className="font-mono text-xs text-slate-400">
-                {filteredFeed.length} Events
+              <span className="font-mono text-xs text-slate-400 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                6 National Sectors Monitored
               </span>
             }
           >
-            {/* Filter & Search Bar */}
-            <div className="p-3.5 border-b border-white/[0.06] bg-white/[0.01] flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
-              <div className="relative flex-1">
-                <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
-                <input
-                  type="text"
-                  placeholder="Filter by asset (e.g. SBI, UPI, AIIMS), attack type..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-white/[0.03] border border-white/[0.07] pl-9 pr-3 py-2 text-xs text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-500 rounded-full font-sans transition-colors"
-                />
-              </div>
-
-              <div className="flex gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-                {['ALL', 'FINANCE', 'POWER', 'HEALTHCARE', 'GOVT'].map(s => (
-                  <button
-                    key={s}
-                    onClick={() => setFilterSector(s)}
-                    className={`px-3 py-1 text-xs rounded-full transition-colors whitespace-nowrap font-medium ${
-                      filterSector === s
-                        ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                        : 'bg-white/[0.03] text-slate-400 border border-white/[0.06] hover:bg-white/[0.06]'
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Events List */}
-            <div className="divide-y divide-white/[0.05] max-h-[380px] overflow-y-auto text-xs">
-              {filteredFeed.length === 0 ? (
-                <div className="p-8 text-center text-slate-500">
-                  No threat events match your search query.
-                </div>
-              ) : (
-                filteredFeed.map((evt, i) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+              {NCIIPC_SECTORS.map(sec => {
+                const isNominal = sec.status === 'NOMINAL'
+                return (
                   <div
-                    key={`${evt.id}-${i}`}
-                    className="p-3.5 hover:bg-white/[0.02] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                    key={sec.id}
+                    className="p-3.5 rounded-xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.06] hover:border-indigo-500/30 transition-all flex flex-col justify-between space-y-2 group"
                   >
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-slate-500 font-mono text-[11px]">{evt.timestamp.slice(11, 19)}Z</span>
-                        <SeverityPill s={evt.severity} />
-                        <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20">
-                          {evt.sector}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-sans font-bold text-xs text-white group-hover:text-indigo-300 transition-colors">
+                          {sec.name}
                         </span>
-                        <span className="text-slate-200 font-semibold truncate">{evt.targetAsset}</span>
+                        <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full border ${
+                          isNominal
+                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            : 'bg-amber-500/10 text-amber-300 border-amber-500/20 animate-pulse'
+                        }`}>
+                          {sec.status}
+                        </span>
                       </div>
-                      <p className="text-slate-400 text-xs line-clamp-1">
-                        {evt.description}
+                      <p className="text-[10px] text-slate-400 font-mono line-clamp-1">
+                        {sec.sub}
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-sky-300 font-mono text-[10px] bg-sky-500/10 border border-sky-500/20 px-2.5 py-0.5 rounded-full">
-                        {evt.ttps[0]}
-                      </span>
-                      <span className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full font-medium ${
-                        evt.status === 'ACTIVE'
-                          ? 'bg-rose-500/15 text-rose-300 border border-rose-500/25'
-                          : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
-                      }`}>
-                        {evt.status}
-                      </span>
+                    <div className="pt-2 border-t border-white/[0.06] space-y-1.5">
+                      <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+                        <span>LATENCY: <strong className="text-white">{sec.latency}ms</strong></span>
+                        <span>JITTER: <strong className="text-slate-300">{sec.jitter}</strong></span>
+                        <span className="text-indigo-300 font-bold">{sec.health}%</span>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="h-1.5 w-full rounded-full bg-white/[0.05] overflow-hidden">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{
+                            width: `${sec.health}%`,
+                            backgroundColor: isNominal ? '#10B981' : '#F59E0B',
+                          }}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 pt-0.5">
+                        <span className="truncate max-w-[180px]">{sec.activeVector}</span>
+                        <span className="text-cyan-400 font-semibold">{sec.ttp}</span>
+                      </div>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
-
-            {/* Footer */}
-            <div className="p-3.5 bg-white/[0.01] border-t border-white/[0.06] flex items-center justify-between">
-              <span className="text-[11px] text-slate-500 font-mono">
-                Telemetry Node: CERT-In Live Ingestion
-              </span>
-              <Link
-                href="/intel"
-                className="flex items-center gap-1 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
-              >
-                <span>Full Threat Radar</span>
-                <ArrowUpRight size={14} />
-              </Link>
+                )
+              })}
             </div>
           </TerminalCard>
         </div>
 
-        {/* Sector Threat Heatmap */}
-        <div className="xl:col-span-2">
+        {/* Right: Interactive Sovereign Quantum Radar & SOC Triage (5 Cols) */}
+        <div className="xl:col-span-5">
           <TerminalCard
-            title="National Sector Heatmap"
-            label="ELEVATED"
-            labelColor="amber"
+            title="Interactive Sovereign Quantum Radar"
+            label="REAL-TIME AIR-SPACE"
+            labelColor="purple"
+            headerRight={
+              <span className="text-[10px] font-mono text-indigo-300 flex items-center gap-1">
+                <Radar size={12} className="animate-spin text-indigo-400" />
+                <span>360° LIVE SWEEP</span>
+              </span>
+            }
           >
             <div className="space-y-4">
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Intrusion attempt velocity calculated across vital Indian infrastructure switches:
-              </p>
+              <InteractiveQuantumRadar />
 
-              <div className="space-y-3.5">
-                {Object.entries(SECTOR_THREAT_LEVELS).map(([sector, data]) => {
-                  const color = data.level > 80 ? '#F43F5E' : data.level > 60 ? '#F59E0B' : '#10B981'
-                  const statusLabel = data.level > 80 ? 'CRITICAL' : data.level > 60 ? 'ELEVATED' : 'NOMINAL'
-                  return (
-                    <div key={sector} className="space-y-1.5 text-xs">
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-200 font-medium">{sector}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-slate-500">{statusLabel}</span>
-                          <span className="font-mono font-bold text-xs" style={{ color }}>{data.level}%</span>
-                        </div>
-                      </div>
-                      <div className="h-2 w-full rounded-full bg-white/[0.04] overflow-hidden border border-white/[0.06]">
-                        <div
-                          className="h-full transition-all duration-700 rounded-full"
-                          style={{
-                            width: `${data.level}%`,
-                            backgroundColor: color,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-slate-300 flex items-start gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1 flex-shrink-0" />
-                <span>
-                  <strong>Threshold Note:</strong> Percentages over 75% indicate automated botnet brute-forcing or weaponized phishing waves targeting public infrastructure.
-                </span>
+              {/* Triage Quick Triggers Bar */}
+              <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
+                <Link
+                  href="/cyber-ir"
+                  className="p-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-indigo-200 text-center font-semibold transition-all hover:scale-[1.01]"
+                >
+                  [DISPATCH PLAYBOOK]
+                </Link>
+                <Link
+                  href="/incident"
+                  className="p-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-200 text-center font-semibold transition-all hover:scale-[1.01]"
+                >
+                  [GENERATE BNS FIR]
+                </Link>
               </div>
             </div>
           </TerminalCard>
@@ -504,102 +381,204 @@ export default function DashboardPage() {
       </div>
 
       {/* ============================================================ */}
-      {/* 5. QUICK LAUNCH OPERATIONAL MODULES                          */}
+      {/* 3. LIVE INFRASTRUCTURE THREAT STREAM & ATTACK TTP MATRIX    */}
       {/* ============================================================ */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-white tracking-tight">
-            Explore Trinetra Operational Modules
-          </h2>
-          <span className="text-xs text-slate-500">11 Integrated Engines</span>
+      <TerminalCard
+        title="Live Threat Telemetry & Attack TTP Ingestion"
+        label="CERT-IN FEED"
+        labelColor="cyan"
+        noPadding
+        headerRight={
+          <span className="font-mono text-xs text-slate-400">
+            {filteredFeed.length} Events Ingested
+          </span>
+        }
+      >
+        {/* Search & Sector Filters */}
+        <div className="p-3.5 border-b border-white/[0.06] bg-white/[0.01] flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+          <div className="relative flex-1">
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              placeholder="Search by target asset (e.g. SBI, UPI, AIIMS), attack type, IOC..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full bg-white/[0.03] border border-white/[0.07] pl-9 pr-3 py-1.5 text-xs text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-500 rounded-lg font-mono transition-colors"
+            />
+          </div>
+
+          <div className="flex gap-1.5 overflow-x-auto pb-1 sm:pb-0 font-mono text-xs">
+            {['ALL', 'FINANCE', 'POWER', 'HEALTHCARE', 'GOVT'].map(s => (
+              <button
+                key={s}
+                onClick={() => setFilterSector(s)}
+                className={`px-2.5 py-1 rounded-md transition-colors whitespace-nowrap font-medium text-[11px] ${
+                  filterSector === s
+                    ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                    : 'bg-white/[0.03] text-slate-400 border border-white/[0.06] hover:bg-white/[0.06]'
+                }`}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Threat Events Table */}
+        <div className="divide-y divide-white/[0.05] max-h-[320px] overflow-y-auto text-xs font-mono">
+          {filteredFeed.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">
+              No threat events match your search query.
+            </div>
+          ) : (
+            filteredFeed.map((evt, i) => (
+              <div
+                key={`${evt.id}-${i}`}
+                className="p-3 hover:bg-white/[0.02] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+              >
+                <div className="space-y-1 min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-slate-500 text-[11px]">{evt.timestamp.slice(11, 19)}Z</span>
+                    <SeverityPill s={evt.severity} />
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                      {evt.sector}
+                    </span>
+                    <span className="text-white font-semibold font-sans truncate">{evt.targetAsset}</span>
+                  </div>
+                  <p className="text-slate-400 text-xs font-sans line-clamp-1">
+                    {evt.description}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-sky-300 text-[10px] bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded">
+                    {evt.ttps[0]}
+                  </span>
+                  <span className={`text-[10px] uppercase px-2 py-0.5 rounded font-medium ${
+                    evt.status === 'ACTIVE'
+                      ? 'bg-rose-500/15 text-rose-300 border border-rose-500/25'
+                      : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
+                  }`}>
+                    {evt.status}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="p-3 bg-white/[0.01] border-t border-white/[0.06] flex items-center justify-between font-mono text-[11px]">
+          <span className="text-slate-500">
+            Ingestion Pipeline: CERT-In Advisory Stream · 12,042 Event Hash Index
+          </span>
+          <Link
+            href="/intel"
+            className="flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors font-sans font-semibold text-xs"
+          >
+            <span>Full Threat Radar</span>
+            <ArrowUpRight size={13} />
+          </Link>
+        </div>
+      </TerminalCard>
+
+      {/* ============================================================ */}
+      {/* 4. TACTICAL OPERATIONAL MODULES ARRAY (ALL 12 MODULES)       */}
+      {/* ============================================================ */}
+      <div className="space-y-3 pt-2">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-bold text-white tracking-tight uppercase font-mono text-slate-300">
+            Sovereign Defense Modules (00 – 11)
+          </h2>
+          <span className="text-[11px] font-mono text-slate-500">12 Engines Online</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           {[
-            {
-              href: '/video-gen',
-              title: '10 // VIDEO STUDIO',
-              desc: 'Autonomous AI video briefings from uploaded PDFs, PPTX decks, and incident advisories.',
-              color: '#6366F1',
-              tag: 'STUDIO',
-            },
             {
               href: '/cyber-ir',
               title: '09 // CYBER-IR ENGINE',
-              desc: 'Dual-model AI engine for generating BNS 2023 legal FIR dossiers and SANS PICERL playbooks.',
-              color: '#8B5CF6',
+              desc: 'Dual-model AI engine for BNS 2023 legal FIR dossiers and SANS PICERL playbooks.',
               tag: 'FEATURED AI',
+              color: '#818CF8',
+            },
+            {
+              href: '/deepfake-xai',
+              title: '11 // DEEPFAKE XAI',
+              desc: 'CGFD, FADI, and Grad-CAM faithfulness metrics with BharatCode legal explainers.',
+              tag: 'XAI FORENSICS',
+              color: '#38BDF8',
+            },
+            {
+              href: '/video-gen',
+              title: '10 // VIDEO STUDIO',
+              desc: 'Autonomous multi-scene video briefing scripts from incident reports and PDF dossiers.',
+              tag: 'STUDIO',
+              color: '#A78BFA',
             },
             {
               href: '/incident',
-              title: '04 // INCIDENT & FIR',
-              desc: 'Immediate emergency crisis response and 1-click legal cybercrime FIR PDF generation.',
-              color: '#F43F5E',
-              tag: 'EMERGENCY',
-            },
-            {
-              href: '/nlp',
-              title: '08 // NLP PHISHING SCAN',
-              desc: 'Inspect fake SMS, UPI fraud alerts, and calculate URL Shannon entropy in real-time.',
-              color: '#0EA5E9',
-              tag: 'SCAM SCAN',
-            },
-            {
-              href: '/breach',
-              title: '06 // SENTINEL GUARD',
-              desc: 'Safely check password exposure with zero-knowledge SHA-1 k-anonymity queries.',
-              color: '#10B981',
-              tag: 'PRIVACY',
+              title: '04 // INCIDENT CRISIS',
+              desc: 'Emergency response runbooks and court-ready BNS 2023 FIR PDF generation.',
+              tag: 'CRISIS SOS',
+              color: '#FB7185',
             },
             {
               href: '/academy',
-              title: '01 // ACADEMY & CTF',
-              desc: 'Interactive tactical CTF terminal, packet dissection, and MITRE ATT&CK flashcards.',
-              color: '#10B981',
-              tag: 'TRAINING',
+              title: '01 // CYBER RANGE',
+              desc: 'Split-pane briefing terminal, CTF challenge shell, and packet hex dump inspection.',
+              tag: 'CTF RANGE',
+              color: '#34D399',
             },
             {
               href: '/mentor',
               title: '02 // AI TACTICAL MENTOR',
-              desc: 'SecOps copilot for active attack mitigation and CERT-In advisory guidance.',
-              color: '#6366F1',
-              tag: 'COPILOT',
+              desc: 'SecOps defense copilot for active attack mitigation and CERT-In compliance.',
+              tag: 'AI COPILOT',
+              color: '#818CF8',
             },
             {
-              href: '/devsec',
-              title: '03 // DEVSEC & SAST',
-              desc: 'Scan code for OWASP vulnerabilities and audit app terms for DPDP Act compliance.',
-              color: '#F59E0B',
-              tag: 'APP SEC',
+              href: '/exif',
+              title: '05 // FORENSICS LAB',
+              desc: 'Canvas EXIF metadata scrubbing, GPS extraction, and image tamper forensics.',
+              tag: 'METADATA',
+              color: '#38BDF8',
+            },
+            {
+              href: '/nlp',
+              title: '08 // NLP PHISHING SCAN',
+              desc: 'Detect phishing SMS lures, UPI scams, and calculate Shannon URL entropy.',
+              tag: 'NLP INSPECT',
+              color: '#FBBF24',
             },
           ].map(m => (
             <Link
               key={m.href}
               href={m.href}
-              className="p-5 rounded-2xl glass-card flex flex-col justify-between group"
+              className="p-4 rounded-xl bg-[#0F1523]/80 hover:bg-[#141C2E] border border-white/[0.07] hover:border-indigo-500/40 shadow-sm transition-all flex flex-col justify-between group"
             >
               <div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="font-mono text-xs font-semibold" style={{ color: m.color }}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-mono text-xs font-bold" style={{ color: m.color }}>
                     {m.title}
                   </span>
-                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-slate-400">
+                  <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-white/[0.04] text-slate-400 border border-white/[0.06]">
                     {m.tag}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed group-hover:text-slate-200 transition-colors">
+                <p className="text-[11px] text-slate-400 leading-relaxed group-hover:text-slate-200 transition-colors">
                   {m.desc}
                 </p>
               </div>
 
-              <div className="mt-5 pt-3.5 border-t border-white/[0.06] flex items-center justify-between text-xs font-medium text-slate-500 group-hover:text-indigo-400 transition-colors">
+              <div className="mt-4 pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-slate-500 group-hover:text-indigo-400 transition-colors">
                 <span>Launch Engine</span>
-                <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                <ChevronRight size={13} className="group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
           ))}
         </div>
-      </section>
+      </div>
     </div>
   )
 }
