@@ -75,7 +75,7 @@ Be technical, tactical, and specific with command line utilities, paths, and pro
 
     try {
       const llmResponse = await callLLM(
-        [{ role: 'user', content: userMessage }],
+        [{ role: 'user', content: prompt }],
         SYSTEM_PROMPTS.PLAYBOOK
       )
 
