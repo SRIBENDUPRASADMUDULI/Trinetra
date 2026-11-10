@@ -252,6 +252,45 @@ async function sendModelRequest(
   return { text, raw: data, requestId, latencyMs }
 }
 
+async function invokeBharatCodeModel(
+  baseUrl: string,
+  apiKey: string,
+  model: string,
+  messages: HarnessMessage[],
+  options: {
+    isFast?: boolean
+    temperature?: number
+    maxTokens?: number
+    jsonMode?: boolean
+  }
+): Promise<{ text: string; raw: any; requestId: string | null; latencyMs: number }> {
+  // First attempt: BharatCode native /responses endpoint (supports store: false, reasoning: { effort: 'none' })
+  try {
+    const responsesPayload: Record<string, any> = {
+      model,
+      input: messages,
+      store: false, // MANDATORY: BharatCode stateless specification
+      ...(options.isFast ? { reasoning: { effort: 'none' } } : {}),
+    }
+
+    return await sendModelRequest(`${baseUrl}/responses`, apiKey, responsesPayload)
+  } catch (err: any) {
+    // If /responses returns 404 or unsupported shape, fallback to OpenAI-compatible /chat/completions
+    if (err.message.includes('HTTP 404') || err.message.includes('unsupported_request_shape') || err.message.includes('Cannot POST')) {
+      const chatPayload: Record<string, any> = {
+        model,
+        messages,
+        temperature: options.temperature ?? 0.25,
+        max_tokens: options.maxTokens ?? 2048,
+        store: false, // MANDATORY: BharatCode stateless specification
+        ...(options.jsonMode ? { response_format: { type: 'json_object' } } : {}),
+      }
+      return await sendModelRequest(`${baseUrl}/chat/completions`, apiKey, chatPayload)
+    }
+    throw err
+  }
+}
+
 /**
  * Unified BharatCode Multi-Model AI Harness Call.
  * Implements:
@@ -310,19 +349,12 @@ export async function callAIHarness(
   // Attempt 1: Primary Model (e.g. qwen-3.8-27b)
   try {
     const isFast = options.fastTriage || primaryModel.includes('flash') || primaryModel.includes('deepseek')
-    const primaryPayload: Record<string, any> = {
-      model: primaryModel,
-      messages: finalMessages,
+    const res = await invokeBharatCodeModel(baseUrl, apiKey, primaryModel, finalMessages, {
+      isFast,
       temperature: options.temperature ?? 0.25,
-      max_tokens: options.maxTokens ?? 2048,
-      store: false, // MANDATORY: BharatCode stateless specification
-      ...(isFast ? { reasoning: { effort: 'none' } } : {}),
-      ...(options.jsonMode ? { response_format: { type: 'json_object' } } : {}),
-    }
-
-    // Try standard chat/completions endpoint
-    const endpoint = `${baseUrl}/chat/completions`
-    const res = await sendModelRequest(endpoint, apiKey, primaryPayload)
+      maxTokens: options.maxTokens ?? 2048,
+      jsonMode: options.jsonMode,
+    })
 
     if (res.text) {
       const cleaned = cleanOutput(res.text)
@@ -350,18 +382,12 @@ export async function callAIHarness(
 
   // Attempt 2: Fallback Model (e.g. deepseek-v4.1-flash)
   try {
-    const fallbackPayload: Record<string, any> = {
-      model: fallbackModel,
-      messages: finalMessages,
+    const res = await invokeBharatCodeModel(baseUrl, apiKey, fallbackModel, finalMessages, {
+      isFast: true,
       temperature: options.temperature ?? 0.2,
-      max_tokens: options.maxTokens ?? 1536,
-      store: false, // MANDATORY: BharatCode stateless specification
-      reasoning: { effort: 'none' }, // MANDATORY: deepseek-v4.1-flash reasoning token guard
-      ...(options.jsonMode ? { response_format: { type: 'json_object' } } : {}),
-    }
-
-    const endpoint = `${baseUrl}/chat/completions`
-    const res = await sendModelRequest(endpoint, apiKey, fallbackPayload)
+      maxTokens: options.maxTokens ?? 1536,
+      jsonMode: options.jsonMode,
+    })
 
     if (res.text) {
       const cleaned = cleanOutput(res.text)

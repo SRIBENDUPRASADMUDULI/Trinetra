@@ -96,7 +96,7 @@ export function AIHarnessBar() {
       {/* Clickable High-Density AI Harness Capsule */}
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2.5 h-8 px-3 rounded-full bg-[#0F1523]/90 hover:bg-[#141C2E] border border-indigo-500/30 hover:border-indigo-400/60 shadow-sm shadow-indigo-950/30 transition-all text-xs font-mono select-none group cursor-pointer"
+        className="flex items-center gap-2.5 h-9 px-3.5 rounded-xl bg-[#262B40] hover:bg-[#2E344E] border border-white/10 shadow-sm transition-all text-xs font-sans select-none group cursor-pointer"
         title="Click to view BharatCode Multi-Model AI Harness Telemetry & Diagnostics"
       >
         {/* Pulsing Model Status Beacon */}
@@ -110,33 +110,33 @@ export function AIHarnessBar() {
                 : 'bg-rose-400 shadow-[0_0_8px_#f87171]'
             }`}
           />
-          <Cpu size={12} className="text-indigo-400 group-hover:text-indigo-300 transition-colors" />
-          <span className="text-white font-semibold text-[11px] tracking-tight">
-            {telemetry.activeModel.toUpperCase()}
+          <Cpu size={13} className="text-[#FF5A79] group-hover:scale-105 transition-transform" />
+          <span className="text-white font-semibold text-xs tracking-tight">
+            {telemetry.activeModel}
           </span>
         </div>
 
-        <div className="h-3 w-px bg-white/[0.12]" />
+        <div className="h-3.5 w-px bg-white/[0.12]" />
 
         {/* Latency Pill */}
-        <div className="flex items-center gap-1 text-[10px] text-slate-300">
+        <div className="flex items-center gap-1 text-[11px] text-slate-300 font-mono">
           <Zap size={10} className="text-amber-400" />
           <span>{telemetry.latencyMs}ms</span>
         </div>
 
-        <div className="h-3 w-px bg-white/[0.12] hidden sm:block" />
+        <div className="h-3.5 w-px bg-white/[0.12] hidden sm:block" />
 
         {/* Guardrail Armed Badge */}
-        <div className="hidden sm:flex items-center gap-1 text-[10px] text-emerald-400">
-          <ShieldCheck size={11} className="text-emerald-400" />
-          <span className="tracking-wide uppercase font-medium">GUARDRAIL</span>
+        <div className="hidden sm:flex items-center gap-1 text-[11px] text-emerald-400">
+          <ShieldCheck size={12} className="text-emerald-400" />
+          <span className="tracking-wide uppercase font-medium text-[10px]">ARMED</span>
         </div>
       </button>
 
       {/* AI Harness Diagnostics Popover / Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="relative w-full max-w-xl rounded-2xl bg-[#0B0F19] border border-white/[0.12] shadow-2xl shadow-indigo-950/60 overflow-hidden text-slate-200 font-sans">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+          <div className="relative w-full max-w-xl rounded-2xl bg-[#262B40] border border-white/10 shadow-2xl overflow-hidden text-slate-200 font-sans">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-5 border-b border-white/[0.08] bg-white/[0.02]">
               <div className="flex items-center gap-3">
