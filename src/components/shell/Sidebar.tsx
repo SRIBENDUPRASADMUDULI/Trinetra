@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   GraduationCap, Terminal, Code2, AlertOctagon,
   Microscope, KeyRound, Radar, MessageSquare, Shield,
-  Home, Eye, Activity, PhoneCall, Video
+  Home, Eye, Activity, PhoneCall, Video, ScanFace
 } from 'lucide-react'
 
 const NAV = [
@@ -20,6 +20,7 @@ const NAV = [
   { idx: '08', label: 'NLP Inspector',  sub: 'Phishing & entropy scan',   path: '/nlp',      Icon: MessageSquare },
   { idx: '09', label: 'Cyber-IR Engine',sub: 'BNS 2023 FIR & playbooks',  path: '/cyber-ir', Icon: Shield },
   { idx: '10', label: 'Video Studio',   sub: 'PPT/PDF to Briefing Vault', path: '/video-gen', Icon: Video },
+  { idx: '11', label: 'Deepfake XAI',   sub: 'CGFD · FADI & Grad-CAM',    path: '/deepfake-xai', Icon: ScanFace },
 ]
 
 function formatUptime(s: number) {

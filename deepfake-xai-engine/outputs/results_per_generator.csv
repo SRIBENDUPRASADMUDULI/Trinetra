@@ -1,0 +1,10 @@
+source,evaluated_on,is_source,accuracy,faithfulness,n_eval
+FaceSwapAE,FaceSwapAE,True,1.0,0.5169590273161974,30
+FaceSwapAE,StableDiffusion,False,0.4,0.5545121077987338,30
+FaceSwapAE,StyleGAN2,False,1.0,0.518533967290044,30
+StableDiffusion,FaceSwapAE,False,0.4,0.49964948802283315,30
+StableDiffusion,StableDiffusion,True,1.0,0.528700707879175,30
+StableDiffusion,StyleGAN2,False,0.4,0.49991990400083147,30
+StyleGAN2,FaceSwapAE,False,0.4,0.6439420941811862,30
+StyleGAN2,StableDiffusion,False,0.4,0.6295614375093438,30
+StyleGAN2,StyleGAN2,True,1.0,0.556188072577237,30
