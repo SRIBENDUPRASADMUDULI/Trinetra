@@ -4,6 +4,7 @@
 // =============================================================================
 
 import { env, features } from '@/lib/env'
+import { callAIHarness } from '@/lib/ai-harness'
 
 // ---------------------------------------------------------------------------
 // Interfaces
@@ -210,66 +211,17 @@ export async function callLLM(
   messages: LLMMessage[],
   systemPrompt?: string,
 ): Promise<LLMResponse> {
-  // Graceful fallback: LLM not configured
-  if (!features.llmEnabled) {
-    return {
-      content: `[LLM_OFFLINE] The AI assistant is not configured. To enable AI features:
-
-1. Copy \`.env.example\` to \`.env.local\`
-2. Add your LLM API key to \`LLM_API_KEY\`
-3. Set your API credentials in LLM_API_KEY
-4. Restart the development server
-
-All other CyberShield Bharat features (URL scanner, credential checker, CVE viewer, threat feed) work without an LLM API key.`,
-      model: 'deterministic/kernel',
-      tokens: 0,
-    }
-  }
-
-  // Build message array with system prompt
-  const allMessages: LLMMessage[] = [
-    ...(systemPrompt ? [{ role: 'system' as const, content: systemPrompt }] : []),
-    ...messages,
-  ]
-
-  const requestBody = {
-    model: env.LLM_MODEL,
-    messages: allMessages,
-    temperature: 0.3,       // Lower temp for factual security responses
-    max_tokens: 2048,
-    top_p: 0.9,
-    stream: false,
-  }
-
-  const response = await fetch(`${env.LLM_BASE_URL}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${env.LLM_API_KEY}`,
-    },
-    body: JSON.stringify(requestBody),
+  const harnessRes = await callAIHarness(messages, {
+    systemPrompt,
+    model: env.LLM_MODEL || env.BHARATCODE_MODEL || 'qwen-3.8-27b',
+    temperature: 0.3,
+    maxTokens: 2048,
   })
 
-  if (!response.ok) {
-    const errorText = await response.text()
-    throw new LLMError(
-      `LLM API returned ${response.status}: ${errorText}`,
-      response.status,
-      errorText,
-    )
-  }
-
-  const data = await response.json() as OpenAICompatibleResponse
-
-  const choice = data.choices?.[0]
-  if (!choice?.message?.content) {
-    throw new LLMError('LLM API returned empty response', 200, JSON.stringify(data))
-  }
-
   return {
-    content: choice.message.content,
-    model: data.model ?? env.LLM_MODEL,
-    tokens: data.usage?.total_tokens ?? 0,
+    content: harnessRes.content,
+    model: harnessRes.model,
+    tokens: harnessRes.tokens,
   }
 }
 

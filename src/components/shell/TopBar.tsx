@@ -1,169 +1,181 @@
 'use client'
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { Siren, HelpCircle, X, Shield, PhoneCall, Search, Activity } from 'lucide-react'
-import { TelemetryTicker } from '@/components/ui/telemetry-ticker'
+import { usePathname } from 'next/navigation'
+import {
+  Search,
+  Plus,
+  HelpCircle,
+  PhoneCall,
+  Shield,
+  X,
+  Bell,
+  ChevronRight,
+} from 'lucide-react'
+import { AIHarnessBar } from '@/components/shell/AIHarnessBar'
+
+interface TopNavTab {
+  id: string
+  label: string
+  path: string
+}
+
+const TOP_NAV_TABS: TopNavTab[] = [
+  { id: 'overview', label: 'Overview', path: '/' },
+  { id: 'intel', label: 'Threat Intelligence', path: '/intel' },
+  { id: 'incident', label: 'Incident & FIR', path: '/incident' },
+  { id: 'mentor', label: 'AI SecOps Copilot', path: '/mentor' },
+  { id: 'deepfake-xai', label: 'Deepfake XAI', path: '/deepfake-xai' },
+  { id: 'academy', label: 'Cyber Range', path: '/academy' },
+  { id: 'devsec', label: 'DevSecOps', path: '/devsec' },
+]
 
 export function TopBar() {
+  const pathname = usePathname()
   const [showHelp, setShowHelp] = useState(false)
+  const [searchFocused, setSearchFocused] = useState(false)
 
   return (
     <>
       <header
-        className="sticky top-0 z-40 h-16 w-full flex items-center justify-between px-6 select-none bg-[#0A0E17]/90 backdrop-blur-xl border-b border-white/[0.07]"
+        className="sticky top-0 z-40 h-16 w-full flex items-center justify-between px-4 sm:px-6 select-none bg-[#1E2235]/95 backdrop-blur-md border-b border-white/[0.06] gap-4"
+        aria-label="Top Navigation Bar"
       >
-        {/* LEFT: Quick Search / Command Pill */}
-        <div className="flex items-center gap-3 w-72">
+        {/* LEFT / CENTER: Horizontal Navigation Tabs with Active Coral-Pink Bottom Indicator */}
+        <nav className="flex items-center gap-1 sm:gap-2 h-full overflow-x-auto no-scrollbar min-w-0 flex-1">
+          {TOP_NAV_TABS.map(tab => {
+            const isActive =
+              tab.path === '/'
+                ? pathname === '/'
+                : pathname === tab.path || pathname?.startsWith(tab.path + '/')
+
+            return (
+              <Link
+                key={tab.id}
+                href={tab.path}
+                className={`relative h-full flex items-center px-3 sm:px-4 text-xs sm:text-sm whitespace-nowrap transition-colors font-medium shrink-0 ${
+                  isActive
+                    ? 'text-white font-semibold'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                <span>{tab.label}</span>
+
+                {/* Active Coral-Pink Bottom Indicator */}
+                {isActive && (
+                  <span className="absolute bottom-0 left-2 right-2 h-[2.5px] bg-[#FF5A79] rounded-t-full shadow-[0_-2px_6px_rgba(255,90,121,0.5)]" />
+                )}
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* RIGHT: Search, AI Harness, 1930 Helpline, Guide & Circular Coral-Pink '+' CTA */}
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+          {/* Minimalist Search Pill */}
           <Link
             href="/intel"
-            className="flex items-center gap-2.5 w-full h-9 px-3.5 rounded-full bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] text-slate-300 text-xs transition-all group"
+            className={`hidden md:flex items-center gap-2 h-9 px-3.5 rounded-xl bg-[#262B40] border border-white/[0.07] hover:border-white/15 text-slate-300 text-xs transition-all ${
+              searchFocused ? 'w-56' : 'w-44 lg:w-48'
+            }`}
+            title="Search IOC, IP, CVE..."
           >
-            <Search size={14} className="text-slate-400 group-hover:text-indigo-400 transition-colors" />
-            <span className="text-slate-400 truncate text-[11px]">Search IOC, IP, or CVE...</span>
-            <span className="ml-auto text-[10px] font-mono text-slate-400 px-1.5 py-0.5 rounded bg-white/[0.06] border border-white/[0.06]">
+            <Search size={14} className="text-slate-400 shrink-0" />
+            <span className="text-slate-400 truncate text-[11px]">Search IOC, IP...</span>
+            <span className="ml-auto text-[9px] font-mono text-slate-400 px-1.5 py-0.5 rounded bg-white/[0.05] border border-white/[0.06]">
               ⌘K
             </span>
           </Link>
-        </div>
 
-        {/* CENTER: Clean Symmetrical Telemetry Capsule */}
-        <div className="hidden lg:flex items-center gap-4">
-          <div className="flex items-center h-9 px-4 rounded-full bg-white/[0.02] border border-white/[0.08] text-xs font-mono text-slate-300 gap-4">
-            <TelemetryTicker />
+          {/* AI Harness Live Status Capsule */}
+          <AIHarnessBar />
 
-            <div className="h-3.5 w-px bg-white/[0.1]" />
-
-            {/* Symmetrical DEFCON Badge */}
-            <div
-              className="flex items-center gap-1.5 text-amber-300 font-sans font-medium text-xs whitespace-nowrap cursor-help"
-              title="DEFCON 3: Elevated Readiness. Monitoring all national critical infrastructure sectors."
-            >
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-              <span>DEFCON 3 · Elevated</span>
-            </div>
-
-            <div className="h-3.5 w-px bg-white/[0.1]" />
-
-            {/* Posture Score */}
-            <div className="flex items-center gap-1.5 text-emerald-400 font-sans font-medium text-xs whitespace-nowrap">
-              <span className="text-slate-500 font-mono text-[10px]">HEALTH</span>
-              <span>84%</span>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT: Actions */}
-        <div className="flex items-center gap-3 w-72 justify-end">
-          {/* Platform Guide */}
-          <button
-            onClick={() => setShowHelp(true)}
-            className="flex items-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-medium text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-all"
-            title="Open Platform Guide & Overview"
-          >
-            <HelpCircle size={14} className="text-slate-400" />
-            <span className="hidden sm:inline">Guide</span>
-          </button>
-
-          {/* Helpline 1930 */}
+          {/* National Cyber Helpline 1930 Solid Badge */}
           <a
             href="tel:1930"
-            className="hidden sm:flex items-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-medium text-amber-300 bg-amber-500/10 border border-amber-500/25 hover:bg-amber-500/20 transition-all"
+            className="hidden sm:flex items-center gap-1.5 h-9 px-3 rounded-xl text-xs font-semibold text-amber-300 bg-[#262B40] hover:bg-[#2e344e] border border-amber-500/25 transition-all shrink-0"
             title="National Cyber Crime Reporting Helpline (Govt of India)"
           >
-            <PhoneCall size={13} className="text-amber-400" />
-            <span>1930</span>
+            <PhoneCall size={12} className="text-amber-400" />
+            <span className="text-[11px] font-mono">1930</span>
           </a>
 
-          {/* Emergency SOS CTA */}
+          {/* Platform Guide Trigger */}
+          <button
+            onClick={() => setShowHelp(true)}
+            className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:text-white bg-[#262B40] hover:bg-[#2e344e] border border-white/[0.08] transition-all cursor-pointer shrink-0"
+            title="Platform Guide & Architecture"
+          >
+            <HelpCircle size={16} />
+          </button>
+
+          {/* PRIMARY ACCENT CTA: Circular Coral-Pink '+' Button */}
           <Link
             href="/incident"
-            className="flex items-center gap-2 h-9 px-4 rounded-full text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 border border-indigo-400/30 shadow-md shadow-indigo-950/40 transition-all hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
+            className="w-9 h-9 rounded-full bg-[#FF5A79] hover:bg-[#ff4065] text-white flex items-center justify-center shadow-lg shadow-[#FF5A79]/30 transition-all hover:scale-105 active:scale-95 shrink-0 group relative cursor-pointer"
+            title="New Incident / Generate Statutory BNS 2023 FIR"
           >
-            <Siren size={14} className="text-indigo-200" />
-            <span>Report Incident</span>
+            <Plus size={18} strokeWidth={2.5} className="transition-transform group-hover:rotate-90 duration-200" />
+
+            {/* Hover Tooltip */}
+            <div className="absolute right-0 top-11 px-3 py-1.5 rounded-xl bg-[#262B40] border border-white/10 text-white text-xs whitespace-nowrap shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
+              <span className="font-semibold text-white">New Incident Report</span>
+              <span className="text-[10px] text-slate-400 block">Synthesize BNS 2023 FIR</span>
+            </div>
           </Link>
         </div>
       </header>
 
       {/* Modern Platform Guide Modal */}
       {showHelp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div
-            className="relative w-full max-w-2xl rounded-2xl bg-[#0F1523] border border-white/[0.12] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
-          >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+          <div className="relative w-full max-w-2xl rounded-2xl bg-[#262B40] border border-white/10 shadow-2xl overflow-hidden text-slate-200 font-sans">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-5 border-b border-white/[0.08] bg-white/[0.02]">
+            <div className="flex items-center justify-between p-5 border-b border-white/[0.08] bg-[#1E2235]/50">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
-                  <Shield size={16} className="text-indigo-400" />
+                <div className="w-8 h-8 rounded-xl bg-[#FF5A79]/15 border border-[#FF5A79]/30 flex items-center justify-center">
+                  <Shield size={16} className="text-[#FF5A79]" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">TRINETRA — Platform Guide</h3>
-                  <p className="text-[11px] text-slate-400">The Sovereign Third Eye for Indian Cyber Defense</p>
+                  <p className="text-[11px] text-slate-400">Sovereign Cyber Defense & Forensic Intelligence</p>
                 </div>
               </div>
               <button
                 onClick={() => setShowHelp(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/[0.05] transition-colors"
+                className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors"
               >
                 <X size={18} />
               </button>
             </div>
 
-            {/* Modal Body */}
+            {/* Modal Content */}
             <div className="p-6 space-y-4 text-slate-300 max-h-[75vh] overflow-y-auto">
-              <div className="p-4 rounded-xl bg-gradient-to-r from-indigo-950/40 via-slate-900/40 to-transparent border border-indigo-500/20">
-                <p className="font-bold text-sm text-white mb-1">What is TRINETRA?</p>
+              <div className="p-4 rounded-xl bg-[#1E2235] border border-white/[0.06]">
+                <p className="font-bold text-sm text-white mb-1">Executive Summary</p>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  TRINETRA is an enterprise-grade cyber defense ecosystem designed for threat telemetry monitoring, automated legal FIR dossier generation under Bharatiya Nyaya Sanhita (BNS) 2023, digital forensics, and proactive defense for Indian citizens and national infrastructure.
+                  TRINETRA combines real-time threat monitoring across NCIIPC critical infrastructure sectors, automated FIR synthesis under Bharatiya Nyaya Sanhita (BNS) 2023, digital media authenticity verification, and the BharatCode stateless AI Copilot (`qwen-3.8-27b` + `deepseek-v4.1-flash`).
                 </p>
               </div>
 
-              <div className="space-y-3">
-                <p className="font-semibold text-white text-xs uppercase tracking-wider">
-                  Core Operational Modules
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                    <p className="text-indigo-300 font-bold mb-0.5">00 // Command Center</p>
-                    <p className="text-slate-400">Live national threat posture, sector alerts, and quick defense actions.</p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                    <p className="text-indigo-300 font-bold mb-0.5">04 & 09 // Legal FIR & Incident Response</p>
-                    <p className="text-slate-400">AI-generated BNS 2023 & IT Act police dossiers with downloadable court-ready PDFs.</p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                    <p className="text-indigo-300 font-bold mb-0.5">06 // Sentinel Guard</p>
-                    <p className="text-slate-400">Check password breach exposure safely with SHA-1 k-anonymity (zero raw credentials transmitted).</p>
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                    <p className="text-indigo-300 font-bold mb-0.5">08 // NLP Phishing Inspector</p>
-                    <p className="text-slate-400">Scan suspicious SMS, emails, and links for punycode homoglyphs and malicious entropy.</p>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="p-3.5 rounded-xl bg-[#1E2235] border border-white/[0.06]">
+                  <p className="text-[#FF5A79] font-bold mb-1">00 // Command Center</p>
+                  <p className="text-slate-400">High-level national telemetry, sector status, and threat feed.</p>
+                </div>
+                <div className="p-3.5 rounded-xl bg-[#1E2235] border border-white/[0.06]">
+                  <p className="text-[#9ED5F0] font-bold mb-1">11 // Deepfake XAI</p>
+                  <p className="text-slate-400">CGFD & FADI metrics, Grad-CAM maps, and BNS §319(2) briefs.</p>
+                </div>
+                <div className="p-3.5 rounded-xl bg-[#1E2235] border border-white/[0.06]">
+                  <p className="text-[#CBE8BA] font-bold mb-1">04 & 09 // Legal FIR & Crisis</p>
+                  <p className="text-slate-400">Court-admissible PDF dossiers with digital hash verification.</p>
+                </div>
+                <div className="p-3.5 rounded-xl bg-[#1E2235] border border-white/[0.06]">
+                  <p className="text-[#F3C19D] font-bold mb-1">02 // AI SecOps Copilot</p>
+                  <p className="text-slate-400">Sovereign defense copilot with zero cloud PII retention.</p>
                 </div>
               </div>
-
-              {/* Emergency info box */}
-              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs flex items-start gap-2.5">
-                <PhoneCall size={16} className="text-amber-400 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="font-bold text-amber-300">Financial Cyber Fraud Emergency</p>
-                  <p className="text-slate-300 mt-0.5">
-                    If funds were debited, immediately dial <strong className="text-white font-mono">1930</strong> (Citizen Financial Cyber Fraud Reporting System) within the golden hour to freeze transfers.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-4 border-t border-white/[0.08] flex justify-end bg-white/[0.02]">
-              <button
-                onClick={() => setShowHelp(false)}
-                className="px-5 py-2 rounded-full bg-white/[0.08] hover:bg-white/[0.12] text-xs font-semibold text-white transition-colors"
-              >
-                Close Guide
-              </button>
             </div>
           </div>
         </div>

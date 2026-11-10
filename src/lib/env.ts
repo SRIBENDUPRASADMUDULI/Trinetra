@@ -9,6 +9,7 @@ export const env = {
   BHARATCODE_API_KEY: process.env.BHARATCODE_API_KEY ?? process.env.LLM_API_KEY ?? '',
   BHARATCODE_BASE_URL: process.env.BHARATCODE_BASE_URL ?? 'https://bharatcode.ai/api/model/v1',
   BHARATCODE_MODEL: process.env.BHARATCODE_MODEL ?? 'qwen-3.8-27b',
+  BHARATCODE_FALLBACK_MODEL: process.env.BHARATCODE_FALLBACK_MODEL ?? 'deepseek-v4.1-flash',
   VIRUSTOTAL_API_KEY: process.env.VIRUSTOTAL_API_KEY ?? '',
   GOOGLE_SAFE_BROWSING_KEY: process.env.GOOGLE_SAFE_BROWSING_KEY ?? '',
   PWNED_API_BASE: 'https://api.pwnedpasswords.com',

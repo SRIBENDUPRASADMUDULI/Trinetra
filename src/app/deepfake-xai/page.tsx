@@ -147,6 +147,7 @@ export default function DeepfakeXaiPage() {
     provider: string
     model?: string
     note?: string
+    requestId?: string
   } | null>(null)
 
   async function fetchOverview() {
@@ -294,6 +295,7 @@ export default function DeepfakeXaiPage() {
           provider: json.provider,
           model: json.model,
           note: json.note,
+          requestId: json.requestId,
         })
       }
     } catch {
@@ -1026,11 +1028,11 @@ export default function DeepfakeXaiPage() {
                     />
 
                     {/* BharatCode AI Forensic Brief */}
-                    <div className="p-4 rounded-xl bg-indigo-950/30 border border-indigo-500/25 space-y-3">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="p-4 sm:p-5 rounded-2xl bg-[#0B0F19]/90 border border-indigo-500/30 shadow-xl space-y-3 font-mono">
+                      <div className="flex flex-wrap items-center justify-between gap-2.5">
                         <div className="text-xs font-bold text-indigo-200 flex items-center gap-2">
                           <Sparkles size={14} className="text-sky-400" />
-                          <span>BharatCode AI Forensic Triage (BSA 2023 / IT Act 66D)</span>
+                          <span>BHARATCODE AI FORENSIC TRIAGE (BNS 2023 §319(2) &amp; BSA 2023 §63(4))</span>
                         </div>
                         <button
                           type="button"
@@ -1047,19 +1049,29 @@ export default function DeepfakeXaiPage() {
                             })
                           }
                           disabled={explaining}
-                          className="px-3 py-1.5 rounded-full bg-indigo-500/25 hover:bg-indigo-500/40 border border-indigo-400/40 text-xs font-semibold text-white transition-all cursor-pointer disabled:opacity-50"
+                          className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600/30 via-indigo-500/20 to-sky-600/30 hover:from-indigo-600/40 hover:to-sky-600/40 border border-indigo-400/40 text-xs font-bold text-white shadow-lg shadow-indigo-950/40 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
                         >
-                          {explaining ? 'Querying BharatCode...' : 'Generate BharatCode Brief'}
+                          <Sparkles size={13} className="text-cyan-400 animate-pulse" />
+                          <span>{explaining ? 'Synthesizing with BharatCode AI...' : '[GENERATE BNS §319 & BSA §63 BRIEF]'}</span>
                         </button>
                       </div>
                       {aiBrief && (
-                        <div className="space-y-2">
-                          <pre className="whitespace-pre-wrap text-xs text-slate-200 font-sans leading-relaxed bg-black/30 p-3 rounded-lg border border-white/[0.06]">
+                        <div className="space-y-2 pt-2 border-t border-white/[0.07]">
+                          <div className="flex items-center justify-between text-[11px] text-slate-400">
+                            <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+                              <ShieldCheck size={13} className="text-emerald-400" />
+                              <span>COURT-ADMISSIBLE FORENSIC VERDICT (BSA §63)</span>
+                            </span>
+                            <span className="px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                              {aiBrief.model || 'qwen-3.8-27b'}
+                            </span>
+                          </div>
+                          <pre className="whitespace-pre-wrap text-xs text-slate-200 font-sans leading-relaxed bg-black/40 p-4 rounded-xl border border-white/[0.08] shadow-inner">
                             {aiBrief.brief}
                           </pre>
-                          <div className="text-[10px] font-mono text-slate-400">
-                            Engine: {aiBrief.provider} {aiBrief.model ? `(${aiBrief.model})` : ''}
-                            {aiBrief.note ? ` · ${aiBrief.note}` : ''}
+                          <div className="flex flex-wrap items-center justify-between text-[10px] text-slate-500 pt-1">
+                            <span>Engine: {aiBrief.provider} {aiBrief.model ? `(${aiBrief.model})` : ''}</span>
+                            {aiBrief.requestId && <span>Ref: {aiBrief.requestId}</span>}
                           </div>
                         </div>
                       )}

@@ -1,391 +1,345 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
-import { THREAT_FEED, SECTOR_THREAT_LEVELS, type ThreatEvent } from '@/data/mock/threat-feed'
-import { CVE_FIXTURES } from '@/data/mock/cve-fixtures'
-import { TerminalCard } from '@/components/ui/terminal-card'
+import { THREAT_FEED, type ThreatEvent } from '@/data/mock/threat-feed'
 import {
-  AlertTriangle, Shield, Activity, Server,
-  ChevronRight, ArrowUpRight, Search, Siren,
-  PhoneCall, Sparkles, Lock, Eye, Cpu, Radio, ShieldCheck, CheckCircle2
+  Shield,
+  Activity,
+  AlertTriangle,
+  ArrowUpRight,
+  Search,
+  Zap,
+  Radio,
+  Eye,
+  Server,
+  Terminal,
+  Cpu,
+  ChevronRight,
+  Lock,
+  Plus,
+  Scale,
+  CheckCircle2,
+  ScanFace,
+  Code2,
+  GraduationCap,
+  Microscope,
+  MessageSquare,
+  Video,
+  KeyRound,
+  AlertOctagon,
 } from 'lucide-react'
 
-function SeverityPill({ s }: { s: string }) {
-  const map: Record<string, { bg: string; text: string; border: string }> = {
-    CRITICAL: { bg: 'bg-rose-500/10', text: 'text-rose-300', border: 'border-rose-500/20' },
-    HIGH:     { bg: 'bg-amber-500/10', text: 'text-amber-300', border: 'border-amber-500/20' },
-    MEDIUM:   { bg: 'bg-sky-500/10', text: 'text-sky-300', border: 'border-sky-500/20' },
-    LOW:      { bg: 'bg-emerald-500/10', text: 'text-emerald-300', border: 'border-emerald-500/20' },
+// NCIIPC 6 Designated Critical Information Infrastructure (CII) Sectors
+interface NCIIPCSector {
+  id: string
+  name: string
+  sub: string
+  status: 'NOMINAL' | 'ELEVATED' | 'CRITICAL'
+  latency: number
+  activeVector: string
+  health: number
+  ttp: string
+}
+
+const NCIIPC_SECTORS: NCIIPCSector[] = [
+  {
+    id: 'power',
+    name: 'Power & Energy',
+    sub: 'National Load Despatch (NLDC) · SCADA 400kV',
+    status: 'NOMINAL',
+    latency: 18,
+    activeVector: 'IEC 60870-5-104 Telemetry Sync',
+    health: 96,
+    ttp: 'T1059.001',
+  },
+  {
+    id: 'bfsi',
+    name: 'Banking & Finance (BFSI)',
+    sub: 'NPCI UPI Switch · RBI RTGS & NEFT Core',
+    status: 'ELEVATED',
+    latency: 24,
+    activeVector: 'Automated Credential Stuffing on API VPA',
+    health: 82,
+    ttp: 'T1110.004',
+  },
+  {
+    id: 'telecom',
+    name: 'Telecom & Satellite',
+    sub: 'SS7 / Diameter Core · Subsea Cable Landings',
+    status: 'NOMINAL',
+    latency: 14,
+    activeVector: 'GTP-C Tunneling Filter Active',
+    health: 94,
+    ttp: 'T1557.001',
+  },
+  {
+    id: 'transport',
+    name: 'Transport & Aviation',
+    sub: 'Airports Authority ATC · Railways UTS / CRIS',
+    status: 'NOMINAL',
+    latency: 29,
+    activeVector: 'Signaling Microsegmentation Nominal',
+    health: 91,
+    ttp: 'T1071.001',
+  },
+  {
+    id: 'government',
+    name: 'Govt & Public Services',
+    sub: 'UIDAI Aadhaar Auth · DigiLocker · NIC Cloud',
+    status: 'ELEVATED',
+    latency: 38,
+    activeVector: 'DDoS Scrapes on e-Governance Gateways',
+    health: 79,
+    ttp: 'T1498.001',
+  },
+  {
+    id: 'strategic',
+    name: 'Strategic & Healthcare',
+    sub: 'AIIMS Health Network · Atomic Energy Grid',
+    status: 'NOMINAL',
+    latency: 21,
+    activeVector: 'Air-Gapped Telemetry Verification Pass',
+    health: 98,
+    ttp: 'T1190',
+  },
+]
+
+function SeverityChip({ s }: { s: string }) {
+  const map: Record<string, { bg: string; text: string }> = {
+    CRITICAL: { bg: 'bg-[#FF5A79]/15', text: 'text-[#FF5A79]' },
+    HIGH:     { bg: 'bg-amber-500/15', text: 'text-amber-300' },
+    MEDIUM:   { bg: 'bg-sky-500/15', text: 'text-sky-300' },
+    LOW:      { bg: 'bg-emerald-500/15', text: 'text-emerald-300' },
   }
   const m = map[s] ?? map.LOW
   return (
-    <span className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-full border ${m.bg} ${m.text} ${m.border}`}>
+    <span className={`text-[10px] font-sans font-semibold px-2 py-0.5 rounded-md ${m.bg} ${m.text}`}>
       {s}
     </span>
   )
 }
 
-function SovereignQuantumShield() {
-  return (
-    <div className="relative w-full max-w-[420px] aspect-square flex items-center justify-center select-none">
-      {/* Soft Ethereal Indigo & Cyan Ambient Aura */}
-      <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-600/15 via-sky-600/10 to-transparent blur-3xl opacity-80" />
-      <div className="absolute w-64 h-64 rounded-full bg-indigo-500/10 blur-2xl" />
-
-      {/* SVG Concentric Radar Rings & Orbital Geometry */}
-      <svg className="w-full h-full relative z-10 overflow-visible" viewBox="0 0 400 400" fill="none">
-        <defs>
-          <radialGradient id="sphereGrad" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#6366F1" stopOpacity="0.85" />
-            <stop offset="50%" stopColor="#4F46E5" stopOpacity="0.4" />
-            <stop offset="85%" stopColor="#1E1B4B" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#0A0E17" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="orbitalTrace" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#818CF8" stopOpacity="0.1" />
-          </linearGradient>
-        </defs>
-
-        {/* Outer Orbital Ring 1 - Dashed */}
-        <circle cx="200" cy="200" r="180" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="1" strokeDasharray="6 8" />
-
-        {/* Outer Ring 2 - Hairline Solid */}
-        <circle cx="200" cy="200" r="158" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="1" />
-
-        {/* Rotating Orbital Segment */}
-        <g className="orbit-slow-anim">
-          <circle cx="200" cy="200" r="135" stroke="rgba(56, 189, 248, 0.4)" strokeWidth="1.5" strokeDasharray="40 80 20 60" />
-          <circle cx="335" cy="200" r="4" fill="#38BDF8" />
-          <circle cx="65" cy="200" r="3" fill="#818CF8" />
-        </g>
-
-        {/* Reverse Orbital Segment */}
-        <g className="orbit-reverse-anim">
-          <circle cx="200" cy="200" r="112" stroke="rgba(129, 140, 248, 0.35)" strokeWidth="1.5" strokeDasharray="30 50 15 45" />
-          <circle cx="200" cy="88" r="3.5" fill="#38BDF8" />
-        </g>
-
-        {/* Inner Solid Indigo Ring */}
-        <circle cx="200" cy="200" r="88" stroke="rgba(99, 102, 241, 0.5)" strokeWidth="1.5" />
-
-        {/* Central Luminous Sphere Core */}
-        <circle cx="200" cy="200" r="68" fill="url(#sphereGrad)" />
-
-        {/* Tactical Shield Geometries */}
-        <path
-          d="M 200 158 L 228 172 V 205 C 228 226 216 238 200 245 C 184 238 172 226 172 205 V 172 Z"
-          stroke="rgba(255, 255, 255, 0.85)"
-          strokeWidth="1.5"
-          fill="rgba(99, 102, 241, 0.15)"
-          strokeLinejoin="round"
-        />
-
-        {/* Inner Shield Trinetra Third Eye Accents */}
-        <path d="M 186 200 Q 200 188 214 200 Q 200 212 186 200 Z" stroke="#38BDF8" strokeWidth="1.5" fill="none" />
-        <circle cx="200" cy="200" r="3.5" fill="#FFFFFF" />
-
-        {/* Clean geometric coordinate crosshairs */}
-        <line x1="135" y1="200" x2="160" y2="200" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1" />
-        <line x1="240" y1="200" x2="265" y2="200" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1" />
-        <line x1="200" y1="135" x2="200" y2="150" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1" />
-        <line x1="200" y1="250" x2="200" y2="265" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="1" />
-      </svg>
-
-      {/* Orbiting Live Telemetry Badges */}
-      <div className="absolute -top-2 right-4 px-3.5 py-1.5 rounded-full bg-[#0F1523]/90 border border-indigo-500/30 text-[10px] font-mono text-indigo-200 backdrop-blur-md shadow-lg flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
-        <span>IR-TRIAGE // 120B ACTIVE</span>
-      </div>
-
-      <div className="absolute -bottom-2 left-4 px-3.5 py-1.5 rounded-full bg-[#0F1523]/90 border border-emerald-500/30 text-[10px] font-mono text-emerald-300 backdrop-blur-md shadow-lg flex items-center gap-1.5">
-        <ShieldCheck size={13} className="text-emerald-400" />
-        <span>BNS 2023 · VERIFIED</span>
-      </div>
-    </div>
-  )
-}
-
-export default function DashboardPage() {
-  const [feed, setFeed] = useState<ThreatEvent[]>(THREAT_FEED.slice(0, 8))
-  const [filterSector, setFilterSector] = useState<string>('ALL')
+export default function CommandCenterPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [now, setNow] = useState('')
+  const [filterSector, setFilterSector] = useState('ALL')
 
-  useEffect(() => {
-    setNow(new Date().toISOString().replace('T', ' ').slice(0, 19) + ' IST')
-    const id = setInterval(() => {
-      setFeed(prev => {
-        const next = THREAT_FEED[Math.floor(Math.random() * THREAT_FEED.length)]
-        return [next, ...prev.slice(0, 9)]
-      })
-    }, 6000)
-    return () => clearInterval(id)
-  }, [])
-
-  const criticalCount = THREAT_FEED.filter(e => e.severity === 'CRITICAL').length
-  const activeCount   = THREAT_FEED.filter(e => e.status === 'ACTIVE').length
-
-  const filteredFeed = feed.filter(evt => {
-    const matchesSector = filterSector === 'ALL' || evt.sector === filterSector
-    const matchesSearch = !searchQuery || 
-      evt.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredFeed = THREAT_FEED.filter(evt => {
+    const matchesSearch =
       evt.targetAsset.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      evt.attackType.toLowerCase().includes(searchQuery.toLowerCase())
-    return matchesSector && matchesSearch
+      evt.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      evt.sector.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesFilter = filterSector === 'ALL' || evt.sector.toUpperCase().includes(filterSector)
+    return matchesSearch && matchesFilter
   })
 
   return (
-    <div className="p-6 md:p-8 space-y-12 max-w-7xl mx-auto">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8 overflow-hidden">
       {/* ============================================================ */}
-      {/* 1. HERO SECTION                                              */}
+      {/* 1. TOP HERO ROW: 3 SIGNATURE PASTEL HIGHLIGHT CARDS          */}
       {/* ============================================================ */}
-      <section className="relative pt-4 pb-8 overflow-hidden">
-        {/* Soft Ambient Mesh Background */}
-        <div className="absolute top-1/2 left-3/4 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] rounded-full bg-indigo-600/10 blur-[130px] pointer-events-none" />
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          {/* Left Column: Headline & Action */}
-          <div className="lg:col-span-7 space-y-6">
-            {/* Pill Tag */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 text-xs font-medium tracking-wide shadow-sm">
-              <Sparkles size={13} className="text-indigo-400" />
-              <span>Sovereign Cyber Intelligence & Threat Operations</span>
-            </div>
-
-            {/* Display Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
-              Protect Your Digital{' '}
-              <span className="bg-gradient-to-r from-indigo-300 via-sky-300 to-teal-200 bg-clip-text text-transparent">
-                Security Operations
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Card 1: Sage Mint */}
+        <div className="rounded-2xl p-6 bg-[#CBE8BA] text-[#1E2235] shadow-lg shadow-black/15 flex flex-col justify-between min-h-[190px] transition-transform hover:-translate-y-0.5">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#1E2235]/70 font-sans">
+                National Cyber Defense Posture
               </span>
-            </h1>
-
-            {/* Descriptive Body */}
-            <p className="text-base sm:text-lg text-slate-300 max-w-xl font-normal leading-relaxed">
-              Equipped with real-time critical infrastructure telemetry, automated Bharatiya Nyaya Sanhita (BNS) 2023 legal FIR dossiers, and ultra-fast incident response triage for Bharat.
+              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#1E2235]/10 text-[#1E2235]">
+                DEFCON 3
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1E2235] font-sans mb-1">
+              94.8% Operational
+            </h2>
+            <p className="text-xs text-[#1E2235]/80 font-medium">
+              NCIIPC 6 Critical Infrastructure Sectors · Real-time sync active
             </p>
-
-            {/* CTA Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Link
-                href="/cyber-ir"
-                className="px-7 py-3.5 rounded-full text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-xl shadow-indigo-950/40 border border-indigo-400/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
-              >
-                <span>Launch Cyber-IR Engine</span>
-                <ChevronRight size={16} />
-              </Link>
-              <Link
-                href="/incident"
-                className="px-6 py-3.5 rounded-full text-sm font-semibold text-slate-200 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.1] backdrop-blur-md transition-all hover:text-white flex items-center gap-2"
-              >
-                <Siren size={16} className="text-indigo-400" />
-                <span>Report Incident (FIR)</span>
-              </Link>
-            </div>
-
-            {/* Trust Badges / Agencies Ticker */}
-            <div className="pt-6 border-t border-white/[0.08]">
-              <p className="text-[11px] font-mono uppercase tracking-widest text-slate-500 mb-3">
-                INTEGRATED WITH SOVEREIGN FRAMEWORKS & AGENCIES
-              </p>
-              <div className="flex flex-wrap items-center gap-6 text-xs text-slate-400 font-medium">
-                <span className="flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" /> CERT-In
-                </span>
-                <span className="flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-indigo-400" /> NCIIPC
-                </span>
-                <span className="flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-sky-400" /> NPCI UPI
-                </span>
-                <span className="flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-amber-400" /> I4C MHA
-                </span>
-                <span className="flex items-center gap-1.5 hover:text-slate-200 transition-colors">
-                  <span className="w-2 h-2 rounded-full bg-violet-400" /> BNS 2023
-                </span>
-              </div>
-            </div>
           </div>
 
-          {/* Right Column: Sovereign Quantum Shield */}
-          <div className="lg:col-span-5 flex items-center justify-center">
-            <SovereignQuantumShield />
+          <div className="space-y-2 pt-4">
+            <div className="flex justify-between text-[11px] font-bold text-[#1E2235]/80">
+              <span>National Grid Health</span>
+              <span>94.8%</span>
+            </div>
+            {/* Emerald Progress Bar */}
+            <div className="w-full h-2 rounded-full bg-[#1E2235]/15 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-[#2E7D32] transition-all duration-500"
+                style={{ width: '94.8%' }}
+              />
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* ============================================================ */}
-      {/* 2. THREE FEATURE CARDS                                       */}
-      {/* ============================================================ */}
-      <section className="space-y-4">
-        <div className="max-w-2xl">
-          <p className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold mb-1">
-            DEFENSE ARCHITECTURE
-          </p>
-          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            From our roots in cybersecurity innovation to becoming a trusted guardian of safety
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-3">
-          {/* Card 1: Robust Protection */}
-          <div className="p-6 rounded-2xl glass-card flex flex-col justify-between group">
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 mb-5 shadow-sm group-hover:scale-105 transition-transform">
-                <Lock size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">
-                Robust Legal Protection
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Instant statutory mapping under the newly enacted Bharatiya Nyaya Sanhita (BNS) 2023 and IT Act 2000. Generates legally sound, court-ready FIR dossiers with PDF downloads.
-              </p>
-            </div>
-            <Link
-              href="/incident"
-              className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-emerald-400 group-hover:text-emerald-300"
-            >
-              <span>Draft FIR Dossier</span>
-              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Card 2: Proactive Defense */}
-          <div className="p-6 rounded-2xl glass-card flex flex-col justify-between group">
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center text-indigo-400 mb-5 shadow-sm group-hover:scale-105 transition-transform">
-                <Cpu size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
-                Proactive SOC Triage
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Sub-second 120B reasoning model identifies exact MITRE ATT&CK techniques (T1566, T1003) and drafts tactical SANS PICERL playbooks to contain ransomware and intrusion chains.
-              </p>
-            </div>
-            <Link
-              href="/cyber-ir"
-              className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-indigo-400 group-hover:text-indigo-300"
-            >
-              <span>Generate Playbook</span>
-              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Card 3: 24/7 Monitoring */}
-          <div className="p-6 rounded-2xl glass-card flex flex-col justify-between group">
-            <div>
-              <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400 mb-5 shadow-sm group-hover:scale-105 transition-transform">
-                <Radio size={22} />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
-                24/7 National Monitoring
-              </h3>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Real-time threat feeds analyzing banking switches, state electricity load dispatch SCADA networks, and telecom SS7 routing against active global APT campaigns.
-              </p>
-            </div>
-            <Link
-              href="/intel"
-              className="mt-5 pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:text-amber-300"
-            >
-              <span>View Threat Stream</span>
-              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* 3. OPERATIONAL METRICS                                        */}
-      {/* ============================================================ */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl glass-card flex items-center justify-between">
+        {/* Card 2: Warm Peach / Coral */}
+        <div className="rounded-2xl p-6 bg-[#F3C19D] text-[#1E2235] shadow-lg shadow-black/15 flex flex-col justify-between min-h-[190px] transition-transform hover:-translate-y-0.5">
           <div>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">Active Threats</p>
-            <p className="text-3xl font-extrabold text-white mt-1">{activeCount}</p>
-            <p className="text-[11px] text-rose-300 mt-1 font-mono">SEV 1 CRITICAL: {criticalCount}</p>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-            <AlertTriangle size={20} />
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card flex items-center justify-between">
-          <div>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">Sectors Watched</p>
-            <p className="text-3xl font-extrabold text-white mt-1">8</p>
-            <p className="text-[11px] text-emerald-300 mt-1 font-mono">ALL NOMINAL</p>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-            <Shield size={20} />
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card flex items-center justify-between">
-          <div>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">Tracked CVEs</p>
-            <p className="text-3xl font-extrabold text-white mt-1">{CVE_FIXTURES.length}</p>
-            <p className="text-[11px] text-amber-300 mt-1 font-mono">9 ACTIVE ZERO-DAYS</p>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-            <Activity size={20} />
-          </div>
-        </div>
-
-        <div className="p-5 rounded-2xl glass-card flex items-center justify-between">
-          <div>
-            <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">National Posture</p>
-            <p className="text-3xl font-extrabold text-white mt-1">84 / 100</p>
-            <p className="text-[11px] text-sky-300 mt-1 font-mono">DEFCON 3 STATUS</p>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-            <Server size={20} />
-          </div>
-        </div>
-      </div>
-
-      {/* ============================================================ */}
-      {/* 4. MAIN OPERATIONS GRID: LIVE FEED & SECTOR HEATMAP          */}
-      {/* ============================================================ */}
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-        {/* Live Threat Feed with Search & Filter */}
-        <div className="xl:col-span-3">
-          <TerminalCard
-            title="Live Infrastructure Threat Stream"
-            label="REAL-TIME"
-            labelColor="cyan"
-            noPadding
-            headerRight={
-              <span className="font-mono text-xs text-slate-400">
-                {filteredFeed.length} Events
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#1E2235]/70 font-sans">
+                Statutory FIR Synthesis
               </span>
-            }
-          >
-            {/* Filter & Search Bar */}
-            <div className="p-3.5 border-b border-white/[0.06] bg-white/[0.01] flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
-              <div className="relative flex-1">
-                <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
-                <input
-                  type="text"
-                  placeholder="Filter by asset (e.g. SBI, UPI, AIIMS), attack type..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-white/[0.03] border border-white/[0.07] pl-9 pr-3 py-2 text-xs text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-500 rounded-full font-sans transition-colors"
-                />
+              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#1E2235]/10 text-[#1E2235]">
+                BNS 2023 · BSA §63
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1E2235] font-sans mb-1">
+              1,248 Legal Dossiers
+            </h2>
+            <p className="text-xs text-[#1E2235]/80 font-medium">
+              Average synthesis latency: 3.8s · Automated 1930 Portal formatting
+            </p>
+          </div>
+
+          <div className="space-y-2 pt-4">
+            <div className="flex justify-between text-[11px] font-bold text-[#1E2235]/80">
+              <span>Triage Resolution Velocity</span>
+              <span>86.4%</span>
+            </div>
+            {/* Coral/Orange Progress Bar */}
+            <div className="w-full h-2 rounded-full bg-[#1E2235]/15 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-[#D84315] transition-all duration-500"
+                style={{ width: '86.4%' }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Card 3: Soft Sky Blue */}
+        <div className="rounded-2xl p-6 bg-[#9ED5F0] text-[#1E2235] shadow-lg shadow-black/15 flex flex-col justify-between min-h-[190px] transition-transform hover:-translate-y-0.5">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#1E2235]/70 font-sans">
+                BharatCode Sovereign AI
+              </span>
+              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#1E2235]/10 text-[#1E2235]">
+                QWEN 3.8 27B
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1E2235] font-sans mb-1">
+              148ms Latency
+            </h2>
+            <p className="text-xs text-[#1E2235]/80 font-medium">
+              Stateless (`store: false`) · Complete PII mask · Zero retention
+            </p>
+          </div>
+
+          <div className="space-y-2 pt-4">
+            <div className="flex justify-between text-[11px] font-bold text-[#1E2235]/80">
+              <span>Failover Gateway Uptime</span>
+              <span>99.8%</span>
+            </div>
+            {/* Royal Blue Progress Bar */}
+            <div className="w-full h-2 rounded-full bg-[#1E2235]/15 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-[#1565C0] transition-all duration-500"
+                style={{ width: '99.8%' }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/* 2. MAIN EXECUTIVE DASHBOARD: 2-COLUMN STRUCTURE              */}
+      {/* ============================================================ */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* LEFT COLUMN: Critical Infrastructure & Threat Stream (2 Cols) */}
+        <div className="xl:col-span-2 space-y-6 min-w-0">
+          {/* NCIIPC 6 Critical Sectors Grid */}
+          <div className="rounded-2xl bg-[#262B40] p-6 shadow-lg shadow-black/20 border border-white/[0.06]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+              <div>
+                <h3 className="text-base font-bold text-white font-sans flex items-center gap-2">
+                  <Shield size={18} className="text-[#FF5A79]" />
+                  <span>NCIIPC National Critical Infrastructure Grid</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Section 70 IT Act 2000 designated critical sectors telemetry
+                </p>
+              </div>
+              <span className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-300 self-start sm:self-auto border border-white/[0.06]">
+                CERT-In Connected
+              </span>
+            </div>
+
+            {/* 6 Sectors Responsive Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {NCIIPC_SECTORS.map(sec => {
+                const isNominal = sec.status === 'NOMINAL'
+                return (
+                  <div
+                    key={sec.id}
+                    className="rounded-xl p-4 bg-[#1E2235] border border-white/[0.06] hover:border-white/15 transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-white font-sans truncate">
+                          {sec.name}
+                        </span>
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            isNominal
+                              ? 'bg-emerald-500/15 text-emerald-300'
+                              : 'bg-amber-500/15 text-amber-300'
+                          }`}
+                        >
+                          {sec.status}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 line-clamp-1 mb-3">
+                        {sec.sub}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2 pt-2 border-t border-white/[0.06]">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-slate-400">Health</span>
+                        <span className="font-semibold text-white">{sec.health}%</span>
+                      </div>
+                      <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${
+                            isNominal ? 'bg-emerald-400' : 'bg-amber-400'
+                          }`}
+                          style={{ width: `${sec.health}%` }}
+                        />
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1">
+                        <span>Latency: {sec.latency}ms</span>
+                        <span className="font-mono text-slate-400">{sec.ttp}</span>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Real-Time CERT-In Threat Stream */}
+          <div className="rounded-2xl bg-[#262B40] p-6 shadow-lg shadow-black/20 border border-white/[0.06]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+              <div>
+                <h3 className="text-base font-bold text-white font-sans flex items-center gap-2">
+                  <Activity size={18} className="text-[#9ED5F0]" />
+                  <span>Real-Time Incident Stream & Telemetry</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  12,042 Ingested Hashes · CERT-In Advisory Pipeline
+                </p>
               </div>
 
-              <div className="flex gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-                {['ALL', 'FINANCE', 'POWER', 'HEALTHCARE', 'GOVT'].map(s => (
+              {/* Sector Quick Filter Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                {['ALL', 'FINANCE', 'POWER', 'GOVT'].map(s => (
                   <button
                     key={s}
                     onClick={() => setFilterSector(s)}
-                    className={`px-3 py-1 text-xs rounded-full transition-colors whitespace-nowrap font-medium ${
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all whitespace-nowrap cursor-pointer ${
                       filterSector === s
-                        ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                        : 'bg-white/[0.03] text-slate-400 border border-white/[0.06] hover:bg-white/[0.06]'
+                        ? 'bg-[#FF5A79] text-white shadow-sm'
+                        : 'bg-[#1E2235] text-slate-400 hover:text-white border border-white/[0.06]'
                     }`}
                   >
                     {s}
@@ -394,41 +348,59 @@ export default function DashboardPage() {
               </div>
             </div>
 
+            {/* Search Input */}
+            <div className="relative mb-4">
+              <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Filter by target asset (e.g. SBI, UPI, AIIMS), attack vector, or IOC..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full bg-[#1E2235] border border-white/[0.08] pl-9 pr-4 py-2 text-xs text-white placeholder:text-slate-500 rounded-xl outline-none focus:border-[#FF5A79] transition-colors"
+              />
+            </div>
+
             {/* Events List */}
-            <div className="divide-y divide-white/[0.05] max-h-[380px] overflow-y-auto text-xs">
+            <div className="divide-y divide-white/[0.06] max-h-[340px] overflow-y-auto pr-1">
               {filteredFeed.length === 0 ? (
-                <div className="p-8 text-center text-slate-500">
-                  No threat events match your search query.
+                <div className="py-12 text-center text-slate-500 text-xs">
+                  No threat events matching filter criteria.
                 </div>
               ) : (
-                filteredFeed.map((evt, i) => (
+                filteredFeed.map((evt, idx) => (
                   <div
-                    key={`${evt.id}-${i}`}
-                    className="p-3.5 hover:bg-white/[0.02] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                    key={`${evt.id}-${idx}`}
+                    className="py-3 hover:bg-white/[0.02] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-lg px-2"
                   >
-                    <div className="space-y-1 min-w-0 flex-1">
+                    <div className="min-w-0 flex-1 space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-slate-500 font-mono text-[11px]">{evt.timestamp.slice(11, 19)}Z</span>
-                        <SeverityPill s={evt.severity} />
-                        <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                        <span className="text-[11px] font-mono text-slate-400">
+                          {evt.timestamp.slice(11, 19)}Z
+                        </span>
+                        <SeverityChip s={evt.severity} />
+                        <span className="text-[11px] font-semibold text-white truncate">
+                          {evt.targetAsset}
+                        </span>
+                        <span className="text-[10px] text-slate-400 px-2 py-0.5 rounded bg-white/[0.04]">
                           {evt.sector}
                         </span>
-                        <span className="text-slate-200 font-semibold truncate">{evt.targetAsset}</span>
                       </div>
-                      <p className="text-slate-400 text-xs line-clamp-1">
+                      <p className="text-xs text-slate-400 line-clamp-1">
                         {evt.description}
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-sky-300 font-mono text-[10px] bg-sky-500/10 border border-sky-500/20 px-2.5 py-0.5 rounded-full">
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[10px] font-mono text-slate-300 bg-white/[0.04] px-2 py-1 rounded">
                         {evt.ttps[0]}
                       </span>
-                      <span className={`text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full font-medium ${
-                        evt.status === 'ACTIVE'
-                          ? 'bg-rose-500/15 text-rose-300 border border-rose-500/25'
-                          : 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
-                      }`}>
+                      <span
+                        className={`text-[10px] font-bold px-2 py-1 rounded ${
+                          evt.status === 'ACTIVE'
+                            ? 'bg-[#FF5A79]/15 text-[#FF5A79]'
+                            : 'bg-emerald-500/15 text-emerald-300'
+                        }`}
+                      >
                         {evt.status}
                       </span>
                     </div>
@@ -436,165 +408,281 @@ export default function DashboardPage() {
                 ))
               )}
             </div>
-
-            {/* Footer */}
-            <div className="p-3.5 bg-white/[0.01] border-t border-white/[0.06] flex items-center justify-between">
-              <span className="text-[11px] text-slate-500 font-mono">
-                Telemetry Node: CERT-In Live Ingestion
-              </span>
-              <Link
-                href="/intel"
-                className="flex items-center gap-1 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
-              >
-                <span>Full Threat Radar</span>
-                <ArrowUpRight size={14} />
-              </Link>
-            </div>
-          </TerminalCard>
+          </div>
         </div>
 
-        {/* Sector Threat Heatmap */}
-        <div className="xl:col-span-2">
-          <TerminalCard
-            title="National Sector Heatmap"
-            label="ELEVATED"
-            labelColor="amber"
-          >
-            <div className="space-y-4">
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Intrusion attempt velocity calculated across vital Indian infrastructure switches:
-              </p>
-
-              <div className="space-y-3.5">
-                {Object.entries(SECTOR_THREAT_LEVELS).map(([sector, data]) => {
-                  const color = data.level > 80 ? '#F43F5E' : data.level > 60 ? '#F59E0B' : '#10B981'
-                  const statusLabel = data.level > 80 ? 'CRITICAL' : data.level > 60 ? 'ELEVATED' : 'NOMINAL'
-                  return (
-                    <div key={sector} className="space-y-1.5 text-xs">
-                      <div className="flex justify-between items-center">
-                        <span className="text-slate-200 font-medium">{sector}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-slate-500">{statusLabel}</span>
-                          <span className="font-mono font-bold text-xs" style={{ color }}>{data.level}%</span>
-                        </div>
-                      </div>
-                      <div className="h-2 w-full rounded-full bg-white/[0.04] overflow-hidden border border-white/[0.06]">
-                        <div
-                          className="h-full transition-all duration-700 rounded-full"
-                          style={{
-                            width: `${data.level}%`,
-                            backgroundColor: color,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-slate-300 flex items-start gap-2.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1 flex-shrink-0" />
-                <span>
-                  <strong>Threshold Note:</strong> Percentages over 75% indicate automated botnet brute-forcing or weaponized phishing waves targeting public infrastructure.
-                </span>
-              </div>
+        {/* RIGHT COLUMN: Sovereign Radar & Quick Actions (1 Col) */}
+        <div className="space-y-6 min-w-0">
+          {/* Sovereign Threat Radar */}
+          <div className="rounded-2xl bg-[#262B40] p-6 shadow-lg shadow-black/20 border border-white/[0.06] flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-white font-sans flex items-center gap-2">
+                <Radio size={18} className="text-[#FF5A79]" />
+                <span>Geospatial Threat Radar</span>
+              </h3>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             </div>
-          </TerminalCard>
+
+            {/* Radar Visual */}
+            <div className="relative w-full aspect-square max-w-[280px] mx-auto my-2 flex items-center justify-center">
+              {/* Radar Rings */}
+              <div className="absolute inset-0 rounded-full border border-white/[0.08]" />
+              <div className="absolute inset-8 rounded-full border border-white/[0.08]" />
+              <div className="absolute inset-16 rounded-full border border-white/[0.08]" />
+              <div className="absolute inset-24 rounded-full border border-white/[0.08]" />
+
+              {/* Crosshairs */}
+              <div className="absolute inset-x-0 top-1/2 h-px bg-white/[0.08]" />
+              <div className="absolute inset-y-0 left-1/2 w-px bg-white/[0.08]" />
+
+              {/* Rotating Sweep Line */}
+              <div className="absolute inset-0 rounded-full overflow-hidden">
+                <div
+                  className="w-1/2 h-1/2 absolute top-0 right-0 origin-bottom-left"
+                  style={{
+                    background: 'conic-gradient(from 0deg, rgba(255, 90, 121, 0.4) 0deg, transparent 60deg)',
+                    animation: 'spin 4s linear infinite',
+                  }}
+                />
+              </div>
+
+              {/* Radar Target Blips */}
+              <div className="absolute top-1/4 left-1/3 flex items-center gap-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#FF5A79] animate-ping" />
+                <span className="text-[9px] font-mono text-[#FF5A79] font-bold">APT-36</span>
+              </div>
+              <div className="absolute bottom-1/3 right-1/4 flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-amber-400" />
+                <span className="text-[9px] font-mono text-amber-300">UPI-BOT</span>
+              </div>
+              <div className="absolute top-1/2 right-1/3 flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span className="text-[9px] font-mono text-emerald-300">SCADA</span>
+              </div>
+
+              {/* Center Bullseye */}
+              <div className="w-3 h-3 rounded-full bg-white shadow-md z-10" />
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
+              <span>Threat Vectors Detected</span>
+              <span className="font-bold text-white">3 Active Locks</span>
+            </div>
+          </div>
+
+          {/* Quick Legal & Defense Actions */}
+          <div className="rounded-2xl bg-[#262B40] p-6 shadow-lg shadow-black/20 border border-white/[0.06] space-y-3">
+            <h3 className="text-base font-bold text-white font-sans flex items-center gap-2 mb-2">
+              <Zap size={18} className="text-[#CBE8BA]" />
+              <span>Emergency Defense Actions</span>
+            </h3>
+
+            <Link
+              href="/incident"
+              className="p-3.5 rounded-xl bg-[#1E2235] hover:bg-[#23283e] border border-white/[0.06] hover:border-[#FF5A79]/40 transition-all flex items-center justify-between group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#FF5A79]/15 flex items-center justify-center text-[#FF5A79]">
+                  <Plus size={16} />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white group-hover:text-[#FF5A79] transition-colors">
+                    Draft Statutory FIR
+                  </div>
+                  <div className="text-[11px] text-slate-400">
+                    BNS 2023 §316–§319 & IT Act 2000
+                  </div>
+                </div>
+              </div>
+              <ChevronRight size={15} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <Link
+              href="/deepfake-xai"
+              className="p-3.5 rounded-xl bg-[#1E2235] hover:bg-[#23283e] border border-white/[0.06] hover:border-[#9ED5F0]/40 transition-all flex items-center justify-between group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#9ED5F0]/15 flex items-center justify-center text-[#9ED5F0]">
+                  <ScanFace size={16} />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white group-hover:text-[#9ED5F0] transition-colors">
+                    Verify Media Authenticity
+                  </div>
+                  <div className="text-[11px] text-slate-400">
+                    CGFD, FADI & Grad-CAM Evidence
+                  </div>
+                </div>
+              </div>
+              <ChevronRight size={15} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
+            </Link>
+
+            <Link
+              href="/mentor"
+              className="p-3.5 rounded-xl bg-[#1E2235] hover:bg-[#23283e] border border-white/[0.06] hover:border-[#CBE8BA]/40 transition-all flex items-center justify-between group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#CBE8BA]/15 flex items-center justify-center text-[#CBE8BA]">
+                  <Terminal size={16} />
+                </div>
+                <div>
+                  <div className="text-xs font-bold text-white group-hover:text-[#CBE8BA] transition-colors">
+                    AI SecOps Copilot
+                  </div>
+                  <div className="text-[11px] text-slate-400">
+                    Engage BharatCode Qwen 3.8
+                  </div>
+                </div>
+              </div>
+              <ChevronRight size={15} className="text-slate-400 group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
         </div>
       </div>
 
       {/* ============================================================ */}
-      {/* 5. QUICK LAUNCH OPERATIONAL MODULES                          */}
+      {/* 3. ALL 12 SOVEREIGN DEFENSE MODULES (ZERO HORIZONTAL CLIPPING)*/}
       {/* ============================================================ */}
-      <section className="space-y-4">
+      <section className="space-y-4 pt-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold text-white tracking-tight">
-            Explore Trinetra Operational Modules
-          </h2>
-          <span className="text-xs text-slate-500">11 Integrated Engines</span>
+          <div>
+            <h3 className="text-lg font-bold text-white font-sans">
+              Operational Defense Engines (00 – 11)
+            </h3>
+            <p className="text-xs text-slate-400">
+              Comprehensive cyber intelligence, digital forensics, and compliance array
+            </p>
+          </div>
+          <span className="text-xs font-mono px-3 py-1 rounded-full bg-[#262B40] text-slate-300 border border-white/[0.06]">
+            12 Modules Armed
+          </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 12-Card Grid (Guaranteed No Horizontal Clipping) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {[
             {
-              href: '/video-gen',
-              title: '10 // VIDEO STUDIO',
-              desc: 'Autonomous AI video briefings from uploaded PDFs, PPTX decks, and incident advisories.',
-              color: '#6366F1',
-              tag: 'STUDIO',
+              href: '/incident',
+              title: '04 // Incident Crisis',
+              desc: 'Emergency FIR runbooks and court-ready BNS 2023 police dossiers with digital hash.',
+              badge: 'CRISIS SOS',
+              badgeColor: 'bg-[#FF5A79]/15 text-[#FF5A79]',
+              Icon: AlertOctagon,
+            },
+            {
+              href: '/deepfake-xai',
+              title: '11 // Deepfake XAI',
+              desc: 'CGFD, FADI, and Grad-CAM metrics with BharatCode statutory admissibility briefs.',
+              badge: 'FORENSICS',
+              badgeColor: 'bg-[#9ED5F0]/15 text-[#9ED5F0]',
+              Icon: ScanFace,
             },
             {
               href: '/cyber-ir',
-              title: '09 // CYBER-IR ENGINE',
-              desc: 'Dual-model AI engine for generating BNS 2023 legal FIR dossiers and SANS PICERL playbooks.',
-              color: '#8B5CF6',
-              tag: 'FEATURED AI',
-            },
-            {
-              href: '/incident',
-              title: '04 // INCIDENT & FIR',
-              desc: 'Immediate emergency crisis response and 1-click legal cybercrime FIR PDF generation.',
-              color: '#F43F5E',
-              tag: 'EMERGENCY',
+              title: '09 // Cyber-IR Engine',
+              desc: 'Statutory FIR legal synthesis and SANS PICERL incident containment playbooks.',
+              badge: 'LEGAL AI',
+              badgeColor: 'bg-[#CBE8BA]/15 text-[#CBE8BA]',
+              Icon: Scale,
             },
             {
               href: '/nlp',
-              title: '08 // NLP PHISHING SCAN',
-              desc: 'Inspect fake SMS, UPI fraud alerts, and calculate URL Shannon entropy in real-time.',
-              color: '#0EA5E9',
-              tag: 'SCAM SCAN',
-            },
-            {
-              href: '/breach',
-              title: '06 // SENTINEL GUARD',
-              desc: 'Safely check password exposure with zero-knowledge SHA-1 k-anonymity queries.',
-              color: '#10B981',
-              tag: 'PRIVACY',
-            },
-            {
-              href: '/academy',
-              title: '01 // ACADEMY & CTF',
-              desc: 'Interactive tactical CTF terminal, packet dissection, and MITRE ATT&CK flashcards.',
-              color: '#10B981',
-              tag: 'TRAINING',
+              title: '08 // NLP Phishing Scan',
+              desc: 'Detect phishing SMS lures, UPI scams, and calculate Shannon URL entropy.',
+              badge: 'NLP INSPECT',
+              badgeColor: 'bg-[#F3C19D]/15 text-[#F3C19D]',
+              Icon: MessageSquare,
             },
             {
               href: '/mentor',
-              title: '02 // AI TACTICAL MENTOR',
-              desc: 'SecOps copilot for active attack mitigation and CERT-In advisory guidance.',
-              color: '#6366F1',
-              tag: 'COPILOT',
+              title: '02 // AI SecOps Copilot',
+              desc: 'Defensive cyber intelligence copilot powered by BharatCode stateless gateway.',
+              badge: 'AI COPILOT',
+              badgeColor: 'bg-indigo-400/15 text-indigo-300',
+              Icon: Terminal,
+            },
+            {
+              href: '/academy',
+              title: '01 // Cyber Range',
+              desc: 'Split-pane mission briefing, CTF challenges, and real-time packet hex inspection.',
+              badge: 'TRAINING',
+              badgeColor: 'bg-emerald-400/15 text-emerald-300',
+              Icon: GraduationCap,
+            },
+            {
+              href: '/exif',
+              title: '05 // Forensics Lab',
+              desc: 'Canvas EXIF metadata scrubbing, GPS extraction, and image tamper forensics.',
+              badge: 'EXIF TOOLS',
+              badgeColor: 'bg-sky-400/15 text-sky-300',
+              Icon: Microscope,
             },
             {
               href: '/devsec',
-              title: '03 // DEVSEC & SAST',
-              desc: 'Scan code for OWASP vulnerabilities and audit app terms for DPDP Act compliance.',
-              color: '#F59E0B',
-              tag: 'APP SEC',
+              title: '03 // DevSecOps',
+              desc: 'Automated code security vulnerability scanner and privacy leakage auditor.',
+              badge: 'AUDIT',
+              badgeColor: 'bg-violet-400/15 text-violet-300',
+              Icon: Code2,
             },
-          ].map(m => (
+            {
+              href: '/video-gen',
+              title: '10 // Video Studio',
+              desc: 'Multi-scene incident video briefing generator with synchronized audio narration.',
+              badge: 'STUDIO',
+              badgeColor: 'bg-rose-400/15 text-rose-300',
+              Icon: Video,
+            },
+            {
+              href: '/intel',
+              title: '07 // Threat Radar',
+              desc: 'Critical infrastructure intelligence feeds, CVE trackers, and IOC lookup.',
+              badge: 'INTEL',
+              badgeColor: 'bg-amber-400/15 text-amber-300',
+              Icon: Radio,
+            },
+            {
+              href: '/breach',
+              title: '06 // Sentinel Guard',
+              desc: 'k-Anonymity identity leak audits and credential exposure intelligence.',
+              badge: 'BREACH',
+              badgeColor: 'bg-cyan-400/15 text-cyan-300',
+              Icon: KeyRound,
+            },
+            {
+              href: '/',
+              title: '00 // Command Center',
+              desc: 'High-density executive overview and real-time national security telemetry.',
+              badge: 'CORE SOC',
+              badgeColor: 'bg-white/10 text-white',
+              Icon: Shield,
+            },
+          ].map(mod => (
             <Link
-              key={m.href}
-              href={m.href}
-              className="p-5 rounded-2xl glass-card flex flex-col justify-between group"
+              key={mod.title}
+              href={mod.href}
+              className="rounded-2xl bg-[#262B40] p-5 border border-white/[0.06] hover:border-white/15 shadow-lg shadow-black/15 transition-all hover:-translate-y-0.5 flex flex-col justify-between min-w-0 group"
             >
               <div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="font-mono text-xs font-semibold" style={{ color: m.color }}>
-                    {m.title}
-                  </span>
-                  <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-slate-400">
-                    {m.tag}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="w-8 h-8 rounded-xl bg-[#1E2235] border border-white/[0.08] flex items-center justify-center text-slate-300 group-hover:text-white transition-colors">
+                    <mod.Icon size={16} />
+                  </div>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${mod.badgeColor}`}>
+                    {mod.badge}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 leading-relaxed group-hover:text-slate-200 transition-colors">
-                  {m.desc}
+                <h4 className="text-sm font-bold text-white group-hover:text-[#FF5A79] transition-colors mb-1 truncate">
+                  {mod.title}
+                </h4>
+                <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
+                  {mod.desc}
                 </p>
               </div>
 
-              <div className="mt-5 pt-3.5 border-t border-white/[0.06] flex items-center justify-between text-xs font-medium text-slate-500 group-hover:text-indigo-400 transition-colors">
+              <div className="mt-4 pt-3 border-t border-white/[0.06] flex items-center justify-between text-xs font-semibold text-slate-400 group-hover:text-white transition-colors">
                 <span>Launch Engine</span>
-                <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform text-[#FF5A79]" />
               </div>
             </Link>
           ))}

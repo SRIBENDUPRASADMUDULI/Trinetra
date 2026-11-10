@@ -32,9 +32,9 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`} suppressHydrationWarning>
       <head>
         <meta name="color-scheme" content="dark" />
-        <meta name="theme-color" content="#08090C" />
+        <meta name="theme-color" content="#1E2235" />
       </head>
-      <body className={`${inter.className} antialiased bg-[#08090C] text-slate-100`}>
+      <body className={`${inter.className} antialiased bg-[#1E2235] text-slate-100`}>
         <GlobalShell>{children}</GlobalShell>
       </body>
     </html>
