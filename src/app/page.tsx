@@ -360,8 +360,8 @@ export default function CommandCenterPage() {
               />
             </div>
 
-            {/* Events List */}
-            <div className="divide-y divide-white/[0.06] max-h-[340px] overflow-y-auto pr-1">
+            {/* Events List (Scroll-capped at 540px) */}
+            <div className="divide-y divide-white/[0.06] max-h-[540px] overflow-y-auto pr-2 [scrollbar-width:thin] [scrollbar-color:#333A54_transparent]">
               {filteredFeed.length === 0 ? (
                 <div className="py-12 text-center text-slate-500 text-xs">
                   No threat events matching filter criteria.
