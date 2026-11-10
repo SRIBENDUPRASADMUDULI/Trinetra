@@ -147,6 +147,7 @@ export default function DeepfakeXaiPage() {
     provider: string
     model?: string
     note?: string
+    requestId?: string
   } | null>(null)
 
   async function fetchOverview() {
@@ -294,6 +295,7 @@ export default function DeepfakeXaiPage() {
           provider: json.provider,
           model: json.model,
           note: json.note,
+          requestId: json.requestId,
         })
       }
     } catch {

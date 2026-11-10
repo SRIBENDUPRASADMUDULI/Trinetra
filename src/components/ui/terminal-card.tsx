@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
-type LabelColor = 'green' | 'red' | 'amber' | 'cyan' | 'white'
+type LabelColor = 'green' | 'red' | 'amber' | 'cyan' | 'white' | 'purple'
 
 interface TerminalCardProps {
   title: string
@@ -14,11 +14,12 @@ interface TerminalCardProps {
 }
 
 const labelColorMap: Record<LabelColor, { text: string; dot: string; badgeBg: string; border: string }> = {
-  green: { text: 'text-emerald-300', dot: 'bg-emerald-400', badgeBg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-  red:   { text: 'text-rose-300',    dot: 'bg-rose-400',    badgeBg: 'bg-rose-500/10',    border: 'border-rose-500/20' },
-  amber: { text: 'text-amber-300',   dot: 'bg-amber-400',   badgeBg: 'bg-amber-500/10',   border: 'border-amber-500/20' },
-  cyan:  { text: 'text-sky-300',     dot: 'bg-sky-400',     badgeBg: 'bg-sky-500/10',     border: 'border-sky-500/20' },
-  white: { text: 'text-slate-300',   dot: 'bg-slate-400',   badgeBg: 'bg-white/[0.06]',   border: 'border-white/15' },
+  green:  { text: 'text-emerald-300', dot: 'bg-emerald-400', badgeBg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  red:    { text: 'text-rose-300',    dot: 'bg-rose-400',    badgeBg: 'bg-rose-500/10',    border: 'border-rose-500/20' },
+  amber:  { text: 'text-amber-300',   dot: 'bg-amber-400',   badgeBg: 'bg-amber-500/10',   border: 'border-amber-500/20' },
+  cyan:   { text: 'text-sky-300',     dot: 'bg-sky-400',     badgeBg: 'bg-sky-500/10',     border: 'border-sky-500/20' },
+  white:  { text: 'text-slate-300',   dot: 'bg-slate-400',   badgeBg: 'bg-white/[0.06]',   border: 'border-white/15' },
+  purple: { text: 'text-indigo-300',  dot: 'bg-indigo-400',  badgeBg: 'bg-indigo-500/10',  border: 'border-indigo-500/20' },
 }
 
 export function TerminalCard({
