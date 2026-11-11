@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { TerminalCard } from '@/components/ui/terminal-card'
 import { StatusBadge } from '@/components/ui/status-badge'
 import {
@@ -109,6 +109,7 @@ export default function CyberIRPage() {
   // FIR State
   const [firForm, setFirForm] = useState(PRESET_FIRS[0].data)
   const [firLoading, setFirLoading] = useState(false)
+  const [firError, setFirError] = useState<string | null>(null)
   const [firResult, setFirResult] = useState<any | null>(null)
 
   // Playbook State
@@ -117,12 +118,29 @@ export default function CyberIRPage() {
   const [pbUrgency, setPbUrgency] = useState(PRESET_PLAYBOOKS[0].urgency)
   const [pbFramework, setPbFramework] = useState(PRESET_PLAYBOOKS[0].framework)
   const [pbLoading, setPbLoading] = useState(false)
+  const [pbError, setPbError] = useState<string | null>(null)
   const [pbResult, setPbResult] = useState<any | null>(null)
   const [copiedPb, setCopiedPb] = useState(false)
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem('trinetra_fir_prefill')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        setFirForm(prev => ({
+          ...prev,
+          incident_type: parsed.incident_type || prev.incident_type,
+          incident_description: parsed.incident_description || prev.incident_description,
+        }))
+        sessionStorage.removeItem('trinetra_fir_prefill')
+      }
+    } catch {}
+  }, [])
 
   // FIR Actions
   async function generateFIR() {
     setFirLoading(true)
+    setFirError(null)
     try {
       const res = await fetch('/api/fir/generate', {
         method: 'POST',
@@ -130,9 +148,12 @@ export default function CyberIRPage() {
         body: JSON.stringify(firForm),
       })
       const data = await res.json()
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'FIR generation failed')
+      }
       setFirResult(data)
-    } catch (err) {
-      console.error(err)
+    } catch (err: unknown) {
+      setFirError(err instanceof Error ? err.message : 'Unable to generate FIR dossier')
     } finally {
       setFirLoading(false)
     }
@@ -141,6 +162,7 @@ export default function CyberIRPage() {
   // Playbook Actions
   async function generatePlaybook() {
     setPbLoading(true)
+    setPbError(null)
     try {
       const res = await fetch('/api/playbook/generate', {
         method: 'POST',
@@ -153,9 +175,12 @@ export default function CyberIRPage() {
         }),
       })
       const data = await res.json()
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Playbook generation failed')
+      }
       setPbResult(data)
-    } catch (err) {
-      console.error(err)
+    } catch (err: unknown) {
+      setPbError(err instanceof Error ? err.message : 'Unable to generate playbook')
     } finally {
       setPbLoading(false)
     }
@@ -198,15 +223,13 @@ export default function CyberIRPage() {
           </div>
 
           <div className="flex items-center gap-3 flex-shrink-0">
-            <a
-              href="#sans-picerl-framework"
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-slate-300 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] transition-all hover:text-white"
+            <button
+              onClick={() => setActiveTab('playbook')}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-slate-300 bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] transition-all hover:text-white cursor-pointer"
             >
-              <ExternalLink size={13} />
-              <span>Framework Spec</span>
-            </a>
+              <BookOpen size={13} />
+              <span>SANS PICERL Spec</span>
+            </button>
             <span className="text-[11px] font-mono font-bold px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               API ONLINE
@@ -397,13 +420,19 @@ export default function CyberIRPage() {
                     </div>
                   </div>
 
+                  {firError && (
+                    <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+                      {firError}
+                    </div>
+                  )}
+
                   <button
                     onClick={generateFIR}
                     disabled={firLoading}
-                    className="w-full py-3.5 px-6 bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-40 text-white font-semibold text-xs rounded-full shadow-lg shadow-indigo-950/40 border border-indigo-400/30 transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3.5 px-6 bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-40 text-white font-semibold text-xs rounded-full shadow-lg shadow-indigo-950/40 border border-indigo-400/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <FileText size={16} />
-                    <span>{firLoading ? 'Synthesizing BNS + IT Act FIR via Gemma 4 MoE...' : 'Generate Legal Cyber FIR & Court PDF'}</span>
+                    <span>{firLoading ? 'Synthesizing BNS 2023 + IT Act FIR...' : 'Generate Legal Cyber FIR & Court PDF'}</span>
                   </button>
                 </div>
               </TerminalCard>
@@ -411,7 +440,15 @@ export default function CyberIRPage() {
 
             {/* FIR Result */}
             <div>
-              {!firResult ? (
+              {firLoading ? (
+                <TerminalCard title="Synthesizing FIR Dossier" label="PROCESSING" labelColor="amber">
+                  <div className="space-y-3 animate-pulse py-4">
+                    <div className="h-8 bg-white/[0.05] rounded-xl w-2/3" />
+                    <div className="h-24 bg-white/[0.04] rounded-xl" />
+                    <div className="h-32 bg-white/[0.04] rounded-xl" />
+                  </div>
+                </TerminalCard>
+              ) : !firResult ? (
                 <TerminalCard title="Generated FIR Dossier" label="AWAITING GENERATION" labelColor="white">
                   <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-3">
                     <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-slate-500 mb-2">
@@ -573,13 +610,19 @@ export default function CyberIRPage() {
                     </div>
                   </div>
 
+                  {pbError && (
+                    <div className="p-2.5 rounded-sm bg-rose-500/10 border border-rose-500/30 text-rose-300 font-mono text-xs">
+                      {pbError}
+                    </div>
+                  )}
+
                   <button
                     onClick={generatePlaybook}
                     disabled={pbLoading}
-                    className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-black font-mono text-xs font-bold rounded-sm transition-all flex items-center justify-center gap-2"
+                    className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-black font-mono text-xs font-bold rounded-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <BookOpen size={15} />
-                    <span>{pbLoading ? '[GENERATING SANS PICERL PLAYBOOK VIA CYBER-IR...]' : '[GENERATE EMERGENCY PLAYBOOK]'}</span>
+                    <span>{pbLoading ? '[GENERATING SANS PICERL PLAYBOOK...]' : '[GENERATE EMERGENCY PLAYBOOK]'}</span>
                   </button>
                 </div>
               </TerminalCard>
@@ -587,7 +630,15 @@ export default function CyberIRPage() {
 
             {/* Playbook Output */}
             <div>
-              {!pbResult ? (
+              {pbLoading ? (
+                <TerminalCard title="Synthesizing SANS PICERL Playbook" label="PROCESSING" labelColor="amber">
+                  <div className="space-y-3 animate-pulse py-4">
+                    <div className="h-7 bg-white/[0.05] rounded w-1/2" />
+                    <div className="h-28 bg-white/[0.04] rounded" />
+                    <div className="h-32 bg-white/[0.04] rounded" />
+                  </div>
+                </TerminalCard>
+              ) : !pbResult ? (
                 <TerminalCard title="Generated SANS PICERL Playbook" label="[AWAITING SITUATION]" labelColor="white">
                   <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-3">
                     <BookOpen size={40} className="text-slate-600" />
