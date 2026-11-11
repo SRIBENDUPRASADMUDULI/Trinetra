@@ -1,10 +1,10 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
   Cpu, ShieldCheck, Zap, ArrowRight, RefreshCw,
-  CheckCircle2, Lock, Terminal, Sparkles, AlertTriangle
+  CheckCircle2, Lock, Terminal, Sparkles, AlertTriangle, Activity
 } from 'lucide-react'
 import { useLang } from '@/lib/i18n-context'
 
@@ -23,6 +23,8 @@ interface TelemetrySnapshot {
   status: string
   activeModel: string
   fallbackModel: string
+  lastGatewayStatus?: string
+  bharatcodeReachable?: boolean
 }
 
 export function BharatCodeShowcase() {
@@ -44,7 +46,7 @@ export function BharatCodeShowcase() {
     redactedPreview?: string
   } | null>(null)
 
-  const refreshTelemetry = async () => {
+  const refreshTelemetry = useCallback(async () => {
     try {
       const res = await fetch('/api/telemetry')
       const data = await res.json()
@@ -52,15 +54,11 @@ export function BharatCodeShowcase() {
         setTelemetry(data.telemetry)
       }
     } catch {
-      // ignore initial offline error
+      // ignore
     }
-  }
-
-  useEffect(() => {
-    refreshTelemetry()
   }, [])
 
-  const runLivePing = async () => {
+  const runLivePing = useCallback(async () => {
     setPinging(true)
     try {
       const res = await fetch('/api/ai/test', { method: 'POST' })
@@ -79,7 +77,14 @@ export function BharatCodeShowcase() {
     } finally {
       setPinging(false)
     }
-  }
+  }, [])
+
+  // Auto-dispatch live probe on load + refresh telemetry periodically
+  useEffect(() => {
+    runLivePing()
+    const id = setInterval(refreshTelemetry, 10000)
+    return () => clearInterval(id)
+  }, [runLivePing, refreshTelemetry])
 
   const runLiveHarnessDemo = async () => {
     if (!demoInput.trim()) return
@@ -110,31 +115,35 @@ export function BharatCodeShowcase() {
     }
   }
 
-  const isPlanUpgrade = probe?.status === 'PLAN_UPGRADE_402'
+  const isPlanUpgrade = probe?.status === 'PLAN_UPGRADE_402' || telemetry?.lastGatewayStatus === 'PLAN_UPGRADE_402'
 
   return (
-    <section className="rounded-xl bg-[#0A0A12]/92 border border-[#1A1A2E] p-6 lg:p-7 backdrop-blur-md shadow-[0_0_28px_rgba(0,212,255,0.08)]">
+    <section className="relative rounded-xl bg-[#0A0A12]/95 border border-[#00D4FF]/45 p-6 lg:p-7 backdrop-blur-md shadow-[0_0_32px_rgba(0,212,255,0.16)] overflow-hidden">
+      {/* Top Cinematic Highlight Accent Strip */}
+      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#FF1B1B] via-[#FF9F1C] to-[#00D4FF]" />
+
       <div className="space-y-5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#1A1A2E] pb-5">
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#00D4FF]/12 border border-[#00D4FF]/35 text-[11px] font-mono font-bold text-[#00D4FF] uppercase tracking-wider">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#00D4FF]/15 border border-[#00D4FF]/50 text-[11px] font-mono font-bold text-[#00D4FF] uppercase tracking-wider shadow-[0_0_12px_rgba(0,212,255,0.2)]">
                 <Cpu className="w-3.5 h-3.5" />
-                {t('BHARATCODE AI HARNESS', 'भारतकोड एआई हार्नेस')}
+                {t('BHARATCODE API · AI HARNESS ENGINE', 'भारतकोड एपीआई · एआई हार्नेस इंजन')}
               </span>
-              <span className="px-2.5 py-1 rounded bg-[#03030A] border border-[#1A1A2E] text-[10px] font-mono text-[#00FF9D]">
+              <span className="px-2.5 py-1 rounded bg-[#03030A] border border-[#00FF9D]/35 text-[10px] font-mono text-[#00FF9D]">
                 DPDP ACT §2023 · store: false
               </span>
-              {telemetry && (
-                <span className="px-2.5 py-1 rounded bg-[#03030A] border border-[#1A1A2E] text-[10px] font-mono text-[#888888]">
-                  Session Calls: <strong className="text-[#F5F5F5]">{telemetry.totalCalls}</strong>
-                  {' · '}
-                  Latency:{' '}
-                  <strong className="text-[#00FF9D]">
-                    {telemetry.latencyMs > 0 ? `${telemetry.latencyMs}ms` : 'Awaiting call'}
-                  </strong>
-                </span>
-              )}
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#03030A] border border-[#1A1A2E] text-[10px] font-mono text-[#F5F5F5]">
+                <Activity className="w-3 h-3 text-[#00FF9D]" />
+                API Calls: <strong>{telemetry?.totalCalls ?? 0}</strong>
+                {' · '}
+                bharatcode.ai RTT:{' '}
+                <strong className="text-[#00FF9D]">
+                  {(probe?.latencyMs || telemetry?.latencyMs || 0) > 0
+                    ? `${probe?.latencyMs || telemetry?.latencyMs}ms`
+                    : 'Probing...'}
+                </strong>
+              </span>
             </div>
             <h2 className="text-lg sm:text-xl font-bold text-[#F5F5F5] font-serif">
               {t(
@@ -144,8 +153,8 @@ export function BharatCodeShowcase() {
             </h2>
             <p className="text-xs text-[#888888] max-w-3xl leading-relaxed">
               {t(
-                'Three-stage sovereign defense inference architecture: PII redaction & prompt-injection filtering, BharatCode multi-model routing (Qwen 3.8 27B -> DeepSeek v4.1 Flash -> Deterministic Security Kernel), and BSA 2023 §63 SHA-256 verification.',
-                'त्रि-स्तरीय साइबर सुरक्षा इन्फरेंस आर्किटेक्चर: पीआईआई रिडैक्शन, भारतकोड मल्टी-मॉडल रूटिंग, एवं बीएसए 2023 §63 सत्यापन।'
+                'Live requests execute against BHARATCODE_API_KEY (qwen-3.8-27b -> deepseek-v4.1-flash) with automatic Aadhaar/PAN PII masking, offensive prompt filtering, and zero-hallucination deterministic failover.',
+                'BHARATCODE_API_KEY पर लाइव अनुरोध (qwen-3.8-27b -> deepseek-v4.1-flash), स्वचालित आधार/पैन मास्किंग और डिटरमिनिस्टिक फेलओवर के साथ।'
               )}
             </p>
           </div>
@@ -154,14 +163,14 @@ export function BharatCodeShowcase() {
             <button
               onClick={runLivePing}
               disabled={pinging}
-              className="px-4 py-2 rounded-lg bg-[#00D4FF] hover:bg-[#00b8de] text-[#03030A] text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer shadow-[0_0_16px_rgba(0,212,255,0.3)]"
+              className="px-4 py-2 rounded-lg bg-[#00D4FF] hover:bg-[#00b8de] text-[#03030A] text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer shadow-[0_0_18px_rgba(0,212,255,0.35)]"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${pinging ? 'animate-spin' : ''}`} />
-              {pinging ? 'Probing Gateway...' : 'Ping BharatCode API'}
+              {pinging ? 'Sending Request...' : 'Ping BharatCode API'}
             </button>
             <Link
               href="/mentor"
-              className="px-4 py-2 rounded-lg bg-[#03030A] hover:border-[#00D4FF]/50 border border-[#1A1A2E] text-[#F5F5F5] text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="px-4 py-2 rounded-lg bg-[#03030A] hover:border-[#00D4FF]/60 border border-[#1A1A2E] text-[#F5F5F5] text-xs font-medium flex items-center gap-1.5 transition-colors"
             >
               Open AI Copilot <ArrowRight className="w-3.5 h-3.5 text-[#00D4FF]" />
             </Link>
@@ -169,7 +178,7 @@ export function BharatCodeShowcase() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg bg-[#03030A] border border-[#1A1A2E] space-y-2">
+          <div className="p-4 rounded-lg bg-[#03030A] border border-[#00D4FF]/25 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono uppercase tracking-wider text-[#00D4FF] font-bold">
                 Stage 01 · Guardrails
@@ -183,7 +192,7 @@ export function BharatCodeShowcase() {
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-[#03030A] border border-[#1A1A2E] space-y-2">
+          <div className="p-4 rounded-lg bg-[#03030A] border border-[#FF9F1C]/25 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono uppercase tracking-wider text-[#FF9F1C] font-bold">
                 Stage 02 · Model Cascade
@@ -197,7 +206,7 @@ export function BharatCodeShowcase() {
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-[#03030A] border border-[#1A1A2E] space-y-2">
+          <div className="p-4 rounded-lg bg-[#03030A] border border-[#00FF9D]/25 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-mono uppercase tracking-wider text-[#00FF9D] font-bold">
                 Stage 03 · Legal Provenance
@@ -268,8 +277,8 @@ export function BharatCodeShowcase() {
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                 )}
                 <span>
-                  Gateway Probe: <strong>{probe.status}</strong> ({probe.model}) · {probe.latencyMs}ms
-                  {isPlanUpgrade ? ' · Active Fail-Safe Kernel Engaged' : ''}
+                  Live Key Probe: <strong>{probe.status}</strong> ({probe.model}) · {probe.latencyMs}ms
+                  {isPlanUpgrade ? ' · Key reached bharatcode.ai (verify student email or upgrade Lite for OK_200)' : ''}
                 </span>
               </div>
               {probe.requestId && (

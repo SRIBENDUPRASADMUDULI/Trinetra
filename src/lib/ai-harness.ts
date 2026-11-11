@@ -42,6 +42,8 @@ export interface AIHarnessTelemetry {
   totalCalls: number
   lastRequestId: string | null
   lastTimestamp: string
+  lastGatewayStatus?: string
+  bharatcodeReachable?: boolean
   guardrails: {
     piiMaskedCount: number
     injectionBlockedCount: number
@@ -65,6 +67,8 @@ const telemetryState: AIHarnessTelemetry = {
   totalCalls: 0,
   lastRequestId: null,
   lastTimestamp: new Date().toISOString(),
+  lastGatewayStatus: 'AWAITING_PROBE',
+  bharatcodeReachable: false,
   guardrails: {
     piiMaskedCount: 0,
     injectionBlockedCount: 0,
@@ -364,6 +368,8 @@ export async function callAIHarness(
 
       telemetryState.activeModel = primaryModel
       telemetryState.status = 'connected'
+      telemetryState.lastGatewayStatus = 'OK_200'
+      telemetryState.bharatcodeReachable = true
       telemetryState.latencyMs = res.latencyMs
       telemetryState.lastRequestId = res.requestId
       telemetryState.tokenBudget.estimatedUsed = (telemetryState.tokenBudget.estimatedUsed + estimatedTokens) % 8192
@@ -379,6 +385,10 @@ export async function callAIHarness(
       }
     }
   } catch (primaryErr: any) {
+    if (primaryErr?.message?.includes('HTTP 402')) {
+      telemetryState.lastGatewayStatus = 'PLAN_UPGRADE_402'
+      telemetryState.bharatcodeReachable = true
+    }
     console.warn(`[AI-HARNESS] Primary model (${primaryModel}) failed: ${primaryErr.message}. Initiating failover...`)
   }
 
@@ -417,6 +427,9 @@ export async function callAIHarness(
   // Attempt 3: Deterministic Security Heuristics Fallback
   telemetryState.status = 'fallback'
   telemetryState.activeModel = 'deterministic-heuristics'
+  if (!telemetryState.lastGatewayStatus || telemetryState.lastGatewayStatus === 'AWAITING_PROBE') {
+    telemetryState.lastGatewayStatus = 'FALLBACK_KERNEL'
+  }
   telemetryState.latencyMs = 5
 
   return {
@@ -448,7 +461,7 @@ function generateDeterministicFallback(messages: HarnessMessage[], options: Harn
   return `### TRINETRA DETERMINISTIC FORENSIC BRIEF (OFFLINE KERNEL)
 **Notice:** Cloud AI routing failed or credits exhausted. Deterministic fallback engaged under sovereign security baseline.
 
-1. **Statutory Admissibility (BSA 2023 §63 / BNS 2023 §318-319):**
+1. **Statutory Admissibility (BSA 2023 Ã‚Â§63 / BNS 2023 Ã‚Â§318-319):**
    - Preserve digital hash (SHA-256) of all volatile memory dumps and network packet captures.
    - Any financial cybercrime report must be dispatched to CyberCrime Portal (1930) within 24 hours.
 
@@ -472,6 +485,8 @@ export async function pingBharatCode(): Promise<{
   note?: string
 }> {
   const start = performance.now()
+  telemetryState.totalCalls += 1
+  telemetryState.lastTimestamp = new Date().toISOString()
   const apiKey = env.BHARATCODE_API_KEY || env.LLM_API_KEY
   const baseUrl = (env.BHARATCODE_BASE_URL || 'https://bharatcode.ai/api/model/v1').replace(/\/+$/, '')
   const model = env.BHARATCODE_MODEL || 'qwen-3.8-27b'
@@ -508,8 +523,12 @@ export async function pingBharatCode(): Promise<{
 
     if (res.ok) {
       telemetryState.status = 'connected'
+      telemetryState.lastGatewayStatus = 'OK_200'
+      telemetryState.bharatcodeReachable = true
       telemetryState.latencyMs = latencyMs
       telemetryState.lastRequestId = requestId
+      telemetryState.lastGatewayStatus = 'OK_200'
+      telemetryState.bharatcodeReachable = true
       return {
         connected: true,
         model,
@@ -531,8 +550,12 @@ export async function pingBharatCode(): Promise<{
     if (res.status === 402 || res.status === 429) {
       telemetryState.status = 'fallback'
       telemetryState.latencyMs = latencyMs
+      telemetryState.lastGatewayStatus = res.status === 402 ? 'PLAN_UPGRADE_402' : 'RATE_LIMIT_429'
+      telemetryState.bharatcodeReachable = true
+      telemetryState.lastRequestId = requestId
     } else if (res.status === 401 || res.status === 403) {
       telemetryState.status = 'offline'
+      telemetryState.lastGatewayStatus = `HTTP_${res.status}`
     }
 
     return {
