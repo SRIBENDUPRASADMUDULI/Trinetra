@@ -400,7 +400,7 @@ export default function DeepfakeXaiPage() {
       </div>
 
       <div className="p-3 sm:p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-800 text-xs flex items-start sm:items-center gap-2.5">
-        <AlertTriangle size={15} className="text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
+        <AlertTriangle size={15} className="text-[#D97706] shrink-0 mt-0.5 sm:mt-0" />
         <span>
           <strong>{data?.pythonAvailable ? 'AI-Assisted Forensic Indication:' : 'Research Benchmark Viewer:'}</strong>{' '}
           {data?.pythonAvailable
@@ -419,7 +419,7 @@ export default function DeepfakeXaiPage() {
       )}
 
       {loadError && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-xs flex items-center gap-2">
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-[#991B1B] text-xs flex items-center gap-2">
           <AlertTriangle size={16} />
           <span>{loadError}</span>
         </div>
@@ -431,7 +431,7 @@ export default function DeepfakeXaiPage() {
           <div className="text-[10px] font-mono uppercase tracking-wider text-slate-600">
             In-Distribution Accuracy
           </div>
-          <div className="text-2xl font-extrabold text-emerald-400 font-mono">
+          <div className="text-2xl font-extrabold text-[#15803D] font-mono">
             {(avgIdAcc * 100).toFixed(1)}%
           </div>
           <div className="text-[11px] text-slate-600">Train & test on same generator</div>
@@ -511,7 +511,7 @@ export default function DeepfakeXaiPage() {
                   Selected Shift Vector Inspection
                 </div>
                 <div className="text-base font-bold text-slate-900 font-mono">
-                  {selectedPair.source} <span className="text-sky-400">â”€â”€â–º</span> {selectedPair.target}
+                  {selectedPair.source} <span className="text-[#2563EB]">â”€â”€â–º</span> {selectedPair.target}
                 </div>
                 <p className="text-xs text-slate-700">
                   Accuracy shifted from{' '}
@@ -760,7 +760,7 @@ export default function DeepfakeXaiPage() {
           {/* Raw summary.txt Console */}
           {data?.summaryText && (
             <TerminalCard title="Pipeline Summary Report (summary.txt)" label="VERIFIED OUTPUT" labelColor="white">
-              <pre className="p-4 rounded-xl bg-[#060910] border border-slate-200 text-[11px] font-mono text-emerald-700 overflow-x-auto leading-relaxed">
+              <pre className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-emerald-700 overflow-x-auto leading-relaxed">
                 {data.summaryText}
               </pre>
             </TerminalCard>
@@ -910,7 +910,7 @@ export default function DeepfakeXaiPage() {
                     type="button"
                     onClick={handleAnalyzeSingleImage}
                     disabled={analyzingImage}
-                    className="w-full py-3 px-4 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white text-xs font-bold tracking-wide flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
+                    className="w-full py-3 px-4 rounded-xl bg-[#2563EB] hover:bg-slate-50 disabled:opacity-50 text-white text-xs font-bold tracking-wide flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
                   >
                     {analyzingImage ? (
                       <>
@@ -953,7 +953,7 @@ export default function DeepfakeXaiPage() {
               >
                 {!imageAnalysis ? (
                   <div className="py-16 text-center space-y-3">
-                    <ScanFace size={40} className="mx-auto text-indigo-400/70" />
+                    <ScanFace size={40} className="mx-auto text-[#2563EB]/70" />
                     <div className="text-sm font-semibold text-slate-900">
                       Select a source detector & image, then run Live XAI Inspection
                     </div>
@@ -971,7 +971,7 @@ export default function DeepfakeXaiPage() {
                         <div className="text-[10px] font-mono text-slate-600">VERDICT</div>
                         <div
                           className={`text-lg font-extrabold font-mono ${
-                            imageAnalysis.prediction === 'FAKE' ? 'text-rose-400' : 'text-emerald-400'
+                            imageAnalysis.prediction === 'FAKE' ? 'text-[#DC2626]' : 'text-[#15803D]'
                           }`}
                         >
                           {imageAnalysis.prediction}
@@ -1038,7 +1038,7 @@ export default function DeepfakeXaiPage() {
                             Spatial Grad-CAM activation distribution across biometric regions (Selvaraju et al., ICCV 2017)
                           </div>
                         </div>
-                        <span className="px-2 py-0.5 rounded bg-[#00D4FF]/15 border border-[#00D4FF]/30 text-[10px] font-mono text-[#00D4FF]">
+                        <span className="px-2 py-0.5 rounded bg-slate-50 border border-[#BFDBFE] text-[10px] font-mono text-[#2563EB]">
                           GRAD-CAM LAYER ATTRIBUTION
                         </span>
                       </div>
@@ -1078,7 +1078,7 @@ export default function DeepfakeXaiPage() {
                             </div>
                             <div className="w-full h-1.5 rounded-full bg-slate-50 overflow-hidden">
                               <div
-                                className="h-full bg-[#00D4FF]"
+                                className="h-full bg-slate-50"
                                 style={{ width: `${Math.min(100, Math.max(5, item.share))}%` }}
                               />
                             </div>
@@ -1099,7 +1099,7 @@ export default function DeepfakeXaiPage() {
                     <div className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-200 space-y-3 font-mono">
                       <div className="flex flex-wrap items-center justify-between gap-2.5">
                         <div className="text-xs font-bold text-indigo-800 flex items-center gap-2">
-                          <Sparkles size={14} className="text-sky-400" />
+                          <Sparkles size={14} className="text-[#2563EB]" />
                           <span>BHARATCODE AI FORENSIC TRIAGE (BNS 2023 §319(2) &amp; BSA 2023 §63(4))</span>
                         </div>
                         <button
@@ -1117,20 +1117,20 @@ export default function DeepfakeXaiPage() {
                             })
                           }
                           disabled={explaining}
-                          className="px-4 py-2 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-xs font-bold text-[#03030A] transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                          className="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-xs font-bold text-white transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
                         >
-                          <Sparkles size={13} className="text-cyan-400 animate-pulse" />
+                          <Sparkles size={13} className="text-[#0284C7] animate-pulse" />
                           <span>{explaining ? 'Synthesizing with BharatCode AI...' : '[GENERATE BNS §319 & BSA §63 BRIEF]'}</span>
                         </button>
                       </div>
                       {aiBrief && (
                         <div className="space-y-2 pt-2 border-t border-slate-200">
                           <div className="flex items-center justify-between text-[11px] text-slate-600">
-                            <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                              <ShieldCheck size={13} className="text-emerald-400" />
+                            <span className="flex items-center gap-1.5 text-[#15803D] font-semibold">
+                              <ShieldCheck size={13} className="text-[#15803D]" />
                               <span>COURT-ADMISSIBLE FORENSIC VERDICT (BSA §63)</span>
                             </span>
-                            <span className="px-2 py-0.5 rounded bg-[#00D4FF]/15 text-[#00D4FF] border border-[#00D4FF]/30">
+                            <span className="px-2 py-0.5 rounded bg-slate-50 text-[#2563EB] border border-[#BFDBFE]">
                               {aiBrief.model || 'qwen-3.8-27b'}
                             </span>
                           </div>
@@ -1171,7 +1171,7 @@ export default function DeepfakeXaiPage() {
                   <select
                     value={studySource}
                     onChange={e => setStudySource(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl bg-[#0A0E17] border border-slate-200 text-slate-900 font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
                   >
                     <option value="ALL">ALL (Full 3Ã—3 Cross-Generator Matrix)</option>
                     {generators.map(g => (
@@ -1187,7 +1187,7 @@ export default function DeepfakeXaiPage() {
                   <select
                     value={studyBackbone}
                     onChange={e => setStudyBackbone(e.target.value as 'simple' | 'efficientnet_b0')}
-                    className="w-full px-3 py-2 rounded-xl bg-[#0A0E17] border border-slate-200 text-slate-900 font-mono"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
                   >
                     <option value="simple">simple (3-Layer CNN â€” fast CPU demo)</option>
                     <option value="efficientnet_b0">efficientnet_b0 (Research Backbone)</option>
@@ -1203,7 +1203,7 @@ export default function DeepfakeXaiPage() {
                       max={20}
                       value={studyEpochs}
                       onChange={e => setStudyEpochs(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-[#0A0E17] border border-slate-200 text-slate-900 font-mono"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
                     />
                   </div>
                   <div className="space-y-1">
@@ -1214,7 +1214,7 @@ export default function DeepfakeXaiPage() {
                       max={100}
                       value={studyNEval}
                       onChange={e => setStudyNEval(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-[#0A0E17] border border-slate-200 text-slate-900 font-mono"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
                     />
                   </div>
                   <div className="space-y-1">
@@ -1222,7 +1222,7 @@ export default function DeepfakeXaiPage() {
                     <select
                       value={studyImgSize}
                       onChange={e => setStudyImgSize(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded-xl bg-[#0A0E17] border border-slate-200 text-slate-900 font-mono"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 font-mono"
                     >
                       <option value={64}>64Ã—64</option>
                       <option value={128}>128Ã—128</option>
@@ -1272,7 +1272,7 @@ export default function DeepfakeXaiPage() {
                 </button>
 
                 {studyError && (
-                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-xs">
+                  <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-[#991B1B] text-xs">
                     {studyError}
                   </div>
                 )}
@@ -1287,7 +1287,7 @@ export default function DeepfakeXaiPage() {
               labelColor={runningStudy ? 'amber' : 'green'}
             >
               <div className="space-y-4">
-                <pre className="h-[360px] overflow-y-auto p-4 rounded-xl bg-[#05080F] border border-slate-200 font-mono text-[11px] text-slate-800 whitespace-pre-wrap leading-relaxed">
+                <pre className="h-[360px] overflow-y-auto p-4 rounded-xl bg-slate-50 border border-slate-200 font-mono text-[11px] text-slate-800 whitespace-pre-wrap leading-relaxed">
                   {studyLog ||
                     '// Configure hyperparameters on the left and click "Execute Live Cross-Generator Study".\n' +
                       '// Once finished, CSVs, CGFD/FADI heatmaps, and Grad-CAM samples auto-refresh across Panel 11.'}
@@ -1376,7 +1376,7 @@ export default function DeepfakeXaiPage() {
             <TerminalCard title="Sovereign Defense & Forensic Context" label="BSA 2023 · CERT-IN" labelColor="green">
               <div className="space-y-3 text-xs text-slate-700 leading-relaxed">
                 <div className="flex items-start gap-2.5">
-                  <ShieldCheck size={16} className="text-emerald-400 shrink-0 mt-0.5" />
+                  <ShieldCheck size={16} className="text-[#15803D] shrink-0 mt-0.5" />
                   <p>
                     <strong className="text-slate-900">Synthetic Media & Disinformation Defense:</strong> Modern
                     influence operations combine GAN face-swaps with Diffusion media. Relying solely on
@@ -1385,7 +1385,7 @@ export default function DeepfakeXaiPage() {
                   </p>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <Cpu size={16} className="text-sky-400 shrink-0 mt-0.5" />
+                  <Cpu size={16} className="text-[#2563EB] shrink-0 mt-0.5" />
                   <p>
                     <strong className="text-slate-900">Court-Admissible Explainability (BSA 2023):</strong> When
                     submitting deepfake evidence alongside Section 63 BSA 2023 electronic certificates,
@@ -1394,7 +1394,7 @@ export default function DeepfakeXaiPage() {
                   </p>
                 </div>
                 <div className="flex items-start gap-2.5">
-                  <Terminal size={16} className="text-indigo-400 shrink-0 mt-0.5" />
+                  <Terminal size={16} className="text-[#2563EB] shrink-0 mt-0.5" />
                   <p>
                     <strong className="text-slate-900">Bundled Engine Path:</strong> Complete Python source lives in{' '}
                     <code className="text-blue-700">deepfake-xai-engine/</code> (<code className="text-blue-700">run.py</code>,{' '}

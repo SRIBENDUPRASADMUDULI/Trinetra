@@ -95,7 +95,7 @@ export default function IntelPage() {
       <div className="p-6 rounded-2xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 font-mono text-[11px] font-bold flex items-center gap-1.5">
+            <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-[#DC2626] font-mono text-[11px] font-bold flex items-center gap-1.5">
               <Radar size={12} style={{ animation: 'spin 3s linear infinite' }} />
               07 // THREAT INTEL RADAR
             </span>
@@ -110,11 +110,11 @@ export default function IntelPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-shrink-0">
-          <div className="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2">
+          <div className="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[#15803D] text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>RADAR ACTIVE</span>
           </div>
-          <div className="px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold flex items-center gap-2">
+          <div className="px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/30 text-[#DC2626] text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-rose-500" />
             <span>Alert Status: Elevated</span>
           </div>
@@ -146,7 +146,7 @@ export default function IntelPage() {
               onClick={() => setPaused(p => !p)}
               className="flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-100 text-slate-700 transition-colors"
             >
-              {paused ? <><Play size={11} className="text-emerald-400 mr-1" /> RESUME</> : <><Pause size={11} className="text-amber-400 mr-1" /> PAUSE</>}
+              {paused ? <><Play size={11} className="text-[#15803D] mr-1" /> RESUME</> : <><Pause size={11} className="text-[#D97706] mr-1" /> PAUSE</>}
             </button>
           </div>
         }>
@@ -200,14 +200,14 @@ export default function IntelPage() {
                 >
                   <div className="flex items-center gap-3 flex-wrap">
                     <span className="font-mono text-xs text-slate-600">{cs.id}</span>
-                    <span className="font-mono text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                    <span className="font-mono text-xs font-bold text-[#D97706] bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
                       {cs.codename}
                     </span>
                     <span className="text-xs text-slate-600">{cs.year} · <strong className="text-slate-900">{cs.entity}</strong></span>
                   </div>
                   <div className="flex items-center gap-2">
                     {cs.ttps.slice(0, 2).map(t => (
-                      <span key={t} className="font-mono text-xs px-2 py-0.5 rounded text-cyan-400 border border-cyan-500/30 bg-cyan-950/30 hidden sm:inline">{t}</span>
+                      <span key={t} className="font-mono text-xs px-2 py-0.5 rounded text-[#0284C7] border border-cyan-500/30 bg-sky-50 hidden sm:inline">{t}</span>
                     ))}
                     <div className="p-1 rounded bg-slate-100 text-slate-600">
                       {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -226,9 +226,9 @@ export default function IntelPage() {
                         <span className="text-slate-600 font-mono block text-[11px] mb-1">ATTRIBUTION:</span>
                         <span className="text-amber-700 font-bold">{cs.attribution}</span>
                       </div>
-                      <div className="col-span-1 md:col-span-2 p-3 rounded-xl bg-rose-950/20 border border-rose-900/40">
-                        <span className="text-rose-400 font-mono block text-[11px] mb-1">DAMAGE &amp; IMPACT:</span>
-                        <span className="text-rose-200 font-medium">{cs.damage}</span>
+                      <div className="col-span-1 md:col-span-2 p-3 rounded-xl bg-rose-50 border border-slate-200">
+                        <span className="text-[#DC2626] font-mono block text-[11px] mb-1">DAMAGE &amp; IMPACT:</span>
+                        <span className="text-[#991B1B] font-medium">{cs.damage}</span>
                       </div>
                     </div>
                     <div>
@@ -239,7 +239,7 @@ export default function IntelPage() {
                       <div className="flex flex-wrap gap-2 items-center">
                         {cs.killChain.map((step, idx) => (
                           <React.Fragment key={idx}>
-                            <span className="font-mono text-xs px-3 py-1.5 rounded-lg text-emerald-700 border border-emerald-500/30 bg-emerald-950/20 shadow-sm">
+                            <span className="font-mono text-xs px-3 py-1.5 rounded-lg text-emerald-700 border border-emerald-500/30 bg-emerald-50 shadow-sm">
                               {idx + 1}. {step}
                             </span>
                             {idx < cs.killChain.length - 1 && <span className="text-slate-600 font-mono text-xs">→</span>}
@@ -265,7 +265,7 @@ export default function IntelPage() {
           <button
             onClick={scanAll}
             disabled={scanningAll}
-            className="flex items-center gap-1.5 font-mono text-xs px-3 py-1 rounded-lg border border-cyan-500/40 bg-cyan-950/40 text-cyan-300 hover:bg-cyan-900/40 transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 font-mono text-xs px-3 py-1 rounded-lg border border-cyan-500/40 bg-sky-50 text-[#0369A1] hover:bg-sky-50 transition-colors disabled:opacity-40"
           >
             <RefreshCw size={11} className={scanningAll ? 'animate-spin' : ''} />
             <span>{scanningAll ? `AUDITING ${scanProgress}%` : 'AUDIT ALL ENDPOINTS'}</span>

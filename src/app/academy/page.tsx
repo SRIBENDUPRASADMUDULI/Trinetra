@@ -235,7 +235,7 @@ export default function AcademyPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-shrink-0 font-mono text-xs">
-          <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-semibold flex items-center gap-2">
+          <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[#15803D] font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>RANGE ONLINE</span>
           </div>
@@ -285,7 +285,7 @@ export default function AcademyPage() {
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08]">
             {/* Left Pane (Audio Briefing & Telemetry Controls) - 6 Cols */}
-            <div className="lg:col-span-6 p-5 sm:p-6 space-y-5 bg-[#0A0E17]/60">
+            <div className="lg:col-span-6 p-5 sm:p-6 space-y-5 bg-slate-50">
               <div className="flex items-center justify-between">
                 <StatusBadge label="BRIEFING LOADED" variant="ok" />
                 <span className="text-[10px] font-mono text-slate-500">
@@ -295,7 +295,7 @@ export default function AcademyPage() {
 
               <div>
                 <h3 className="font-mono text-base font-bold text-slate-900 flex items-center gap-2">
-                  <span className="text-emerald-400">MODULE_07:</span>
+                  <span className="text-[#15803D]">MODULE_07:</span>
                   <span>Advanced Persistent Threat — Supply Chain Intrusion</span>
                 </h3>
                 <p className="text-xs text-slate-600 font-sans mt-1">
@@ -307,7 +307,7 @@ export default function AcademyPage() {
               <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-3">
                 <div className="flex items-center justify-between text-[11px] font-mono text-slate-600">
                   <span className="flex items-center gap-1.5">
-                    <Radio size={12} className={isPlayingBriefing ? 'text-emerald-400 animate-pulse' : 'text-slate-500'} />
+                    <Radio size={12} className={isPlayingBriefing ? 'text-[#15803D] animate-pulse' : 'text-slate-500'} />
                     {isPlayingBriefing ? 'AUDIO STREAM TRANSMITTING' : 'STREAM STANDBY'}
                   </span>
                   <span>00:04:32 / 00:12:00</span>
@@ -382,12 +382,12 @@ export default function AcademyPage() {
                       onClick={() => handleSelectChapter(c.ch)}
                       className={`p-2.5 rounded-lg border transition-all cursor-pointer flex items-center justify-between ${
                         activeChapter === c.ch
-                          ? 'bg-indigo-950/20 border-indigo-500/40 text-indigo-800'
+                          ? 'bg-indigo-50 border-indigo-500/40 text-indigo-800'
                           : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50'
                       }`}
                     >
                       <span className="flex items-center gap-2">
-                        <span className={activeChapter === c.ch ? 'text-indigo-400' : 'text-slate-600'}>
+                        <span className={activeChapter === c.ch ? 'text-[#2563EB]' : 'text-slate-600'}>
                           ▶
                         </span>
                         <span>{c.title}</span>
@@ -400,7 +400,7 @@ export default function AcademyPage() {
             </div>
 
             {/* Right Pane (Live Packet Hex Dump & Stream Dissection) - 6 Cols */}
-            <div className="lg:col-span-6 p-5 sm:p-6 space-y-4 bg-[#080B12]">
+            <div className="lg:col-span-6 p-5 sm:p-6 space-y-4 bg-slate-50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <StatusBadge label="PCAP_DISSECTION" variant="info" />
@@ -412,7 +412,7 @@ export default function AcademyPage() {
                   onClick={copyHexDump}
                   className="px-2.5 py-1 rounded bg-slate-50 hover:bg-slate-50 text-[11px] font-mono text-slate-700 border border-slate-200 flex items-center gap-1 transition-all cursor-pointer"
                 >
-                  {copiedHex ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+                  {copiedHex ? <Check size={11} className="text-[#15803D]" /> : <Copy size={11} />}
                   <span>{copiedHex ? 'Copied' : 'Copy Hex'}</span>
                 </button>
               </div>
@@ -430,7 +430,7 @@ export default function AcademyPage() {
               </div>
 
               {/* Synchronized Hex Dump Terminal Box */}
-              <div className="p-3.5 rounded-xl bg-[#04060A] border border-slate-200 font-mono text-[11px] space-y-1 overflow-x-auto max-h-[300px]">
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 font-mono text-[11px] space-y-1 overflow-x-auto max-h-[300px]">
                 <div className="text-slate-500 pb-1 border-b border-slate-200 text-[10px] flex justify-between">
                   <span>OFFSET    HEXADECIMAL DATA</span>
                   <span>ASCII DECODE</span>
@@ -441,7 +441,7 @@ export default function AcademyPage() {
                     <span className="text-indigo-700 font-medium tracking-wider mr-4">
                       {row.hex}
                     </span>
-                    <span className="text-emerald-400 font-bold tracking-tight">
+                    <span className="text-[#15803D] font-bold tracking-tight">
                       |{row.ascii}|
                     </span>
                   </div>
@@ -452,7 +452,7 @@ export default function AcademyPage() {
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2 font-mono text-[11px]">
                 <div className="text-slate-600 flex items-center justify-between">
                   <span>FORENSIC SIGNATURE:</span>
-                  <span className="text-emerald-400">SHA-256 MATCH VERIFIED</span>
+                  <span className="text-[#15803D]">SHA-256 MATCH VERIFIED</span>
                 </div>
                 <div className="p-2 rounded bg-slate-100 text-[10px] text-slate-700 break-all select-all border border-slate-200">
                   7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
@@ -574,7 +574,7 @@ export default function AcademyPage() {
               </div>
 
               {/* Card */}
-              <div className="p-5 cursor-pointer rounded-xl border border-slate-200 bg-[#0A0E17]" onClick={() => setFlipped(f => !f)}
+              <div className="p-5 cursor-pointer rounded-xl border border-slate-200 bg-slate-50" onClick={() => setFlipped(f => !f)}
                 style={{ minHeight: '200px' }}>
                 <div className="flex justify-between items-start mb-4">
                   <span className="font-mono text-xs font-bold" style={{ color: '#f59e0b' }}>[{card.classification}]</span>

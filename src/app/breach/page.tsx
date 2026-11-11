@@ -104,7 +104,7 @@ export default function BreachPage() {
       <div className="p-6 rounded-2xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 font-mono text-[11px] font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-[#DC2626] font-mono text-[11px] font-bold">
               06 // DARK WEB PASSWORD SENTINEL
             </span>
             <span className="text-slate-600 text-xs">•</span>
@@ -119,7 +119,7 @@ export default function BreachPage() {
         </div>
 
         <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2">
+          <div className="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[#15803D] text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>100% PRIVATE · CLIENT ENCRYPTED</span>
           </div>
@@ -129,7 +129,7 @@ export default function BreachPage() {
       {/* Visual How It Works Guide (3 Symmetrical Cards) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-sans text-xs">
         <div className="p-4 rounded-2xl glass-card space-y-1.5">
-          <div className="flex items-center gap-2 text-rose-400 font-mono font-bold text-xs uppercase">
+          <div className="flex items-center gap-2 text-[#DC2626] font-mono font-bold text-xs uppercase">
             <span className="w-5 h-5 rounded-full bg-rose-500/20 flex items-center justify-center text-[10px]">1</span>
             <span>Local SHA-1 Hash</span>
           </div>
@@ -139,17 +139,17 @@ export default function BreachPage() {
         </div>
 
         <div className="p-4 rounded-2xl glass-card space-y-1.5">
-          <div className="flex items-center gap-2 text-cyan-400 font-mono font-bold text-xs uppercase">
+          <div className="flex items-center gap-2 text-[#0284C7] font-mono font-bold text-xs uppercase">
             <span className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-[10px]">2</span>
             <span>k-Anonymity Slice</span>
           </div>
           <p className="text-slate-600 leading-relaxed">
-            Only the first 5 characters (e.g. <code className="text-cyan-300 font-mono font-semibold">CBFDA</code>) are queried. Millions of passwords share the exact same prefix.
+            Only the first 5 characters (e.g. <code className="text-[#0369A1] font-mono font-semibold">CBFDA</code>) are queried. Millions of passwords share the exact same prefix.
           </p>
         </div>
 
         <div className="p-4 rounded-2xl glass-card space-y-1.5">
-          <div className="flex items-center gap-2 text-emerald-400 font-mono font-bold text-xs uppercase">
+          <div className="flex items-center gap-2 text-[#15803D] font-mono font-bold text-xs uppercase">
             <span className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px]">3</span>
             <span>Zero-Knowledge Match</span>
           </div>
@@ -169,7 +169,7 @@ export default function BreachPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-slate-600 font-medium">Test pre-loaded scenarios (1-click):</span>
-                  <span className="text-[11px] font-mono text-rose-400">Benchmark Hash Vector</span>
+                  <span className="text-[11px] font-mono text-[#DC2626]">Benchmark Hash Vector</span>
                 </div>
                 <div className="space-y-2">
                   {PRESET_CREDS.map((demo, idx) => (
@@ -228,7 +228,7 @@ export default function BreachPage() {
                 <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 font-mono text-xs">
                   <div className="flex items-center justify-between text-[11px] text-slate-500 pb-1 border-b border-slate-200">
                     <span>LIVE CRYPTOGRAPHIC DIGEST</span>
-                    <span className="text-emerald-400">WebCrypto API</span>
+                    <span className="text-[#15803D]">WebCrypto API</span>
                   </div>
                   <div className="space-y-1.5">
                     <div>
@@ -268,7 +268,7 @@ export default function BreachPage() {
                 {result.found ? (
                   <div className="p-5 rounded-2xl bg-gradient-to-r from-rose-950/40 via-red-950/20 to-transparent border border-rose-500/30 space-y-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400 flex-shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-[#DC2626] flex-shrink-0">
                         <ShieldAlert size={20} />
                       </div>
                       <div>
@@ -287,7 +287,7 @@ export default function BreachPage() {
                 ) : (
                   <div className="p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-teal-950/20 to-transparent border border-emerald-500/30 space-y-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-[#15803D] flex-shrink-0">
                         <CheckCircle2 size={20} />
                       </div>
                       <div>
@@ -319,7 +319,7 @@ export default function BreachPage() {
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                       <span className="text-slate-500 block text-[11px]">Crack Resistance:</span>
-                      <strong className={result.found ? 'text-rose-400 font-mono text-sm' : 'text-emerald-400 font-mono text-sm'}>
+                      <strong className={result.found ? 'text-[#DC2626] font-mono text-sm' : 'text-[#15803D] font-mono text-sm'}>
                         {result.found ? '< 1 Second (Dictionary)' : '> 400 Years (GPU Cluster)'}
                       </strong>
                     </div>

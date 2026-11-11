@@ -143,7 +143,7 @@ export default function ResearchPage() {
             <span className="text-[11px] font-mono text-slate-600">10 PEER-REVIEWED SOURCES · 6 OSS INTEGRATIONS</span>
           </div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
-            <BookOpen className="text-indigo-400 shrink-0" size={26} />
+            <BookOpen className="text-[#2563EB] shrink-0" size={26} />
             <span>Academic Grounding &amp; Open-Source Stack</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
@@ -153,7 +153,7 @@ export default function ResearchPage() {
       </div>
 
       <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-800 text-xs flex items-start sm:items-center gap-2.5">
-        <AlertTriangle size={15} className="text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
+        <AlertTriangle size={15} className="text-[#D97706] shrink-0 mt-0.5 sm:mt-0" />
         <span>
           <strong>Honest Scope &amp; Limitations:</strong> Pure cryptographic operations (SHA-256, k-anonymity, Shannon entropy) are deterministic. AI phishing and deepfake classification outputs are probabilistic indications — verify manually before legal or enforcement action.
         </span>
@@ -181,7 +181,7 @@ export default function ResearchPage() {
                       href={paper.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] font-mono text-sky-400 hover:text-blue-700 mt-1"
+                      className="inline-flex items-center gap-1 text-[11px] font-mono text-[#2563EB] hover:text-blue-700 mt-1"
                     >
                       <span>{paper.doi}</span>
                       <ExternalLink size={11} />
@@ -213,7 +213,7 @@ export default function ResearchPage() {
               </div>
               <p className="font-mono font-bold text-slate-900 break-words">{item.name}</p>
               <p className="text-slate-600 leading-relaxed">{item.role}</p>
-              <div className="text-[10px] font-mono text-emerald-400 flex items-center gap-1 pt-1">
+              <div className="text-[10px] font-mono text-[#15803D] flex items-center gap-1 pt-1">
                 <ShieldCheck size={12} />
                 <span>{item.license}</span>
               </div>
@@ -224,7 +224,7 @@ export default function ResearchPage() {
 
       <div className="p-4 rounded-2xl glass-card flex flex-wrap items-center justify-between gap-3 text-xs text-slate-700">
         <div className="flex items-center gap-2">
-          <Layers size={15} className="text-indigo-400" />
+          <Layers size={15} className="text-[#2563EB]" />
           <span>Full technical architecture &amp; security guardrails documented in <code>DOCS.md</code> and <code>README.md</code>.</span>
         </div>
       </div>

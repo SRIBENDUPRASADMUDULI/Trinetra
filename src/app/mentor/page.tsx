@@ -5,6 +5,7 @@ import {
   Sparkles, Cpu, ShieldCheck, HelpCircle, Activity
 } from 'lucide-react'
 import { consumeTokenStream } from '@/lib/sse-stream'
+import { InfoExplain } from '@/components/ui/InfoExplain'
 
 interface Message {
   id: string
@@ -151,21 +152,21 @@ export default function MentorPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-[#0A0E17]">
+    <div className="flex h-[calc(100vh-140px)] min-h-[600px] overflow-hidden bg-white rounded-xl border border-[#E5E7EB] shadow-xs">
       {/* Main Chat Column */}
       <div className="flex-1 flex flex-col min-w-0 border-r border-slate-200">
         {/* Terminal Header */}
         <div className="px-6 py-4 flex items-center justify-between flex-shrink-0 bg-white backdrop-blur-xl border-b border-slate-200">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+            <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB]">
               <Eye size={18} />
             </div>
             <div>
               <h1 className="text-sm font-bold text-slate-900 tracking-wide">
-                02 // TRINETRA SecOps AI Defense Copilot
+                AI Cyber Safety Assistant
               </h1>
               <p className="text-[11px] text-slate-600">
-                TRINETRA Neural SecOps Copilot & Indian Statutory Defense Kernel
+                Ask any cybersecurity or online scam question in plain language
               </p>
             </div>
           </div>
@@ -174,7 +175,7 @@ export default function MentorPage() {
             <button
               onClick={handlePingBharatCode}
               disabled={pinging}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold text-indigo-700 hover:text-white rounded-full bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold text-[#2563EB] hover:bg-[#DBEAFE] rounded-full bg-[#EFF6FF] border border-[#BFDBFE] transition-colors cursor-pointer disabled:opacity-50"
               title="Verify BharatCode Gateway Connectivity"
             >
               <Activity size={12} className={pinging ? 'animate-spin' : ''} />
@@ -188,7 +189,13 @@ export default function MentorPage() {
               <RotateCcw size={12} />
               <span>Reset</span>
             </button>
-            <span className="text-[11px] font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+            <InfoExplain
+              title="AI Cyber Safety Assistant"
+              whatIsIt="A safe AI chat assistant where you can ask questions about scams, hacked accounts, privacy laws, or security steps."
+              whoShouldUse="Anyone who has a security doubt or wants clear advice without technical jargon."
+              whatResultMeans="Gives practical defense steps. Always verify legal sections or banking instructions with official sources."
+            />
+            <span className="text-[11px] font-semibold px-3 py-1 rounded-full bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               STREAMING READY
             </span>
@@ -198,7 +205,7 @@ export default function MentorPage() {
         {/* Message Log Transcript */}
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto p-6 space-y-6"
+          className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#F8F9FA]"
         >
           {messages.map(msg => (
             <div
@@ -223,7 +230,7 @@ export default function MentorPage() {
                       onClick={() => handleCopy(msg.id, msg.content)}
                       className="text-slate-600 hover:text-slate-900 ml-1.5"
                     >
-                      {copiedId === msg.id ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                      {copiedId === msg.id ? <Check size={12} className="text-[#15803D]" /> : <Copy size={12} />}
                     </button>
                   )}
                 </div>
@@ -231,7 +238,7 @@ export default function MentorPage() {
                 <div className={`p-4 rounded-2xl text-xs leading-relaxed ${
                   msg.role === 'agent'
                     ? 'glass-card text-slate-800 border-slate-200 whitespace-pre-wrap'
-                    : 'bg-gradient-to-r from-rose-600 to-red-600 text-slate-900 font-medium shadow-md shadow-rose-950/40 ml-auto'
+                    : 'bg-[#2563EB] text-white font-medium shadow-xs ml-auto'
                 }`}>
                   {msg.content}
                 </div>
@@ -299,7 +306,7 @@ export default function MentorPage() {
             <button
               onClick={() => sendMessage(input)}
               disabled={loading || !input.trim()}
-              className="p-2 rounded-full text-slate-900 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 disabled:opacity-40 shadow-md transition-all"
+              className="p-2 rounded-full text-white bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-40 shadow-xs transition-colors cursor-pointer"
             >
               <Send size={14} />
             </button>
@@ -308,9 +315,9 @@ export default function MentorPage() {
       </div>
 
       {/* Right Intelligence Sidebar */}
-      <div className="w-80 bg-[#0B0D13]/60 p-5 space-y-5 overflow-y-auto hidden xl:block text-xs">
+      <div className="w-80 bg-[#F8F9FA] border-l border-[#E5E7EB] p-5 space-y-4 overflow-y-auto hidden xl:block text-xs">
         <div className="p-4 rounded-2xl glass-card space-y-3">
-          <div className="flex items-center gap-2 text-rose-400 font-bold">
+          <div className="flex items-center gap-2 text-[#2563EB] font-bold">
             <Cpu size={16} />
             <span>AI Engine Specifications</span>
           </div>
@@ -325,7 +332,7 @@ export default function MentorPage() {
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-1.5">
               <span className="text-slate-500">Latency:</span>
-              <strong className="text-emerald-400 font-mono">&lt; 1,200 ms</strong>
+              <strong className="text-[#15803D] font-mono">&lt; 1,200 ms</strong>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Domain:</span>
@@ -346,7 +353,7 @@ export default function MentorPage() {
           </ul>
         </div>
 
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-slate-700 space-y-1">
+        <div className="p-4 rounded-xl bg-[#F0FDF4] border border-[#BBF7D0] text-[#166534] space-y-1">
           <span className="font-bold text-emerald-700 block">Confidentiality Guarantee</span>
           <p className="text-[11px] text-slate-600 leading-relaxed">
             Incident queries are processed in an isolated memory buffer and never retained for public model training.

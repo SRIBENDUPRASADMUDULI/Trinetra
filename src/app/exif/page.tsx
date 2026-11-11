@@ -109,7 +109,7 @@ export default function ExifPage() {
       <div className="p-6 rounded-2xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 font-mono text-[11px] font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-[#0284C7] font-mono text-[11px] font-bold">
               05 // DIGITAL IMAGE FORENSICS
             </span>
             <span className="text-slate-600 text-xs">•</span>
@@ -128,7 +128,7 @@ export default function ExifPage() {
             onClick={loadSample}
             className="px-4 py-2 rounded-full bg-slate-50 hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-semibold flex items-center gap-2 transition-all"
           >
-            <Sparkles size={14} className="text-rose-400" />
+            <Sparkles size={14} className="text-[#DC2626]" />
             <span>Load Forensic Sample</span>
           </button>
         </div>
@@ -163,7 +163,7 @@ export default function ExifPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-4">
                       <div className="text-slate-900 space-y-0.5">
                         <p className="font-bold text-xs flex items-center gap-1.5">
-                          <Camera size={14} className="text-rose-400" />
+                          <Camera size={14} className="text-[#DC2626]" />
                           <span>{isSample ? 'Demo Recon Image (New Delhi Target)' : 'Uploaded User Evidence'}</span>
                         </p>
                         <p className="text-[11px] text-slate-700 font-mono">
@@ -208,7 +208,7 @@ export default function ExifPage() {
               {scrubLog.length > 0 && (
                 <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200 font-mono text-[11px] space-y-1 max-h-44 overflow-y-auto">
                   {scrubLog.map((log, i) => (
-                    <div key={i} className="text-emerald-400">
+                    <div key={i} className="text-[#15803D]">
                       {log}
                     </div>
                   ))}
@@ -225,7 +225,7 @@ export default function ExifPage() {
               <div className="space-y-4 text-xs">
                 {/* Covert GPS Alert */}
                 <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-950/40 via-red-950/20 to-transparent border border-rose-500/30 space-y-1.5">
-                  <div className="flex items-center gap-2 text-rose-400 font-bold">
+                  <div className="flex items-center gap-2 text-[#DC2626] font-bold">
                     <MapPin size={16} />
                     <span>PHYSICAL GPS LOCATION LEAK DETECTED</span>
                   </div>
@@ -233,8 +233,8 @@ export default function ExifPage() {
                     This photo contained exact physical satellite coordinates:
                   </p>
                   <div className="font-mono text-xs text-slate-900 bg-slate-100 p-2.5 rounded-xl border border-slate-200 space-y-0.5">
-                    <div>Latitude: <strong className="text-rose-400">{exif.GPSLatitude ?? '28.6139° N'}</strong></div>
-                    <div>Longitude: <strong className="text-rose-400">{exif.GPSLongitude ?? '77.2090° E'}</strong></div>
+                    <div>Latitude: <strong className="text-[#DC2626]">{exif.GPSLatitude ?? '28.6139° N'}</strong></div>
+                    <div>Longitude: <strong className="text-[#DC2626]">{exif.GPSLongitude ?? '77.2090° E'}</strong></div>
                     <div>Altitude: <span className="text-slate-600">{exif.GPSAltitude ?? '216m'}</span></div>
                   </div>
                 </div>
@@ -256,7 +256,7 @@ export default function ExifPage() {
                     </div>
                     <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                       <span className="text-slate-500 block text-[11px]">Device Serial Number:</span>
-                      <strong className="text-rose-400 font-mono">{String(exif.SerialNumber ?? 'DNQX19472KL9')}</strong>
+                      <strong className="text-[#DC2626] font-mono">{String(exif.SerialNumber ?? 'DNQX19472KL9')}</strong>
                     </div>
                     <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                       <span className="text-slate-500 block text-[11px]">OS / Software:</span>

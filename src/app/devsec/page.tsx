@@ -116,7 +116,7 @@ export default function DevSecPage() {
       <div className="p-6 rounded-2xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 font-mono text-[11px] font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-[#DC2626] font-mono text-[11px] font-bold">
               03 // DEVSEC AUDITOR
             </span>
             <span className="text-slate-600 text-xs">•</span>
@@ -130,11 +130,11 @@ export default function DevSecPage() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-shrink-0">
-          <div className="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2">
+          <div className="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[#15803D] text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>SAST ENGINE LIVE</span>
           </div>
-          <div className="px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold flex items-center gap-2">
+          <div className="px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-[#D97706] text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-amber-400" />
             <span>8 VULN PAIRS</span>
           </div>
@@ -142,7 +142,7 @@ export default function DevSecPage() {
       </div>
 
       <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-800 text-xs flex items-center gap-2">
-        <AlertTriangle size={14} className="text-amber-400 shrink-0" />
+        <AlertTriangle size={14} className="text-[#D97706] shrink-0" />
         <span><strong>AI-Assisted Indication:</strong> SAST &amp; DPDP Act audit results require manual engineering and legal review before production deployment.</span>
       </div>
 
@@ -202,8 +202,8 @@ export default function DevSecPage() {
           <div className="p-3 bg-slate-100 border border-slate-200 rounded-sm flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
             <div className="flex flex-wrap items-center gap-3">
               <span><span className="text-slate-500">VULN:</span> <strong className="text-red-400">[{selectedPair.cweId}] {selectedPair.cweName}</strong></span>
-              <span><span className="text-slate-500">SEVERITY CVSS:</span> <strong className="text-amber-400">{selectedPair.cvssScore}</strong></span>
-              <span><span className="text-slate-500">LANGUAGE:</span> <strong className="text-cyan-400">{selectedPair.language.toUpperCase()}</strong></span>
+              <span><span className="text-slate-500">SEVERITY CVSS:</span> <strong className="text-[#D97706]">{selectedPair.cvssScore}</strong></span>
+              <span><span className="text-slate-500">LANGUAGE:</span> <strong className="text-[#0284C7]">{selectedPair.language.toUpperCase()}</strong></span>
               <span><span className="text-slate-500">CATEGORY:</span> <span className="text-slate-700">{selectedPair.owaspCategory}</span></span>
             </div>
             <StatusBadge label="VERIFIED PATCH AVAILABLE" variant="ok" />
@@ -212,7 +212,7 @@ export default function DevSecPage() {
           {/* Educational Threat Explanation */}
           <div className="p-4 bg-slate-100 border border-slate-200 rounded-sm font-sans text-xs space-y-1.5">
             <div className="flex items-center gap-2 font-mono font-bold text-slate-800">
-              <AlertTriangle size={15} className="text-amber-400" />
+              <AlertTriangle size={15} className="text-[#D97706]" />
               <span>WHAT IS THIS SECURITY RISK & HOW ATTACKERS EXPLOIT IT:</span>
             </div>
             <p className="text-slate-700 leading-relaxed">
@@ -229,7 +229,7 @@ export default function DevSecPage() {
               labelColor="red"
               noPadding
             >
-              <div className="p-3 bg-red-950/20 border-b border-red-800/40 text-xs font-mono text-red-300 flex items-center gap-2">
+              <div className="p-3 bg-red-50 border-b border-slate-200 text-xs font-mono text-red-300 flex items-center gap-2">
                 <ShieldAlert size={14} className="text-red-400 flex-shrink-0" />
                 <span>Flaw: Unsanitized execution vector detected</span>
               </div>
@@ -249,15 +249,15 @@ export default function DevSecPage() {
               headerRight={
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1 px-2 py-1 font-mono text-[11px] bg-emerald-950/60 border border-emerald-800/60 text-emerald-700 hover:bg-emerald-900/60 rounded-sm transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 font-mono text-[11px] bg-emerald-50 border border-slate-200 text-emerald-700 hover:bg-emerald-50 rounded-sm transition-colors"
                 >
-                  {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                  {copied ? <Check size={12} className="text-[#15803D]" /> : <Copy size={12} />}
                   <span>{copied ? 'COPIED!' : 'COPY FIX'}</span>
                 </button>
               }
             >
-              <div className="p-3 bg-emerald-950/20 border-b border-emerald-800/40 text-xs font-mono text-emerald-700 flex items-center gap-2">
-                <ShieldCheck size={14} className="text-emerald-400 flex-shrink-0" />
+              <div className="p-3 bg-emerald-50 border-b border-slate-200 text-xs font-mono text-emerald-700 flex items-center gap-2">
+                <ShieldCheck size={14} className="text-[#15803D] flex-shrink-0" />
                 <span>Remediated: Safe execution with input boundary enforcement</span>
               </div>
               <pre
@@ -414,7 +414,7 @@ export default function DevSecPage() {
                         <p className="text-[11px] text-slate-500 font-mono mt-0.5">Evidence: {r.evidence}</p>
                       </td>
                       <td className="p-3 whitespace-nowrap"><RiskBadge risk={r.risk} /></td>
-                      <td className="p-3 text-emerald-400 font-semibold whitespace-nowrap">{r.law}</td>
+                      <td className="p-3 text-[#15803D] font-semibold whitespace-nowrap">{r.law}</td>
                     </tr>
                   ))}
                 </tbody>
