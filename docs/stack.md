@@ -58,8 +58,11 @@
 
 | API | Base URL | Feature |
 |-----|----------|---------|
-| VirusTotal API v3 | api.virustotal.com/api/v3 | F-08 malware scanning |
-| Google Safe Browsing | safebrowsing.googleapis.com | F-02 URL risk |
+| BharatCode AI Gateway | bharatcode.ai/api/model/v1 | Stateless qwen-3.8-27b & deepseek-v4.1-flash routing |
+| Abuse.ch URLhaus | urlhaus-api.abuse.ch/v1/url | Live malware URL reputation (no key required) |
+| OpenPhish Feed | openphish.com/feed.txt | Live phishing URL feed (no key required) |
+| VirusTotal API v3 | api.virustotal.com/api/v3 | F-02/F-08 URL & malware scanning |
+| Google Safe Browsing | safebrowsing.googleapis.com | F-02 URL threat lookup |
 | NVD CVE API | services.nvd.nist.gov | F-30 threat intelligence |
 | MITRE ATT&CK | attack.mitre.org/api | F-30 threat tactics |
 | HuggingFace Hub | huggingface.co | F-03 model downloads |
