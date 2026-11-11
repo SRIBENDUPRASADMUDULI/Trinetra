@@ -533,6 +533,17 @@ export default function NLPPage() {
                     </button>
                     <Link
                       href="/cyber-ir"
+                      onClick={() => {
+                        try {
+                          sessionStorage.setItem(
+                            'trinetra_fir_prefill',
+                            JSON.stringify({
+                              incident_type: 'online_financial_fraud',
+                              incident_description: `[NLP Verdict: ${analysisResult.verdict} (${analysisResult.confidence}) | Category: ${analysisResult.category}]\n\nCaptured Message / Artifact:\n${msgText.trim()}\n\nDetected Indicators:\n- ${analysisResult.flags.join('\n- ')}`,
+                            })
+                          )
+                        } catch {}
+                      }}
                       className="py-2.5 px-4 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] text-slate-200 font-semibold text-xs flex items-center justify-center gap-2 transition-all shrink-0"
                     >
                       <Scale size={14} className="text-indigo-400" />
