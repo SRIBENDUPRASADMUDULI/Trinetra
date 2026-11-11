@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { TerminalCard } from '@/components/ui/terminal-card'
 import { StatusBadge } from '@/components/ui/status-badge'
@@ -195,6 +195,20 @@ export default function IncidentPage() {
   const selectedIt = watch('itActSections') || []
   const selectedBsa = watch('bsaSections') || []
 
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem('trinetra_fir_prefill')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed.incident_description) {
+          setValue('evidenceDescription', parsed.incident_description)
+          setValue('attackType', 'Financial Fraud / Phishing Scam')
+        }
+        sessionStorage.removeItem('trinetra_fir_prefill')
+      }
+    } catch {}
+  }, [setValue])
+
   function fillDemo() {
     setValue('complainantName', 'Ramesh Kumar Sharma')
     setValue('complainantPhone', '+91-9876543210')
@@ -214,16 +228,52 @@ export default function IncidentPage() {
     setValue('bsaSections', ['63_4'])
   }
 
-  function onSubmit(data: FIRFormData) {
-    const fir = generateFIR(data)
-    setFirText(fir)
+  async function onSubmit(data: FIRFormData) {
     setCertReceipt(null)
+    try {
+      const res = await fetch('/api/incident', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      const json = await res.json()
+      if (res.ok && json.success && json.usedAI && json.firDraft) {
+        setFirText(json.firDraft)
+        return
+      }
+    } catch {}
+    setFirText(generateFIR(data))
   }
 
   async function exportBsa63Certificate() {
     if (!firText) return
     setExportingCert(true)
     try {
+      try {
+        const res = await fetch('/api/certificate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sourcePanel: '04 // Incident Crisis & FIR',
+            payload: firText,
+            verdict: 'STATUTORY_FIR_DOSSIER',
+            category: 'BNS_2023_IT_ACT_2000',
+          }),
+        })
+        const data = await res.json()
+        if (res.ok && data.success && data.certificate) {
+          const a = document.createElement('a')
+          a.href = data.certificate.downloadUrl
+          a.download = `TRINETRA_${data.certificate.certId}.pdf`
+          a.click()
+          setCertReceipt({
+            certId: data.certificate.certId,
+            sha256Hash: data.certificate.sha256Hash,
+            timestampIso: data.certificate.timestampIso,
+          })
+          return
+        }
+      } catch {}
       const timestampIso = new Date().toISOString()
       const sha256Hash = await sha256(`${timestampIso}\n${firText}`)
       const certId = `BSA63-FIR-${sha256Hash.slice(0, 10).toUpperCase()}`

@@ -113,6 +113,7 @@ def health():
     }
 
 
+@app.post("/predict")
 @app.post("/analyze")
 async def analyze(
     file: Optional[UploadFile] = File(default=None),
