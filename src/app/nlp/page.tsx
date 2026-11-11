@@ -488,6 +488,12 @@ export default function NLPPage() {
                             <span className="px-2 py-0.5 rounded bg-white/[0.05] text-slate-300">
                               VirusTotal: {rep.virusTotal.status}
                             </span>
+                            <span className="px-2 py-0.5 rounded bg-white/[0.05] text-slate-300">
+                              URLhaus: {rep.urlhaus?.status ?? 'NOT_LISTED'}
+                            </span>
+                            <span className="px-2 py-0.5 rounded bg-white/[0.05] text-slate-300">
+                              OpenPhish: {rep.openPhish?.status ?? 'NOT_LISTED'}
+                            </span>
                           </div>
                         </div>
                       ))}
@@ -657,7 +663,7 @@ export default function NLPPage() {
                         <ShieldCheck size={14} className="text-indigo-400" />
                         External Threat Reputation Checks
                       </span>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-mono text-[11px]">
+                      <div className="grid grid-cols-2 gap-2.5 font-mono text-[11px]">
                         <div className="p-2.5 rounded-xl bg-black/30 border border-white/[0.04]">
                           <span className="text-slate-500 block text-[10px]">Google Safe Browsing</span>
                           <strong className={urlReputation.safeBrowsing.status === 'THREAT_DETECTED' ? 'text-rose-400' : 'text-slate-200'}>
@@ -665,9 +671,21 @@ export default function NLPPage() {
                           </strong>
                         </div>
                         <div className="p-2.5 rounded-xl bg-black/30 border border-white/[0.04]">
-                          <span className="text-slate-500 block text-[10px]">VirusTotal v3 URL Scan</span>
+                          <span className="text-slate-500 block text-[10px]">VirusTotal v3</span>
                           <strong className={urlReputation.virusTotal.status === 'MALICIOUS' ? 'text-rose-400' : 'text-slate-200'}>
                             {urlReputation.virusTotal.status}
+                          </strong>
+                        </div>
+                        <div className="p-2.5 rounded-xl bg-black/30 border border-white/[0.04]">
+                          <span className="text-slate-500 block text-[10px]">Abuse.ch URLhaus</span>
+                          <strong className={urlReputation.urlhaus?.status === 'LISTED_MALWARE' ? 'text-rose-400' : 'text-emerald-300'}>
+                            {urlReputation.urlhaus?.status ?? 'NOT_LISTED'}
+                          </strong>
+                        </div>
+                        <div className="p-2.5 rounded-xl bg-black/30 border border-white/[0.04]">
+                          <span className="text-slate-500 block text-[10px]">OpenPhish Feed</span>
+                          <strong className={urlReputation.openPhish?.status === 'LISTED_PHISHING' ? 'text-rose-400' : 'text-emerald-300'}>
+                            {urlReputation.openPhish?.status ?? 'NOT_LISTED'}
                           </strong>
                         </div>
                       </div>

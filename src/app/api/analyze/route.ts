@@ -17,6 +17,15 @@ export interface UrlReputationResult {
     maliciousCount?: number
     harmlessCount?: number
   }
+  urlhaus: {
+    checked: boolean
+    status: 'LISTED_MALWARE' | 'NOT_LISTED' | 'ERROR'
+    threat?: string
+  }
+  openPhish: {
+    checked: boolean
+    status: 'LISTED_PHISHING' | 'NOT_LISTED' | 'ERROR'
+  }
 }
 
 export interface AnalyzeResponsePayload {
@@ -52,6 +61,9 @@ Respond ONLY with a valid JSON object matching this exact schema (no markdown, n
   "recommendation": "clear defensive action for an Indian citizen (cite 1930 cyber helpline / cybercrime.gov.in if financial or impersonation risk)"
 }`
 
+let openPhishCache: { fetchedAt: number; urls: Set<string> } | null = null
+const OPENPHISH_TTL_MS = 10 * 60 * 1000
+
 function extractUrlsFromText(text: string, explicitUrl?: string): string[] {
   const matches = text.match(/https?:\/\/[^\s"'<>]+/gi) ?? []
   const set = new Set<string>()
@@ -64,13 +76,23 @@ function extractUrlsFromText(text: string, explicitUrl?: string): string[] {
   return Array.from(set).slice(0, 3)
 }
 
+async function fetchWithTimeout(input: string, init: RequestInit = {}, timeoutMs = 2500): Promise<Response> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    return await fetch(input, { ...init, signal: controller.signal })
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 async function checkSafeBrowsing(targetUrl: string): Promise<UrlReputationResult['safeBrowsing']> {
   if (!env.GOOGLE_SAFE_BROWSING_KEY) {
     return { checked: false, status: 'NOT_CONFIGURED' }
   }
   try {
     const endpoint = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${encodeURIComponent(env.GOOGLE_SAFE_BROWSING_KEY)}`
-    const res = await fetch(endpoint, {
+    const res = await fetchWithTimeout(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -83,9 +105,7 @@ async function checkSafeBrowsing(targetUrl: string): Promise<UrlReputationResult
         },
       }),
     })
-    if (!res.ok) {
-      return { checked: true, status: 'ERROR' }
-    }
+    if (!res.ok) return { checked: true, status: 'ERROR' }
     const data = await res.json() as { matches?: Array<{ threatType: string }> }
     if (Array.isArray(data.matches) && data.matches.length > 0) {
       return {
@@ -110,12 +130,10 @@ async function checkVirusTotal(targetUrl: string): Promise<UrlReputationResult['
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=+$/, '')
-    const res = await fetch(`https://www.virustotal.com/api/v3/urls/${urlId}`, {
+    const res = await fetchWithTimeout(`https://www.virustotal.com/api/v3/urls/${urlId}`, {
       headers: { 'x-apikey': env.VIRUSTOTAL_API_KEY },
     })
-    if (!res.ok) {
-      return { checked: true, status: 'ERROR' }
-    }
+    if (!res.ok) return { checked: true, status: 'ERROR' }
     const data = await res.json() as {
       data?: { attributes?: { last_analysis_stats?: { malicious?: number; suspicious?: number; harmless?: number } } }
     }
@@ -134,15 +152,54 @@ async function checkVirusTotal(targetUrl: string): Promise<UrlReputationResult['
   }
 }
 
+async function checkUrlhaus(targetUrl: string): Promise<UrlReputationResult['urlhaus']> {
+  try {
+    const body = new URLSearchParams({ url: targetUrl })
+    const res = await fetchWithTimeout('https://urlhaus-api.abuse.ch/v1/url/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+    })
+    if (!res.ok) return { checked: true, status: 'ERROR' }
+    const data = await res.json() as { query_status?: string; threat?: string }
+    if (data.query_status === 'ok') {
+      return { checked: true, status: 'LISTED_MALWARE', threat: data.threat || 'malware_download' }
+    }
+    return { checked: true, status: 'NOT_LISTED' }
+  } catch {
+    return { checked: true, status: 'ERROR' }
+  }
+}
+
+async function checkOpenPhish(targetUrl: string): Promise<UrlReputationResult['openPhish']> {
+  try {
+    const now = Date.now()
+    if (!openPhishCache || now - openPhishCache.fetchedAt > OPENPHISH_TTL_MS) {
+      const res = await fetchWithTimeout('https://openphish.com/feed.txt', {}, 2500)
+      if (!res.ok) return { checked: true, status: 'ERROR' }
+      const text = await res.text()
+      const lines = text.split(/\r?\n/).map(l => l.trim().toLowerCase()).filter(Boolean)
+      openPhishCache = { fetchedAt: now, urls: new Set(lines) }
+    }
+    const normalized = targetUrl.trim().toLowerCase()
+    const listed = openPhishCache.urls.has(normalized)
+    return { checked: true, status: listed ? 'LISTED_PHISHING' : 'NOT_LISTED' }
+  } catch {
+    return { checked: true, status: 'ERROR' }
+  }
+}
+
 async function inspectUrlReputations(urls: string[]): Promise<UrlReputationResult[]> {
   return Promise.all(
     urls.map(async u => {
       const lexical = extractUrlFeatures(u)
-      const [safeBrowsing, virusTotal] = await Promise.all([
+      const [safeBrowsing, virusTotal, urlhaus, openPhish] = await Promise.all([
         checkSafeBrowsing(u),
         checkVirusTotal(u),
+        checkUrlhaus(u),
+        checkOpenPhish(u),
       ])
-      return { url: u, lexical, safeBrowsing, virusTotal }
+      return { url: u, lexical, safeBrowsing, virusTotal, urlhaus, openPhish }
     })
   )
 }
@@ -172,10 +229,14 @@ function analyzeDeterministically(
     : 12
 
   const externalThreatHit = urlReputations.some(
-    r => r.safeBrowsing.status === 'THREAT_DETECTED' || r.virusTotal.status === 'MALICIOUS'
+    r =>
+      r.safeBrowsing.status === 'THREAT_DETECTED' ||
+      r.virusTotal.status === 'MALICIOUS' ||
+      r.urlhaus.status === 'LISTED_MALWARE' ||
+      r.openPhish.status === 'LISTED_PHISHING'
   )
 
-  const linkRiskScore = externalThreatHit ? Math.max(92, maxLexicalRisk) : maxLexicalRisk
+  const linkRiskScore = externalThreatHit ? Math.max(94, maxLexicalRisk) : maxLexicalRisk
   const urgencyScore = Math.min(98, urgencyHits.length > 0 ? 52 + urgencyHits.length * 14 : 14)
   const impersonationScore = Math.min(99, impHits.length > 0 ? 50 + impHits.length * 13 : 12)
   const overall = Math.round(urgencyScore * 0.34 + impersonationScore * 0.36 + linkRiskScore * 0.30)
@@ -193,6 +254,12 @@ function analyzeDeterministically(
     }
     if (rep.virusTotal.status === 'MALICIOUS') {
       flags.push(`VirusTotal engines flagged ${rep.url} (${rep.virusTotal.maliciousCount} malicious detections)`)
+    }
+    if (rep.urlhaus.status === 'LISTED_MALWARE') {
+      flags.push(`Abuse.ch URLhaus active malware listing (${rep.urlhaus.threat})`)
+    }
+    if (rep.openPhish.status === 'LISTED_PHISHING') {
+      flags.push(`OpenPhish live feed match for ${rep.url}`)
     }
     if (rep.lexical.riskScore >= 50) {
       flags.push(`High-risk link structure detected (${rep.url} — Risk ${rep.lexical.riskScore}/100, Shannon Entropy ${rep.lexical.entropy.toFixed(2)})`)
