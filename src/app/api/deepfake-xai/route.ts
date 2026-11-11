@@ -21,7 +21,9 @@ async function checkPythonRuntime(): Promise<{ available: boolean; version?: str
 export async function GET() {
   try {
     const data = loadDeepfakeXaiResults()
-    const runtime = await checkPythonRuntime()
+    const runtime = env.DEEPFAKE_XAI_API_URL
+      ? { available: true, version: 'FastAPI XAI Service' }
+      : await checkPythonRuntime()
     return NextResponse.json({
       success: true,
       pythonAvailable: runtime.available,

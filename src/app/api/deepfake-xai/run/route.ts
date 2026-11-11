@@ -10,6 +10,7 @@ import {
   loadDeepfakeXaiResults,
   syncEngineOutputsToPublic,
 } from '@/lib/deepfake-xai'
+import { env } from '@/lib/env'
 
 const execFileAsync = promisify(execFile)
 
@@ -32,6 +33,40 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const mode = body.mode as 'study' | 'analyze_image'
+
+    // If an external Python FastAPI service (deepfake-xai-engine/server.py) is configured,
+    // proxy live single-image inference directly so Vercel serverless deployments can use it too.
+    if (mode === 'analyze_image' && env.DEEPFAKE_XAI_API_URL) {
+      const form = new FormData()
+      form.append('source', typeof body.source === 'string' ? body.source : 'StyleGAN2')
+      form.append('backbone', VALID_BACKBONES.has(body.backbone) ? body.backbone : 'simple')
+      form.append('use_hf', 'true')
+      if (typeof body.imageBase64 === 'string' && body.imageBase64.startsWith('data:image/')) {
+        form.append('image_base64', body.imageBase64)
+      } else if (typeof body.sampleName === 'string' && body.sampleName.trim()) {
+        const candidate = path.join(getPublicXaiDir(), 'test_samples', path.basename(body.sampleName.trim()))
+        if (!fs.existsSync(candidate)) {
+          return NextResponse.json({ success: false, error: 'Selected sample image not found.' }, { status: 404 })
+        }
+        const b64 = fs.readFileSync(candidate).toString('base64')
+        form.append('image_base64', `data:image/png;base64,${b64}`)
+      } else {
+        return NextResponse.json({ success: false, error: 'Provide either an uploaded image or sampleName.' }, { status: 400 })
+      }
+      const remoteUrl = `${env.DEEPFAKE_XAI_API_URL.replace(/\/+$/, '')}/analyze`
+      const remoteRes = await fetch(remoteUrl, { method: 'POST', body: form })
+      const remoteJson = await remoteRes.json()
+      if (!remoteRes.ok || !remoteJson.success) {
+        return NextResponse.json({ success: false, error: remoteJson.detail || 'Remote Deepfake XAI service error' }, { status: 502 })
+      }
+      return NextResponse.json({
+        success: true,
+        mode: 'analyze_image',
+        durationMs: Date.now() - start,
+        analysis: remoteJson.analysis,
+      })
+    }
+
     const engineRoot = getEngineRoot()
 
     if (!fs.existsSync(engineRoot)) {

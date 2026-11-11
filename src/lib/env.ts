@@ -12,6 +12,7 @@ export const env = {
   BHARATCODE_FALLBACK_MODEL: process.env.BHARATCODE_FALLBACK_MODEL ?? 'deepseek-v4.1-flash',
   VIRUSTOTAL_API_KEY: process.env.VIRUSTOTAL_API_KEY ?? '',
   GOOGLE_SAFE_BROWSING_KEY: process.env.GOOGLE_SAFE_BROWSING_KEY ?? '',
+  DEEPFAKE_XAI_API_URL: process.env.DEEPFAKE_XAI_API_URL ?? '',
   PWNED_API_BASE: 'https://api.pwnedpasswords.com',
   NODE_ENV: process.env.NODE_ENV ?? 'development',
 }
@@ -21,4 +22,5 @@ export const features = {
   bharatcodeEnabled: !!env.BHARATCODE_API_KEY,
   virusTotalEnabled: !!env.VIRUSTOTAL_API_KEY,
   safeBrowsingEnabled: !!env.GOOGLE_SAFE_BROWSING_KEY,
+  deepfakeRemoteEnabled: !!env.DEEPFAKE_XAI_API_URL,
 }
