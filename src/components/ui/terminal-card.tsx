@@ -14,12 +14,12 @@ interface TerminalCardProps {
 }
 
 const labelColorMap: Record<LabelColor, { text: string; dot: string; badgeBg: string; border: string }> = {
-  green:  { text: 'text-[#00FF9D]', dot: 'bg-[#00FF9D]', badgeBg: 'bg-[#00FF9D]/10', border: 'border-[#00FF9D]/30' },
-  red:    { text: 'text-[#FF1B1B]', dot: 'bg-[#FF1B1B]', badgeBg: 'bg-[#FF1B1B]/10', border: 'border-[#FF1B1B]/35' },
-  amber:  { text: 'text-[#FF9F1C]', dot: 'bg-[#FF9F1C]', badgeBg: 'bg-[#FF9F1C]/10', border: 'border-[#FF9F1C]/35' },
-  cyan:   { text: 'text-[#00D4FF]', dot: 'bg-[#00D4FF]', badgeBg: 'bg-[#00D4FF]/10', border: 'border-[#00D4FF]/35' },
-  white:  { text: 'text-[#F5F5F5]', dot: 'bg-[#888888]', badgeBg: 'bg-[#03030A]',    border: 'border-[#1A1A2E]' },
-  purple: { text: 'text-[#00D4FF]', dot: 'bg-[#00D4FF]', badgeBg: 'bg-[#00D4FF]/10', border: 'border-[#00D4FF]/35' },
+  green:  { text: 'text-[#15803D]', dot: 'bg-[#15803D]', badgeBg: 'bg-[#F0FDF4]', border: 'border-[#BBF7D0]' },
+  red:    { text: 'text-[#DC2626]', dot: 'bg-[#DC2626]', badgeBg: 'bg-[#FEF2F2]', border: 'border-[#FECACA]' },
+  amber:  { text: 'text-[#D97706]', dot: 'bg-[#D97706]', badgeBg: 'bg-[#FFFBEB]', border: 'border-[#FDE68A]' },
+  cyan:   { text: 'text-[#2563EB]', dot: 'bg-[#2563EB]', badgeBg: 'bg-[#EFF6FF]', border: 'border-[#BFDBFE]' },
+  white:  { text: 'text-[#4B5563]', dot: 'bg-[#6B7280]', badgeBg: 'bg-[#F3F4F6]', border: 'border-[#E5E7EB]' },
+  purple: { text: 'text-[#2563EB]', dot: 'bg-[#2563EB]', badgeBg: 'bg-[#EFF6FF]', border: 'border-[#BFDBFE]' },
 }
 
 export function TerminalCard({
@@ -29,22 +29,22 @@ export function TerminalCard({
   return (
     <div
       className={cn(
-        'relative flex flex-col rounded-xl overflow-hidden bg-[#0A0A12]/92 border border-[#1A1A2E] backdrop-blur-md shadow-[0_12px_32px_-12px_rgba(0,0,0,0.85)] transition-all duration-200 hover:border-[#00D4FF]/35',
+        'relative flex flex-col rounded-xl overflow-hidden bg-[#FFFFFF] border border-[#E5E7EB] shadow-xs transition-shadow duration-150 hover:shadow-sm',
         className
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-[#1A1A2E] bg-[#03030A]/85">
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#E5E7EB] bg-[#F8F9FA]">
         <div className="flex items-center gap-2.5">
           <span className={cn('w-2 h-2 rounded-full', colors.dot)} />
-          <span className="text-xs font-semibold text-[#F5F5F5] tracking-wide font-sans">
+          <span className="text-sm font-semibold text-[#1A1A1A] font-sans">
             {title}
           </span>
         </div>
         <div className="flex items-center gap-2.5">
           {headerRight}
           {label && (
-            <span className={cn('font-mono text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded border', colors.text, colors.badgeBg, colors.border)}>
+            <span className={cn('text-[11px] font-semibold px-2.5 py-0.5 rounded-full border', colors.text, colors.badgeBg, colors.border)}>
               {label}
             </span>
           )}

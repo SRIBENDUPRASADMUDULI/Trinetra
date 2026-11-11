@@ -11,11 +11,11 @@ interface StatusBadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, { pill: string; dot: string }> = {
-  ok:       { pill: 'text-emerald-300 bg-emerald-500/10 border-emerald-500/20', dot: 'bg-emerald-400' },
-  critical: { pill: 'text-rose-300 bg-rose-500/10 border-rose-500/20', dot: 'bg-rose-400' },
-  warning:  { pill: 'text-amber-300 bg-amber-500/10 border-amber-500/20', dot: 'bg-amber-400' },
-  info:     { pill: 'text-sky-300 bg-sky-500/10 border-sky-500/20', dot: 'bg-sky-400' },
-  neutral:  { pill: 'text-slate-300 bg-white/[0.05] border-white/10', dot: 'bg-slate-400' },
+  ok:       { pill: 'text-[#15803D] bg-[#F0FDF4] border-[#BBF7D0]', dot: 'bg-[#15803D]' },
+  critical: { pill: 'text-[#DC2626] bg-[#FEF2F2] border-[#FECACA]', dot: 'bg-[#DC2626]' },
+  warning:  { pill: 'text-[#D97706] bg-[#FFFBEB] border-[#FDE68A]', dot: 'bg-[#D97706]' },
+  info:     { pill: 'text-[#2563EB] bg-[#EFF6FF] border-[#BFDBFE]', dot: 'bg-[#2563EB]' },
+  neutral:  { pill: 'text-[#4B5563] bg-[#F3F4F6] border-[#E5E7EB]', dot: 'bg-[#6B7280]' },
 }
 
 export function StatusBadge({ label, variant = 'neutral', className, blink }: StatusBadgeProps) {
@@ -23,7 +23,7 @@ export function StatusBadge({ label, variant = 'neutral', className, blink }: St
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 font-mono text-[11px] font-medium tracking-wide border px-2.5 py-0.5 rounded-full select-none',
+        'inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide border px-2.5 py-0.5 rounded-full select-none',
         style.pill,
         className
       )}

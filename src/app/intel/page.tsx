@@ -4,6 +4,7 @@ import { THREAT_FEED, type ThreatEvent } from '@/data/mock/threat-feed'
 import { FAMILY_ENDPOINTS } from '@/data/mock/family-endpoints'
 import { TerminalCard } from '@/components/ui/terminal-card'
 import { StatusBadge } from '@/components/ui/status-badge'
+import { InfoExplain } from '@/components/ui/InfoExplain'
 import { Pause, Play, RefreshCw, Radar, ChevronDown, ChevronUp } from 'lucide-react'
 import { ThreatGlobe } from '@/components/three/ThreatGlobe'
 
@@ -99,12 +100,12 @@ export default function IntelPage() {
               07 // THREAT INTEL RADAR
             </span>
             <span className="text-slate-600 text-xs">•</span>
-            <span className="text-[11px] font-mono text-slate-300">ATT&amp;CK · SECTOR DEFENSE · IOC MATRIX</span>
+            <span className="text-[11px] font-mono text-slate-700">ATT&amp;CK · SECTOR DEFENSE · IOC MATRIX</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            Threat Intelligence Radar &amp; Sector Hardening
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Threat Intelligence Radar &amp; Latest Indian Scam Alerts
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
             Real-time attack telemetry across Indian sovereign sectors, declassified APT intrusion archives with full kill-chain reconstruction, and endpoint hygiene matrix.
           </p>
         </div>
@@ -115,7 +116,15 @@ export default function IntelPage() {
           </div>
           <div className="px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-rose-500" />
-            <span>DEFCON 3</span>
+            <span>Alert Status: Elevated</span>
+          </div>
+          <InfoExplain
+            title="Latest Threats"
+            whatIsIt="Shows current scam trends, banking fraud warnings, and security advisories affecting users in India."
+            whoShouldUse="Anyone who wants to know what new online frauds to watch out for."
+            whatResultMeans="High Risk / Advisory items indicate active scams where you should be extra careful with links or OTPs."
+          />
+          <div className="hidden">
           </div>
         </div>
       </div>
@@ -130,19 +139,19 @@ export default function IntelPage() {
         label="[LIVE_FEED]" labelColor="red" noPadding
         headerRight={
           <div className="flex items-center gap-2.5">
-            <span className="font-mono text-xs text-slate-400">
-              BUFFER: <strong className="text-white">{THREAT_FEED.length}</strong> EVENTS
+            <span className="font-mono text-xs text-slate-600">
+              BUFFER: <strong className="text-slate-900">{THREAT_FEED.length}</strong> EVENTS
             </span>
             <button
               onClick={() => setPaused(p => !p)}
-              className="flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded-lg border border-slate-700/80 bg-slate-900/60 hover:bg-slate-800 text-slate-300 transition-colors"
+              className="flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-100 text-slate-700 transition-colors"
             >
               {paused ? <><Play size={11} className="text-emerald-400 mr-1" /> RESUME</> : <><Pause size={11} className="text-amber-400 mr-1" /> PAUSE</>}
             </button>
           </div>
         }>
         {/* Filter bar */}
-        <div className="flex gap-2 flex-wrap px-4 py-2.5 bg-slate-950/60 border-b border-slate-800/60">
+        <div className="flex gap-2 flex-wrap px-4 py-2.5 bg-slate-50 border-b border-slate-200">
           {(['ALL', 'CRITICAL', 'FINANCE', 'POWER', 'TELECOM', 'GOVT', 'HEALTHCARE'] as SectorFilter[]).map(f => (
             <button
               key={f}
@@ -161,14 +170,14 @@ export default function IntelPage() {
         </div>
         <div className="divide-y divide-slate-800/40" style={{ maxHeight: '280px', overflowY: 'auto' }}>
           {filteredFeed.map((evt, i) => (
-            <div key={`${evt.id}-${i}`} className="flex flex-wrap items-center gap-3 px-4 py-2.5 hover:bg-slate-900/40 transition-colors text-xs font-mono">
-              <span className="text-slate-400 w-20 flex-shrink-0">{evt.timestamp.slice(11, 19)}Z</span>
+            <div key={`${evt.id}-${i}`} className="flex flex-wrap items-center gap-3 px-4 py-2.5 hover:bg-slate-100 transition-colors text-xs font-mono">
+              <span className="text-slate-600 w-20 flex-shrink-0">{evt.timestamp.slice(11, 19)}Z</span>
               <span className="font-bold flex-shrink-0" style={{ color: sevColor(evt.severity) }}>[{evt.severity.slice(0, 4)}]</span>
               <span className="flex-shrink-0 px-2 py-0.5 rounded text-[11px] font-semibold"
                 style={{ color: '#38bdf8', border: '1px solid rgba(56,189,248,0.3)', backgroundColor: 'rgba(56,189,248,0.08)' }}>
                 {evt.sector}
               </span>
-              <span className="text-slate-200 flex-1 truncate font-sans text-xs">{evt.attackType}</span>
+              <span className="text-slate-800 flex-1 truncate font-sans text-xs">{evt.attackType}</span>
               <StatusBadge label={evt.status} variant={evt.status === 'ACTIVE' ? 'critical' : evt.status === 'INVESTIGATING' ? 'warning' : 'ok'} />
             </div>
           ))}
@@ -186,36 +195,36 @@ export default function IntelPage() {
             return (
               <div key={cs.id}>
                 <div
-                  className="flex items-center justify-between px-4 py-3.5 cursor-pointer hover:bg-slate-900/50 transition-colors"
+                  className="flex items-center justify-between px-4 py-3.5 cursor-pointer hover:bg-slate-100 transition-colors"
                   onClick={() => setExpandedCase(isExpanded ? null : cs.id)}
                 >
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span className="font-mono text-xs text-slate-400">{cs.id}</span>
+                    <span className="font-mono text-xs text-slate-600">{cs.id}</span>
                     <span className="font-mono text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
                       {cs.codename}
                     </span>
-                    <span className="text-xs text-slate-400">{cs.year} · <strong className="text-white">{cs.entity}</strong></span>
+                    <span className="text-xs text-slate-600">{cs.year} · <strong className="text-slate-900">{cs.entity}</strong></span>
                   </div>
                   <div className="flex items-center gap-2">
                     {cs.ttps.slice(0, 2).map(t => (
                       <span key={t} className="font-mono text-xs px-2 py-0.5 rounded text-cyan-400 border border-cyan-500/30 bg-cyan-950/30 hidden sm:inline">{t}</span>
                     ))}
-                    <div className="p-1 rounded bg-slate-800/60 text-slate-400">
+                    <div className="p-1 rounded bg-slate-100 text-slate-600">
                       {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     </div>
                   </div>
                 </div>
 
                 {isExpanded && (
-                  <div className="px-5 py-4 space-y-4 bg-slate-950/80 border-t border-slate-800/60">
+                  <div className="px-5 py-4 space-y-4 bg-slate-50 border-t border-slate-200">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="p-3 rounded-xl bg-slate-900/50 border border-slate-800/80">
-                        <span className="text-slate-400 font-mono block text-[11px] mb-1">INFECTION VECTOR:</span>
-                        <span className="text-slate-200 font-medium">{cs.vector}</span>
+                      <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">
+                        <span className="text-slate-600 font-mono block text-[11px] mb-1">INFECTION VECTOR:</span>
+                        <span className="text-slate-800 font-medium">{cs.vector}</span>
                       </div>
-                      <div className="p-3 rounded-xl bg-slate-900/50 border border-slate-800/80">
-                        <span className="text-slate-400 font-mono block text-[11px] mb-1">ATTRIBUTION:</span>
-                        <span className="text-amber-300 font-bold">{cs.attribution}</span>
+                      <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">
+                        <span className="text-slate-600 font-mono block text-[11px] mb-1">ATTRIBUTION:</span>
+                        <span className="text-amber-700 font-bold">{cs.attribution}</span>
                       </div>
                       <div className="col-span-1 md:col-span-2 p-3 rounded-xl bg-rose-950/20 border border-rose-900/40">
                         <span className="text-rose-400 font-mono block text-[11px] mb-1">DAMAGE &amp; IMPACT:</span>
@@ -223,14 +232,14 @@ export default function IntelPage() {
                       </div>
                     </div>
                     <div>
-                      <p className="font-mono text-xs text-slate-400 mb-2.5 font-bold flex items-center gap-1.5">
+                      <p className="font-mono text-xs text-slate-600 mb-2.5 font-bold flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
                         RECONSTRUCTED KILL CHAIN:
                       </p>
                       <div className="flex flex-wrap gap-2 items-center">
                         {cs.killChain.map((step, idx) => (
                           <React.Fragment key={idx}>
-                            <span className="font-mono text-xs px-3 py-1.5 rounded-lg text-emerald-300 border border-emerald-500/30 bg-emerald-950/20 shadow-sm">
+                            <span className="font-mono text-xs px-3 py-1.5 rounded-lg text-emerald-700 border border-emerald-500/30 bg-emerald-950/20 shadow-sm">
                               {idx + 1}. {step}
                             </span>
                             {idx < cs.killChain.length - 1 && <span className="text-slate-600 font-mono text-xs">→</span>}
@@ -264,24 +273,24 @@ export default function IntelPage() {
         }
       >
         {scanningAll && (
-          <div className="mx-4 my-2 h-1.5 rounded-full overflow-hidden bg-slate-800">
+          <div className="mx-4 my-2 h-1.5 rounded-full overflow-hidden bg-slate-100">
             <div className="h-full bg-gradient-to-r from-cyan-500 to-emerald-400 transition-all duration-200" style={{ width: `${scanProgress}%` }} />
           </div>
         )}
         <div className="overflow-x-auto">
           <table className="w-full font-mono text-xs">
             <thead>
-              <tr className="border-b border-slate-800/80 bg-slate-950/40">
+              <tr className="border-b border-slate-200 bg-slate-50">
                 {['DEVICE IDENTIFIER', 'OPERATING SYSTEM', 'PATCH STATUS', '2FA', 'ANTIVIRUS', 'RISK INDEX', 'POSTURE'].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-slate-400 tracking-wider text-[11px] font-semibold">{h}</th>
+                  <th key={h} className="text-left px-4 py-3 text-slate-600 tracking-wider text-[11px] font-semibold">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/40">
               {FAMILY_ENDPOINTS.map(ep => (
-                <tr key={ep.id} className="hover:bg-slate-900/40 transition-colors">
-                  <td className="px-4 py-3 text-white font-semibold">{ep.name}</td>
-                  <td className="px-4 py-3 text-slate-300 font-sans text-xs">{ep.os} {ep.osVersion}</td>
+                <tr key={ep.id} className="hover:bg-slate-100 transition-colors">
+                  <td className="px-4 py-3 text-slate-900 font-semibold">{ep.name}</td>
+                  <td className="px-4 py-3 text-slate-700 font-sans text-xs">{ep.os} {ep.osVersion}</td>
                   <td className="px-4 py-3">
                     <span className="font-bold text-xs px-2 py-0.5 rounded" style={{ color: patchColor(ep.patchStatus) }}>
                       [{ep.patchStatus.replace('_', ' ')}]
@@ -299,7 +308,7 @@ export default function IntelPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-16 h-1.5 rounded-full overflow-hidden bg-slate-800">
+                      <div className="w-16 h-1.5 rounded-full overflow-hidden bg-slate-100">
                         <div className="h-full rounded-full" style={{ width: `${ep.riskScore}%`, backgroundColor: riskColor(ep.riskLevel) }} />
                       </div>
                       <span className="font-bold" style={{ color: riskColor(ep.riskLevel) }}>{ep.riskScore}</span>

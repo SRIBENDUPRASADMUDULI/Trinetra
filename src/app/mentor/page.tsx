@@ -153,18 +153,18 @@ export default function MentorPage() {
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-[#0A0E17]">
       {/* Main Chat Column */}
-      <div className="flex-1 flex flex-col min-w-0 border-r border-white/[0.08]">
+      <div className="flex-1 flex flex-col min-w-0 border-r border-slate-200">
         {/* Terminal Header */}
-        <div className="px-6 py-4 flex items-center justify-between flex-shrink-0 bg-[#0F1523]/90 backdrop-blur-xl border-b border-white/[0.08]">
+        <div className="px-6 py-4 flex items-center justify-between flex-shrink-0 bg-white backdrop-blur-xl border-b border-slate-200">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
               <Eye size={18} />
             </div>
             <div>
-              <h1 className="text-sm font-bold text-white tracking-wide">
+              <h1 className="text-sm font-bold text-slate-900 tracking-wide">
                 02 // TRINETRA SecOps AI Defense Copilot
               </h1>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-600">
                 TRINETRA Neural SecOps Copilot & Indian Statutory Defense Kernel
               </p>
             </div>
@@ -174,7 +174,7 @@ export default function MentorPage() {
             <button
               onClick={handlePingBharatCode}
               disabled={pinging}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold text-indigo-300 hover:text-white rounded-full bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 transition-all cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold text-indigo-700 hover:text-white rounded-full bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 transition-all cursor-pointer disabled:opacity-50"
               title="Verify BharatCode Gateway Connectivity"
             >
               <Activity size={12} className={pinging ? 'animate-spin' : ''} />
@@ -182,7 +182,7 @@ export default function MentorPage() {
             </button>
             <button
               onClick={handleReset}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-full bg-slate-50 hover:bg-slate-50 border border-slate-200 transition-all cursor-pointer"
               title="Reset conversation"
             >
               <RotateCcw size={12} />
@@ -207,8 +207,8 @@ export default function MentorPage() {
             >
               <div className={`w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center text-xs font-bold ${
                 msg.role === 'agent'
-                  ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                  : 'bg-white/[0.08] text-white border border-white/[0.12]'
+                  ? 'bg-indigo-500/20 text-indigo-700 border border-indigo-500/30'
+                  : 'bg-slate-50 text-slate-900 border border-slate-200'
               }`}>
                 {msg.role === 'agent' ? <Eye size={16} /> : 'OP'}
               </div>
@@ -221,7 +221,7 @@ export default function MentorPage() {
                   {msg.role === 'agent' && (
                     <button
                       onClick={() => handleCopy(msg.id, msg.content)}
-                      className="text-slate-400 hover:text-white ml-1.5"
+                      className="text-slate-600 hover:text-slate-900 ml-1.5"
                     >
                       {copiedId === msg.id ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
                     </button>
@@ -230,8 +230,8 @@ export default function MentorPage() {
 
                 <div className={`p-4 rounded-2xl text-xs leading-relaxed ${
                   msg.role === 'agent'
-                    ? 'glass-card text-slate-200 border-white/[0.08] whitespace-pre-wrap'
-                    : 'bg-gradient-to-r from-rose-600 to-red-600 text-white font-medium shadow-md shadow-rose-950/40 ml-auto'
+                    ? 'glass-card text-slate-800 border-slate-200 whitespace-pre-wrap'
+                    : 'bg-gradient-to-r from-rose-600 to-red-600 text-slate-900 font-medium shadow-md shadow-rose-950/40 ml-auto'
                 }`}>
                   {msg.content}
                 </div>
@@ -240,7 +240,7 @@ export default function MentorPage() {
           ))}
 
           {errorBanner && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center justify-between gap-2">
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-xs flex items-center justify-between gap-2">
               <span>{errorBanner}</span>
               <button onClick={() => setErrorBanner(null)} className="text-[10px] underline cursor-pointer">Dismiss</button>
             </div>
@@ -248,23 +248,23 @@ export default function MentorPage() {
 
           {loading && (
             <div className="flex gap-4 max-w-xl">
-              <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-700 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
                 <Eye size={16} />
               </div>
-              <div className="p-4 rounded-2xl glass-card text-xs text-slate-400 space-y-2 flex-1 animate-pulse">
+              <div className="p-4 rounded-2xl glass-card text-xs text-slate-600 space-y-2 flex-1 animate-pulse">
                 <div className="flex items-center gap-2">
                   <span>Synthesizing tactical defense response</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
                 </div>
-                <div className="h-2.5 bg-white/[0.06] rounded w-5/6" />
-                <div className="h-2.5 bg-white/[0.05] rounded w-2/3" />
+                <div className="h-2.5 bg-slate-50 rounded w-5/6" />
+                <div className="h-2.5 bg-slate-50 rounded w-2/3" />
               </div>
             </div>
           )}
         </div>
 
         {/* Quick Inquiries (Pills) */}
-        <div className="p-4 bg-[#0F1523]/90 border-t border-white/[0.08] space-y-2 flex-shrink-0">
+        <div className="p-4 bg-white border-t border-slate-200 space-y-2 flex-shrink-0">
           <span className="text-[10px] uppercase font-mono tracking-wider text-slate-500 font-bold block">
             Suggested Quick Inquiries:
           </span>
@@ -273,7 +273,7 @@ export default function MentorPage() {
               <button
                 key={i}
                 onClick={() => { setInput(item.query); inputRef.current?.focus() }}
-                className="text-xs px-3.5 py-1.5 rounded-full bg-white/[0.03] hover:bg-white/[0.07] text-slate-300 hover:text-white border border-white/[0.08] hover:border-rose-500/30 transition-all"
+                className="text-xs px-3.5 py-1.5 rounded-full bg-slate-50 hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-rose-500/30 transition-all"
               >
                 {item.label}
               </button>
@@ -282,24 +282,24 @@ export default function MentorPage() {
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 bg-[#0F1523]/90 border-t border-white/[0.08] flex-shrink-0">
+        <div className="p-4 bg-white border-t border-slate-200 flex-shrink-0">
           <p className="text-[10px] text-slate-500 mb-2 px-1">
             AI-assisted indication — verify legal citations and remediation commands manually before action.
           </p>
-          <div className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.08] focus-within:border-rose-500/60 rounded-full px-4 py-2 transition-colors">
+          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 focus-within:border-rose-500/60 rounded-full px-4 py-2 transition-colors">
             <input
               ref={inputRef}
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !loading) sendMessage(input) }}
               placeholder="Ask about active attacks, BNS 2023 legal sections, ransomware containment..."
-              className="flex-1 text-xs bg-transparent outline-none text-slate-200 placeholder:text-slate-500"
+              className="flex-1 text-xs bg-transparent outline-none text-slate-800 placeholder:text-slate-500"
               disabled={loading}
             />
             <button
               onClick={() => sendMessage(input)}
               disabled={loading || !input.trim()}
-              className="p-2 rounded-full text-white bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 disabled:opacity-40 shadow-md transition-all"
+              className="p-2 rounded-full text-slate-900 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 disabled:opacity-40 shadow-md transition-all"
             >
               <Send size={14} />
             </button>
@@ -314,31 +314,31 @@ export default function MentorPage() {
             <Cpu size={16} />
             <span>AI Engine Specifications</span>
           </div>
-          <div className="space-y-2 text-slate-300">
-            <div className="flex justify-between border-b border-white/[0.06] pb-1.5">
+          <div className="space-y-2 text-slate-700">
+            <div className="flex justify-between border-b border-slate-200 pb-1.5">
               <span className="text-slate-500">Engine:</span>
-              <strong className="text-white font-mono">TRINETRA SecOps Core</strong>
+              <strong className="text-slate-900 font-mono">TRINETRA SecOps Core</strong>
             </div>
-            <div className="flex justify-between border-b border-white/[0.06] pb-1.5">
+            <div className="flex justify-between border-b border-slate-200 pb-1.5">
               <span className="text-slate-500">Architecture:</span>
-              <strong className="text-white">Hybrid Transformer-AST</strong>
+              <strong className="text-slate-900">Hybrid Transformer-AST</strong>
             </div>
-            <div className="flex justify-between border-b border-white/[0.06] pb-1.5">
+            <div className="flex justify-between border-b border-slate-200 pb-1.5">
               <span className="text-slate-500">Latency:</span>
               <strong className="text-emerald-400 font-mono">&lt; 1,200 ms</strong>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-500">Domain:</span>
-              <strong className="text-slate-200">SecOps & Indian Law</strong>
+              <strong className="text-slate-800">SecOps & Indian Law</strong>
             </div>
           </div>
         </div>
 
         <div className="p-4 rounded-2xl glass-card space-y-3">
-          <span className="font-bold text-slate-200 block border-b border-white/[0.06] pb-1.5">
+          <span className="font-bold text-slate-800 block border-b border-slate-200 pb-1.5">
             Knowledge Capabilities
           </span>
-          <ul className="space-y-2 text-slate-400 text-xs">
+          <ul className="space-y-2 text-slate-600 text-xs">
             <li>• <strong>Bharatiya Nyaya Sanhita (BNS 2023)</strong> criminal sections.</li>
             <li>• <strong>Information Technology Act 2000</strong> (§43, §66C, §66D).</li>
             <li>• <strong>CERT-In 2022 Directions</strong> & 6-hour disclosure rule.</li>
@@ -346,9 +346,9 @@ export default function MentorPage() {
           </ul>
         </div>
 
-        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-slate-300 space-y-1">
-          <span className="font-bold text-emerald-300 block">Confidentiality Guarantee</span>
-          <p className="text-[11px] text-slate-400 leading-relaxed">
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-slate-700 space-y-1">
+          <span className="font-bold text-emerald-700 block">Confidentiality Guarantee</span>
+          <p className="text-[11px] text-slate-600 leading-relaxed">
             Incident queries are processed in an isolated memory buffer and never retained for public model training.
           </p>
         </div>

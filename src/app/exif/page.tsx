@@ -113,12 +113,12 @@ export default function ExifPage() {
               05 // DIGITAL IMAGE FORENSICS
             </span>
             <span className="text-slate-600 text-xs">•</span>
-            <span className="text-[11px] font-mono text-slate-300">EXIF · GPS · PRIVACY SCRUBBER</span>
+            <span className="text-[11px] font-mono text-slate-700">EXIF · GPS · PRIVACY SCRUBBER</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Digital Forensics & Metadata Scrubber
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
             Extract covert physical GPS coordinates, device serial numbers, and camera timestamps embedded inside photographs, then scrub the tracking headers completely clean.
           </p>
         </div>
@@ -126,7 +126,7 @@ export default function ExifPage() {
         <div className="flex items-center gap-3 flex-shrink-0">
           <button
             onClick={loadSample}
-            className="px-4 py-2 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-2 transition-all"
+            className="px-4 py-2 rounded-full bg-slate-50 hover:bg-slate-50 border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-semibold flex items-center gap-2 transition-all"
           >
             <Sparkles size={14} className="text-rose-400" />
             <span>Load Forensic Sample</span>
@@ -143,7 +143,7 @@ export default function ExifPage() {
               {/* Dropzone & Preview Area */}
               <div
                 onClick={() => inputRef.current?.click()}
-                className="relative rounded-2xl overflow-hidden border border-white/[0.08] hover:border-rose-500/40 bg-white/[0.02] cursor-pointer transition-all aspect-video flex items-center justify-center group"
+                className="relative rounded-2xl overflow-hidden border border-slate-200 hover:border-rose-500/40 bg-slate-50 cursor-pointer transition-all aspect-video flex items-center justify-center group"
               >
                 <input
                   ref={inputRef}
@@ -161,12 +161,12 @@ export default function ExifPage() {
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-end p-4">
-                      <div className="text-white space-y-0.5">
+                      <div className="text-slate-900 space-y-0.5">
                         <p className="font-bold text-xs flex items-center gap-1.5">
                           <Camera size={14} className="text-rose-400" />
                           <span>{isSample ? 'Demo Recon Image (New Delhi Target)' : 'Uploaded User Evidence'}</span>
                         </p>
-                        <p className="text-[11px] text-slate-300 font-mono">
+                        <p className="text-[11px] text-slate-700 font-mono">
                           Click to swap or upload new image
                         </p>
                       </div>
@@ -175,7 +175,7 @@ export default function ExifPage() {
                 ) : (
                   <div className="text-center p-6 space-y-2">
                     <Upload size={32} className="text-slate-500 mx-auto" />
-                    <p className="font-semibold text-slate-200">Drag & drop photo or click to browse</p>
+                    <p className="font-semibold text-slate-800">Drag & drop photo or click to browse</p>
                     <p className="text-[11px] text-slate-500">Supports JPG, PNG, HEIC, TIFF formats</p>
                   </div>
                 )}
@@ -186,7 +186,7 @@ export default function ExifPage() {
                 <button
                   onClick={scrubMetadata}
                   disabled={scrubbing || !preview}
-                  className="w-full py-3.5 px-6 font-semibold text-xs text-white bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-red-500 disabled:opacity-40 rounded-full shadow-lg shadow-rose-950/40 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-6 font-semibold text-xs text-slate-900 bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-red-500 disabled:opacity-40 rounded-full shadow-lg shadow-rose-950/40 transition-all flex items-center justify-center gap-2"
                 >
                   <Trash2 size={15} />
                   <span>{scrubbing ? 'Executing 7-Step EXIF Zero-Out...' : 'Scrub Tracking Metadata Clean'}</span>
@@ -196,7 +196,7 @@ export default function ExifPage() {
                   <a
                     href={cleanUrl}
                     download="TRINETRA_Scrubbed_Evidence.jpg"
-                    className="w-full py-3 px-6 font-semibold text-xs text-emerald-300 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 rounded-full transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 px-6 font-semibold text-xs text-emerald-700 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 rounded-full transition-all flex items-center justify-center gap-2"
                   >
                     <Download size={14} />
                     <span>Download Sanitized Clean Image</span>
@@ -206,7 +206,7 @@ export default function ExifPage() {
 
               {/* Scrubbing Telemetry Log */}
               {scrubLog.length > 0 && (
-                <div className="p-4 rounded-2xl bg-black/60 border border-white/[0.08] font-mono text-[11px] space-y-1 max-h-44 overflow-y-auto">
+                <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200 font-mono text-[11px] space-y-1 max-h-44 overflow-y-auto">
                   {scrubLog.map((log, i) => (
                     <div key={i} className="text-emerald-400">
                       {log}
@@ -229,46 +229,46 @@ export default function ExifPage() {
                     <MapPin size={16} />
                     <span>PHYSICAL GPS LOCATION LEAK DETECTED</span>
                   </div>
-                  <p className="text-slate-300 leading-relaxed font-normal">
+                  <p className="text-slate-700 leading-relaxed font-normal">
                     This photo contained exact physical satellite coordinates:
                   </p>
-                  <div className="font-mono text-xs text-white bg-black/40 p-2.5 rounded-xl border border-white/[0.06] space-y-0.5">
+                  <div className="font-mono text-xs text-slate-900 bg-slate-100 p-2.5 rounded-xl border border-slate-200 space-y-0.5">
                     <div>Latitude: <strong className="text-rose-400">{exif.GPSLatitude ?? '28.6139° N'}</strong></div>
                     <div>Longitude: <strong className="text-rose-400">{exif.GPSLongitude ?? '77.2090° E'}</strong></div>
-                    <div>Altitude: <span className="text-slate-400">{exif.GPSAltitude ?? '216m'}</span></div>
+                    <div>Altitude: <span className="text-slate-600">{exif.GPSAltitude ?? '216m'}</span></div>
                   </div>
                 </div>
 
                 {/* Device & Camera Details */}
-                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-3">
-                  <span className="text-xs font-bold text-slate-200 block uppercase tracking-wider font-mono">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                  <span className="text-xs font-bold text-slate-800 block uppercase tracking-wider font-mono">
                     Captured Device Telemetry
                   </span>
 
                   <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                       <span className="text-slate-500 block text-[11px]">Hardware Make:</span>
-                      <strong className="text-white font-mono">{String(exif.Make ?? 'Apple')}</strong>
+                      <strong className="text-slate-900 font-mono">{String(exif.Make ?? 'Apple')}</strong>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                       <span className="text-slate-500 block text-[11px]">Device Model:</span>
-                      <strong className="text-white font-mono">{String(exif.Model ?? 'iPhone 15 Pro Max')}</strong>
+                      <strong className="text-slate-900 font-mono">{String(exif.Model ?? 'iPhone 15 Pro Max')}</strong>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                       <span className="text-slate-500 block text-[11px]">Device Serial Number:</span>
                       <strong className="text-rose-400 font-mono">{String(exif.SerialNumber ?? 'DNQX19472KL9')}</strong>
                     </div>
-                    <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                    <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
                       <span className="text-slate-500 block text-[11px]">OS / Software:</span>
-                      <strong className="text-white font-mono">{String(exif.Software ?? 'iOS 18.1.1')}</strong>
+                      <strong className="text-slate-900 font-mono">{String(exif.Software ?? 'iOS 18.1.1')}</strong>
                     </div>
                   </div>
                 </div>
 
                 {/* Privacy Warning */}
-                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300 space-y-1">
-                  <span className="font-bold text-amber-300 block">Forensic Intelligence Advisory:</span>
-                  <p className="leading-relaxed text-slate-400">
+                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-700 space-y-1">
+                  <span className="font-bold text-amber-700 block">Forensic Intelligence Advisory:</span>
+                  <p className="leading-relaxed text-slate-600">
                     Photos shared on forums, chats, or unencrypted emails expose private home addresses and device fingerprints. Always scrub metadata before publishing sensitive operational evidence.
                   </p>
                 </div>

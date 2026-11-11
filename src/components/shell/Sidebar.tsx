@@ -16,105 +16,95 @@ import {
   Scale,
   Video,
   BookOpen,
+  Shield,
+  PhoneCall,
 } from 'lucide-react'
+import { useLang } from '@/lib/i18n-context'
 
-interface RailItem {
+interface NavItem {
   id: string
-  label: string
-  sub: string
+  enLabel: string
+  hiLabel: string
   path: string
   Icon: React.ComponentType<{ size?: number; className?: string }>
 }
 
-const ALL_DEPARTMENTS: RailItem[] = [
-  { id: '00', label: '00 // Command Center', sub: '3D Threat Globe & DEF CON', path: '/', Icon: Home },
-  { id: '01', label: '01 // Cyber Range & Academy', sub: 'CTF Exercises & Packet Analysis', path: '/academy', Icon: GraduationCap },
-  { id: '02', label: '02 // AI Operations Copilot', sub: 'BharatCode Streaming SecOps Chat', path: '/mentor', Icon: Bot },
-  { id: '03', label: '03 // DevSecOps Auditor', sub: 'SAST CWE Audit & DPDP Compliance', path: '/devsec', Icon: Code2 },
-  { id: '04', label: '04 // Incident Response & FIR', sub: 'BNS 2023 Drafting & BSA §63 Cert', path: '/incident', Icon: AlertOctagon },
-  { id: '05', label: '05 // Digital Forensics Lab', sub: 'EXIF Scrub & Evidence Hash Chain', path: '/exif', Icon: Microscope },
-  { id: '06', label: '06 // Sentinel Guard', sub: 'k-Anonymity SHA-1 Leak Audit', path: '/breach', Icon: KeyRound },
-  { id: '07', label: '07 // Threat Intel Radar', sub: '3D Globe, CVE & MITRE ATT&CK', path: '/intel', Icon: Radar },
-  { id: '08', label: '08 // Phishing & Link Inspector', sub: 'Live SMS/URL & Levenshtein Desk', path: '/nlp', Icon: MessageSquare },
-  { id: '09', label: '09 // IR Playbook Engine', sub: 'SANS PICERL & Statutory FIR', path: '/cyber-ir', Icon: Scale },
-  { id: '10', label: '10 // Video Briefing Studio', sub: 'Incident Briefing Synthesis', path: '/video-gen', Icon: Video },
-  { id: '11', label: '11 // Deepfake Forensics', sub: 'Grad-CAM, CGFD & FADI Evidence', path: '/deepfake-xai', Icon: ScanFace },
-  { id: '12', label: '12 // Research & Citations', sub: 'Academic Sources & OSS Stack', path: '/research', Icon: BookOpen },
+const GENERAL_TOOLS: NavItem[] = [
+  { id: '00', enLabel: 'Dashboard', hiLabel: 'डैशबोर्ड', path: '/', Icon: Home },
+  { id: '08', enLabel: 'Message Checker', hiLabel: 'संदेश जांचें', path: '/nlp', Icon: MessageSquare },
+  { id: '04', enLabel: 'File Complaint', hiLabel: 'शिकायत दर्ज करें', path: '/incident', Icon: AlertOctagon },
+  { id: '02', enLabel: 'AI Assistant', hiLabel: 'एआई सहायक', path: '/mentor', Icon: Bot },
+  { id: '11', enLabel: 'Fake Video Checker', hiLabel: 'नकली वीडियो जांच', path: '/deepfake-xai', Icon: ScanFace },
+  { id: '05', enLabel: 'File Checker', hiLabel: 'फ़ाइल जांचें', path: '/exif', Icon: Microscope },
+  { id: '06', enLabel: 'Identity Check', hiLabel: 'डेटा लीक जांच', path: '/breach', Icon: KeyRound },
+  { id: '07', enLabel: 'Latest Threats', hiLabel: 'ताज़ा खतरे', path: '/intel', Icon: Radar },
+  { id: '01', enLabel: 'Learn & Practice', hiLabel: 'सीखें और अभ्यास करें', path: '/academy', Icon: GraduationCap },
+  { id: '03', enLabel: 'Code Scanner', hiLabel: 'कोड स्कैनर', path: '/devsec', Icon: Code2 },
+  { id: '09', enLabel: 'Emergency Guide', hiLabel: 'आपातकालीन गाइड', path: '/cyber-ir', Icon: Scale },
+  { id: '10', enLabel: 'Make Videos', hiLabel: 'जागरूकता वीडियो', path: '/video-gen', Icon: Video },
+  { id: '12', enLabel: 'Research & Sources', hiLabel: 'शोध और स्रोत', path: '/research', Icon: BookOpen },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
+  const { t } = useLang()
 
   return (
     <aside
-      className="fixed bottom-0 left-0 right-0 h-14 w-full md:top-0 md:bottom-auto md:right-auto md:h-screen md:w-16 bg-[#0A0A12]/95 backdrop-blur-md border-t md:border-t-0 md:border-r border-[#1A1A2E] flex flex-row md:flex-col items-center px-2 md:px-0 md:py-3 z-50 select-none md:justify-between overflow-x-auto md:overflow-visible no-scrollbar"
-      aria-label="Primary Department Navigation Rail"
+      className="fixed bottom-0 left-0 right-0 h-16 w-full lg:top-0 lg:bottom-auto lg:right-auto lg:h-screen lg:w-60 bg-[#FFFFFF] border-t lg:border-t-0 lg:border-r border-[#E5E7EB] flex flex-row lg:flex-col z-50 select-none overflow-x-auto lg:overflow-y-auto no-scrollbar"
+      aria-label="Main Navigation"
     >
-      {/* Emblem / Monogram Badge */}
-      <div className="flex flex-row md:flex-col items-center gap-2 md:gap-3 shrink-0 mr-1 md:mr-0 md:w-full">
-        <Link
-          href="/"
-          className="group relative flex items-center justify-center cursor-pointer"
-          title="TRINETRA — Cinematic Cyber Defense Console"
-        >
-          <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-[#03030A] border border-[#FF1B1B]/60 flex items-center justify-center font-bold text-[#FF1B1B] text-sm md:text-base shadow-[0_0_16px_rgba(255,27,27,0.3)] transition-all group-hover:bg-[#FF1B1B] group-hover:text-[#F5F5F5] group-hover:scale-105">
-            TR
+      {/* Desktop Brand Header */}
+      <div className="hidden lg:flex items-center gap-3 px-4 py-4 border-b border-[#E5E7EB] shrink-0">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="w-9 h-9 rounded-lg bg-[#2563EB] text-white flex items-center justify-center shadow-xs">
+            <Shield size={18} />
           </div>
-          <div className="hidden md:flex absolute left-16 ml-2 px-3 py-1.5 rounded-lg bg-[#0A0A12] border border-[#1A1A2E] text-[#F5F5F5] text-xs font-semibold whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 items-center gap-2">
-            <span>TRINETRA · त्रिनेत्र</span>
-            <span className="text-[10px] font-mono text-[#00D4FF] bg-[#00D4FF]/10 px-1.5 py-0.5 rounded border border-[#00D4FF]/30">
-              3D SOC
-            </span>
+          <div>
+            <div className="text-sm font-bold text-[#1A1A1A] leading-tight">TRINETRA</div>
+            <div className="text-[11px] text-[#6B7280]">Cyber Safety Console</div>
           </div>
         </Link>
       </div>
 
-      {/* Department Navigation Links */}
-      <nav className="flex-1 overflow-x-auto md:overflow-x-visible md:overflow-y-auto no-scrollbar md:w-full px-1 md:px-2 md:py-2 flex flex-row md:flex-col items-center gap-1.5">
-        {ALL_DEPARTMENTS.map(item => {
+      {/* Navigation List (Icon + Clear Text Label on Desktop, Compact Strip on Mobile) */}
+      <nav className="flex-1 flex flex-row lg:flex-col items-center lg:items-stretch gap-1 px-2 lg:px-3 py-2 lg:py-3 overflow-x-auto lg:overflow-y-auto no-scrollbar">
+        {GENERAL_TOOLS.map(item => {
           const isActive =
             item.path === '/'
               ? pathname === '/'
               : pathname === item.path || pathname?.startsWith(item.path + '/')
 
           return (
-            <div key={item.id} className="relative group shrink-0 md:w-full flex justify-center">
-              <Link
-                href={item.path}
-                className={`w-9 h-9 md:w-10 md:h-10 rounded-lg flex items-center justify-center transition-all duration-200 cursor-pointer border ${
-                  isActive
-                    ? 'bg-[#FF1B1B] text-[#F5F5F5] border-[#FF1B1B] shadow-[0_0_18px_rgba(255,27,27,0.45)] scale-105'
-                    : 'text-[#888888] border-transparent hover:text-[#00D4FF] hover:bg-[#03030A] hover:border-[#00D4FF]/40 hover:scale-105'
-                }`}
-                aria-label={item.label}
-              >
-                <item.Icon size={17} className="shrink-0" />
-              </Link>
-
-              <div className="hidden md:flex absolute left-16 ml-2 px-3 py-1.5 rounded-lg bg-[#0A0A12] border border-[#1A1A2E] shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-50 whitespace-nowrap flex-col gap-0.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-[#F5F5F5] font-sans">
-                    {item.label}
-                  </span>
-                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#FF1B1B]" />}
-                </div>
-                <span className="text-[10px] text-[#888888] font-sans">
-                  {item.sub}
-                </span>
-              </div>
-            </div>
+            <Link
+              key={item.id}
+              href={item.path}
+              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-colors shrink-0 ${
+                isActive
+                  ? 'bg-[#EFF6FF] text-[#2563EB] font-semibold border border-[#BFDBFE]'
+                  : 'text-[#4B5563] hover:text-[#1A1A1A] hover:bg-[#F3F4F6] border border-transparent'
+              }`}
+              aria-label={item.enLabel}
+            >
+              <item.Icon size={16} className={`shrink-0 ${isActive ? 'text-[#2563EB]' : 'text-[#6B7280]'}`} />
+              <span>{t(item.enLabel, item.hiLabel)}</span>
+            </Link>
           )
         })}
       </nav>
 
-      {/* Operational Jurisdiction Identifier (Desktop Rail Only) */}
-      <div className="hidden md:flex flex-col items-center gap-2 w-full px-2 pt-2 border-t border-[#1A1A2E] shrink-0">
-        <div
-          className="w-8 h-8 rounded-lg bg-[#03030A] border border-[#1A1A2E] flex items-center justify-center text-[10px] font-mono font-bold text-[#00FF9D]"
-          title="Jurisdiction: Republic of India (CERT-In / BNS 2023)"
+      {/* Desktop Emergency Help Box */}
+      <div className="hidden lg:block p-3 border-t border-[#E5E7EB] shrink-0">
+        <a
+          href="tel:1930"
+          className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-[#FEF2F2] border border-[#FECACA] text-[#DC2626] hover:bg-[#FEE2E2] transition-colors text-xs font-semibold"
         >
-          IN
-        </div>
+          <span className="flex items-center gap-2">
+            <PhoneCall size={14} />
+            <span>{t('Scam Helpline', 'हेल्पलाइन')}</span>
+          </span>
+          <span className="font-mono font-bold">1930</span>
+        </a>
       </div>
     </aside>
   )

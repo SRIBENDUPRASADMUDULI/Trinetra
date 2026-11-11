@@ -1,27 +1,18 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import Link from 'next/link'
 import {
-  MailWarning, Link2, ShieldAlert, CheckCircle2, AlertTriangle,
-  Download, FileJson, ArrowRight, RefreshCw, Sparkles, Search, Lock
+  MailWarning, Link2, Search, RefreshCw, AlertTriangle
 } from 'lucide-react'
-import { TerminalCard } from '@/components/ui/terminal-card'
+import { InfoExplain } from '@/components/ui/InfoExplain'
+import { ScanResultCard } from '@/components/ui/ScanResultCard'
 import { useLang } from '@/lib/i18n-context'
 
 interface UrlReputation {
   url: string
-  lexical?: {
-    hostname?: string
-    tld?: string
-    entropy?: number
-    hasIpHost?: boolean
-    hasPunycode?: boolean
-    suspiciousKeywordCount?: number
-  }
-  safeBrowsing: { checked: boolean; status: string; threatTypes?: string[] }
-  virusTotal: { checked: boolean; status: string; maliciousCount?: number; harmlessCount?: number }
-  urlhaus: { checked: boolean; status: string; threat?: string }
+  safeBrowsing: { checked: boolean; status: string }
+  virusTotal: { checked: boolean; status: string }
+  urlhaus: { checked: boolean; status: string }
   openPhish: { checked: boolean; status: string }
 }
 
@@ -85,31 +76,24 @@ function extractDomain(raw: string): string | null {
 
 const EXAMPLE_MESSAGES = [
   {
-    label: 'SBI KYC Suspension Lure',
+    label: 'Example: Fake Bank KYC SMS',
     text: 'URGENT: Dear SBI User, your YONO KYC will expire within 2 hours and account will be blocked. Update PAN immediately at https://sbi-kyc-verif.top/login to avoid freeze.',
     url: 'https://sbi-kyc-verif.top/login',
   },
   {
-    label: 'RTO e-Challan APK Bait',
+    label: 'Example: Fake Traffic Challan',
     text: 'Traffic Police Notice: Pending e-Challan DL09CA4421 Rs.2500 due today. Download official notice receipt: http://parivahan-challan-pay.xyz/apk',
     url: 'http://parivahan-challan-pay.xyz/apk',
   },
   {
-    label: 'Genuine NPCI Alert (Benign)',
+    label: 'Example: Genuine NPCI Alert',
     text: 'Dear Customer, UPI mandate reference 41928371 for Rs.499.00 was successfully executed via your bank app. For queries visit https://npci.org.in.',
     url: 'https://npci.org.in',
   },
 ]
 
-const EXAMPLE_URLS = [
-  { label: 'Spoofed SBI Top-Level', url: 'https://on1inesbi-kyc.top/auth' },
-  { label: 'Spoofed Income Tax Portal', url: 'https://incometax-gov-refund.xyz/claim' },
-  { label: 'Official Cybercrime Portal', url: 'https://cybercrime.gov.in' },
-]
-
-export default function NlpInspectorPage() {
+export default function MessageCheckerPage() {
   const { t } = useLang()
-  const [activeTab, setActiveTab] = useState<'sms' | 'url'>('sms')
   const [msgText, setMsgText] = useState('')
   const [urlInput, setUrlInput] = useState('')
   const [analyzing, setAnalyzing] = useState(false)
@@ -118,8 +102,8 @@ export default function NlpInspectorPage() {
   const [certStatus, setCertStatus] = useState<string | null>(null)
   const [exportingCert, setExportingCert] = useState(false)
 
-  // Client-side Levenshtein Typosquatting check on live inputs + extracted URLs
-  const typosquatMatches = useMemo(() => {
+  // Fake Website Lookalike Check (Levenshtein distance vs official Indian bank/govt domains)
+  const lookalikeChecks = useMemo(() => {
     const candidateUrls: string[] = []
     if (urlInput.trim()) candidateUrls.push(urlInput.trim())
     const inlineMatches = msgText.match(/https?:\/\/[^\s"'<>]+/gi) ?? []
@@ -129,11 +113,12 @@ export default function NlpInspectorPage() {
     }
 
     const seenHosts = new Set<string>()
-    const evaluations: Array<{
+    const list: Array<{
       host: string
       closestOfficial: string
       distance: number
-      classification: 'EXACT_OFFICIAL' | 'TYPOSQUAT_SUSPECT' | 'UNRELATED_DOMAIN'
+      isOfficial: boolean
+      isLookalike: boolean
     }> = []
 
     for (const rawUrl of candidateUrls) {
@@ -151,27 +136,23 @@ export default function NlpInspectorPage() {
         }
       }
 
-      const classification =
-        minDist === 0 || host.endsWith(`.${bestTarget}`)
-          ? 'EXACT_OFFICIAL'
-          : minDist <= 5 || host.includes(bestTarget.split('.')[0])
-            ? 'TYPOSQUAT_SUSPECT'
-            : 'UNRELATED_DOMAIN'
+      const isOfficial = minDist === 0 || host.endsWith(`.${bestTarget}`)
+      const isLookalike = !isOfficial && (minDist <= 5 || host.includes(bestTarget.split('.')[0]))
 
-      evaluations.push({
+      list.push({
         host,
         closestOfficial: bestTarget,
         distance: minDist,
-        classification,
+        isOfficial,
+        isLookalike,
       })
     }
-    return evaluations
+    return list
   }, [msgText, urlInput, result])
 
-  const handleAnalyze = async () => {
-    const payloadText = activeTab === 'sms' ? msgText.trim() : urlInput.trim()
-    if (!payloadText && !urlInput.trim()) {
-      setErrorMsg('Please enter an SMS/email body or suspicious URL before analyzing.')
+  const handleCheckNow = async () => {
+    if (!msgText.trim() && !urlInput.trim()) {
+      setErrorMsg('Please paste a message or link first before clicking Check Now.')
       return
     }
 
@@ -184,41 +165,20 @@ export default function NlpInspectorPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          text: activeTab === 'sms' ? msgText : `Inspect URL risk: ${urlInput}`,
+          text: msgText.trim() || `Check this website link: ${urlInput.trim()}`,
           url: urlInput.trim() || undefined,
         }),
       })
       const data = await res.json()
       if (!res.ok || !data.success || !data.analysis) {
-        throw new Error(data.error || 'Analysis request failed')
+        throw new Error(data.error || 'Unable to check message right now.')
       }
       setResult(data.analysis)
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : 'Unable to complete analysis')
+      setErrorMsg(err instanceof Error ? err.message : 'Something went wrong while checking.')
     } finally {
       setAnalyzing(false)
     }
-  }
-
-  const handleExportJson = () => {
-    if (!result) return
-    const bundle = {
-      platform: 'TRINETRA CyberShield Bharat',
-      statute: 'BSA 2023 §63 Preliminary Forensic Dump',
-      exportedAtIst: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-      inputMessage: msgText,
-      targetUrl: urlInput,
-      typosquatAnalysis: typosquatMatches,
-      analysis: result,
-      disclaimer: 'AI-assisted indication — verify manually before legal action.',
-    }
-    const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' })
-    const href = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = href
-    link.download = `TRINETRA_NLP_REPORT_${Date.now()}.json`
-    link.click()
-    URL.revokeObjectURL(href)
   }
 
   const handleExportBsa63Pdf = async () => {
@@ -226,13 +186,12 @@ export default function NlpInspectorPage() {
     setExportingCert(true)
     setCertStatus(null)
     try {
-      const payloadSummary = activeTab === 'sms' ? msgText : urlInput
       const res = await fetch('/api/certificate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          sourcePanel: '08 // Phishing & Link Inspector',
-          payload: payloadSummary || urlInput,
+          sourcePanel: 'Message Checker',
+          payload: msgText || urlInput,
           verdict: result.verdict,
           confidence: result.confidence,
           category: result.category,
@@ -243,462 +202,289 @@ export default function NlpInspectorPage() {
       })
       const data = await res.json()
       if (!res.ok || !data.success || !data.certificate?.downloadUrl) {
-        throw new Error(data.error || 'Failed to generate BSA 2023 §63 PDF')
+        throw new Error(data.error || 'Could not generate PDF report')
       }
       const link = document.createElement('a')
       link.href = data.certificate.downloadUrl
-      link.download = `TRINETRA_BSA63_${data.certificate.certId}.pdf`
+      link.download = `TRINETRA_REPORT_${data.certificate.certId}.pdf`
       link.click()
-      setCertStatus(`Issued ${data.certificate.certId} · SHA-256: ${data.certificate.sha256Hash.slice(0, 16)}...`)
+      setCertStatus(`Saved Evidence Report (${data.certificate.certId}) · SHA-256 verified`)
     } catch (err: unknown) {
-      setCertStatus(err instanceof Error ? err.message : 'PDF generation failed')
+      setCertStatus(err instanceof Error ? err.message : 'PDF save failed')
     } finally {
       setExportingCert(false)
     }
   }
 
-  const verdictTone = useMemo(() => {
+  const handleExportJson = () => {
+    if (!result) return
+    const bundle = {
+      platform: 'TRINETRA Cyber Safety Console',
+      checkedAtIst: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      message: msgText,
+      link: urlInput,
+      lookalikeChecks,
+      result,
+      disclaimer: 'AI tool. Verify with your bank before taking action.',
+    }
+    const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' })
+    const href = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = href
+    link.download = `TRINETRA_CHECK_${Date.now()}.json`
+    link.click()
+    URL.revokeObjectURL(href)
+  }
+
+  // Convert technical verdict into plain-English guidance for ScanResultCard
+  const cardData = useMemo(() => {
     if (!result) return null
-    const v = result.verdict.toUpperCase()
-    if (v.includes('HIGH') || v.includes('PHISHING') || v.includes('MALICIOUS')) {
-      return {
-        bg: 'bg-[#FF1B1B]/15 border-[#FF1B1B]/40',
-        text: 'text-[#FF1B1B]',
-        badge: 'HIGH RISK SCAM',
-      }
+    const upper = result.verdict.toUpperCase()
+    const isScam = upper.includes('HIGH') || upper.includes('PHISHING') || upper.includes('MALICIOUS')
+    const isSuspicious = !isScam && upper.includes('SUSPICIOUS')
+
+    const verdictKind: 'scam' | 'suspicious' | 'safe' = isScam ? 'scam' : isSuspicious ? 'suspicious' : 'safe'
+    const headline = isScam
+      ? 'This looks like a scam — do not click the link'
+      : isSuspicious
+        ? 'This message looks suspicious — double-check before trusting'
+        : 'No obvious scam patterns found — still verify with official sources'
+
+    const spoofNotes = lookalikeChecks
+      .filter((c) => c.isLookalike)
+      .map((c) => `Fake lookalike website detected: "${c.host}" pretends to be official "${c.closestOfficial}".`)
+
+    const whyList = [...spoofNotes, ...(result.flags || [])]
+    if (whyList.length === 0) {
+      whyList.push('No high-risk scam keywords or known phishing links were detected.')
     }
-    if (v.includes('SUSPICIOUS')) {
-      return {
-        bg: 'bg-[#FF9F1C]/15 border-[#FF9F1C]/40',
-        text: 'text-[#FF9F1C]',
-        badge: 'SUSPICIOUS',
-      }
-    }
+
+    const todoList = isScam || isSuspicious
+      ? [
+          'Do NOT click any link or download any `.apk` file from this message.',
+          'Do NOT share your OTP, UPI PIN, Aadhaar, or bank details.',
+          'If you already lost money, call 1930 immediately or file a police complaint.',
+          'Verify using your official bank app or website instead.',
+        ]
+      : [
+          'Still check the sender number or open your official bank app directly to confirm.',
+          'Never share OTPs or passwords with anyone on a phone call or SMS.',
+        ]
+
     return {
-      bg: 'bg-[#00D4FF]/15 border-[#00D4FF]/40',
-      text: 'text-[#00D4FF]',
-      badge: 'LOW RISK / BENIGN',
+      verdictKind,
+      headline,
+      subheadline: `${result.threatType} · Confidence: ${result.confidence}`,
+      whyList,
+      todoList,
     }
-  }, [result])
+  }, [result, lookalikeChecks])
 
   return (
     <div className="space-y-6">
-      {/* Header Banner */}
-      <section className="rounded-xl bg-[#0A0A12] border border-[#1A1A2E] p-6">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      {/* Page Title & Plain Help Button */}
+      <section className="rounded-xl bg-[#FFFFFF] border border-[#E5E7EB] p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">
+            {t('Check Suspicious Message or Link', 'संदिग्ध संदेश या लिंक जांचें')}
+          </h1>
+          <p className="text-xs text-[#6B7280] max-w-2xl">
+            {t(
+              'Paste an SMS, WhatsApp forward, email, or website link below. We will tell you in plain English if it looks safe or like a scam.',
+              'नीचे कोई भी संदिग्ध एसएमएस, व्हाट्सएप संदेश या लिंक पेस्ट करें और जांचें कि वह सुरक्षित है या धोखाधड़ी।'
+            )}
+          </p>
+        </div>
+        <InfoExplain
+          title="Message & Link Checker"
+          whatIsIt="This tool reads suspicious SMS messages, emails, and website links to spot common Indian banking, KYC, lottery, and traffic-challan scams."
+          whoShouldUse="Anyone who got a strange message asking to click a link, update KYC, or pay money urgently."
+          whatResultMeans="SCAM means strong signs of fraud — do not click or pay. SAFE means no clear scam patterns were found, though you should always double-check on your official bank app."
+        />
+      </section>
+
+      {/* Input Card */}
+      <section className="rounded-xl bg-[#FFFFFF] border border-[#E5E7EB] p-6 shadow-xs space-y-5">
+        <div className="space-y-2">
+          <span className="text-xs font-medium text-[#6B7280]">
+            Try an example to see how it works:
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {EXAMPLE_MESSAGES.map((ex) => (
+              <button
+                key={ex.label}
+                type="button"
+                onClick={() => {
+                  setMsgText(ex.text)
+                  setUrlInput(ex.url)
+                  setErrorMsg(null)
+                }}
+                className="px-3 py-1.5 rounded-lg bg-[#F8F9FA] hover:bg-[#EFF6FF] border border-[#E5E7EB] hover:border-[#BFDBFE] text-xs font-medium text-[#2563EB] transition-colors cursor-pointer"
+              >
+                {ex.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <div className="space-y-1.5">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-1 rounded bg-[#03030A] border border-[#1A1A2E] text-[10px] font-mono font-bold text-[#FF9F1C]">
-                08 // PHISHING &amp; LINK INSPECTOR
-              </span>
-              <span className="px-2.5 py-1 rounded bg-[#00D4FF]/15 border border-[#00D4FF]/35 text-[10px] font-mono text-[#00D4FF]">
-                BharatCode Live Analysis · URLhaus · OpenPhish · Levenshtein Spoof Check
+            <div className="flex items-center justify-between text-xs">
+              <label htmlFor="msg-input" className="font-semibold text-[#1A1A1A] flex items-center gap-1.5">
+                <MailWarning className="w-4 h-4 text-[#2563EB]" />
+                Paste SMS or Email Here
+              </label>
+              <span className="text-[#6B7280] font-mono text-[11px]">
+                {msgText.length} / {MAX_CHARS}
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-[#F5F5F5] font-serif">
-              {t('SMS, Email & Suspicious URL Forensic Triage', 'एसएमएस, ईमेल और संदिग्ध लिंक फोरेंसिक निरीक्षण')}
-            </h1>
-            <p className="text-xs text-[#888888] max-w-3xl">
-              {t(
-                'Inspect multilingual Indian cyber fraud messages (English, Hindi, Hinglish) and evaluate URL domains against official banking/government registers.',
-                'भारतीय साइबर धोखाधड़ी संदेशों और संदिग्ध लिंक का आधिकारिक बैंकिंग एवं सरकारी डोमेन के साथ विश्लेषण करें।'
-              )}
-            </p>
+            <textarea
+              id="msg-input"
+              rows={5}
+              maxLength={MAX_CHARS}
+              value={msgText}
+              onChange={(e) => setMsgText(e.target.value)}
+              placeholder="Example: Your SBI KYC is expired, click this link to verify..."
+              className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] p-3.5 text-sm text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#2563EB] focus:bg-[#FFFFFF]"
+            />
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setActiveTab('sms')}
-              className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border transition-colors cursor-pointer ${
-                activeTab === 'sms'
-                  ? 'bg-[#FF9F1C] text-[#03030A] border-[#FF9F1C]'
-                  : 'bg-[#03030A] text-[#888888] border-[#1A1A2E] hover:text-[#F5F5F5]'
-              }`}
-            >
-              <MailWarning className="w-3.5 h-3.5" /> SMS / Email Text
-            </button>
-            <button
-              onClick={() => setActiveTab('url')}
-              className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border transition-colors cursor-pointer ${
-                activeTab === 'url'
-                  ? 'bg-[#FF9F1C] text-[#03030A] border-[#FF9F1C]'
-                  : 'bg-[#03030A] text-[#888888] border-[#1A1A2E] hover:text-[#F5F5F5]'
-              }`}
-            >
-              <Link2 className="w-3.5 h-3.5" /> URL Reputation Scan
-            </button>
+          <div className="space-y-4 flex flex-col justify-between">
+            <div className="space-y-1.5">
+              <label htmlFor="link-input" className="font-semibold text-[#1A1A1A] text-xs flex items-center gap-1.5">
+                <Link2 className="w-4 h-4 text-[#2563EB]" />
+                Paste Website Link Here (Optional)
+              </label>
+              <input
+                id="link-input"
+                type="text"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                placeholder="https://example-suspicious-link.top"
+                className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3.5 py-2.5 text-sm font-mono text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#2563EB] focus:bg-[#FFFFFF]"
+              />
+            </div>
+
+            {errorMsg && (
+              <div className="p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA] text-xs text-[#DC2626] flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handleCheckNow}
+                disabled={analyzing}
+                className="flex-1 py-3 px-6 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer shadow-xs"
+              >
+                {analyzing ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" /> Checking Message...
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-4 h-4" /> Check Now
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMsgText('')
+                  setUrlInput('')
+                  setResult(null)
+                  setErrorMsg(null)
+                  setCertStatus(null)
+                }}
+                className="px-4 py-3 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E5E7EB] text-xs font-semibold text-[#4B5563] cursor-pointer"
+              >
+                Clear
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Main Split Workspace */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        {/* Left: Input Form (Empty initial state + Load Example chips) */}
-        <div className="xl:col-span-5 space-y-5">
-          <TerminalCard
-            title={activeTab === 'sms' ? 'Message & Embedded Link Input' : 'Target URL Inspection'}
-            label="STATELESS INPUT"
-            labelColor="amber"
-          >
+      {/* Reusable Plain-English ScanResultCard */}
+      {result && cardData && (
+        <ScanResultCard
+          verdictKind={cardData.verdictKind}
+          headline={cardData.headline}
+          subheadline={cardData.subheadline}
+          whyList={cardData.whyList}
+          todoList={cardData.todoList}
+          disclaimer="AI tool. Verify with your bank or official website before taking action."
+          onSaveReport={handleExportBsa63Pdf}
+          savingReport={exportingCert}
+          onExportJson={handleExportJson}
+          onReset={() => {
+            setResult(null)
+            setMsgText('')
+            setUrlInput('')
+            setCertStatus(null)
+          }}
+          certNote={certStatus}
+          extraContent={
             <div className="space-y-4">
-              {/* Example Autofill Chips */}
-              <div className="space-y-1.5">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-[#888888]">
-                  Load Example Input (Autofill only — click Analyze to run):
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {activeTab === 'sms'
-                    ? EXAMPLE_MESSAGES.map((ex) => (
-                        <button
-                          key={ex.label}
-                          type="button"
-                          onClick={() => {
-                            setMsgText(ex.text)
-                            setUrlInput(ex.url)
-                            setErrorMsg(null)
-                          }}
-                          className="px-2.5 py-1 rounded bg-[#03030A] hover:bg-[#121222] border border-[#1A1A2E] text-[11px] font-mono text-[#00D4FF] transition-colors cursor-pointer"
-                        >
-                          + {ex.label}
-                        </button>
-                      ))
-                    : EXAMPLE_URLS.map((ex) => (
-                        <button
-                          key={ex.label}
-                          type="button"
-                          onClick={() => {
-                            setUrlInput(ex.url)
-                            setErrorMsg(null)
-                          }}
-                          className="px-2.5 py-1 rounded bg-[#03030A] hover:bg-[#121222] border border-[#1A1A2E] text-[11px] font-mono text-[#00D4FF] transition-colors cursor-pointer"
-                        >
-                          + {ex.label}
-                        </button>
-                      ))}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                <div className="p-3 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB]">
+                  <div className="text-[#6B7280]">Urgency Score</div>
+                  <div className="text-base font-bold font-mono text-[#D97706]">{result.urgencyScore} / 100</div>
+                </div>
+                <div className="p-3 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB]">
+                  <div className="text-[#6B7280]">Impersonation Score</div>
+                  <div className="text-base font-bold font-mono text-[#DC2626]">{result.impersonationScore} / 100</div>
+                </div>
+                <div className="p-3 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB]">
+                  <div className="text-[#6B7280]">Link Risk Score</div>
+                  <div className="text-base font-bold font-mono text-[#DC2626]">{result.linkRiskScore} / 100</div>
                 </div>
               </div>
 
-              {activeTab === 'sms' && (
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between text-xs">
-                    <label htmlFor="nlp-msg-input" className="font-semibold text-[#F5F5F5]">
-                      Suspicious Message Content <span className="text-[#FF1B1B]">*</span>
-                    </label>
-                    <span className="font-mono text-[11px] text-[#888888]">
-                      {msgText.length} / {MAX_CHARS}
-                    </span>
-                  </div>
-                  <textarea
-                    id="nlp-msg-input"
-                    rows={6}
-                    maxLength={MAX_CHARS}
-                    value={msgText}
-                    onChange={(e) => setMsgText(e.target.value)}
-                    placeholder="Paste suspected phishing SMS, WhatsApp forward, or email text here..."
-                    className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] p-3 text-xs font-mono text-[#F5F5F5] placeholder:text-[#888888]/60 focus:outline-none focus:border-[#00D4FF]"
-                  />
-                </div>
-              )}
-
-              <div className="space-y-1.5">
-                <label htmlFor="nlp-url-input" className="block text-xs font-semibold text-[#F5F5F5]">
-                  Target / Extracted URL {activeTab === 'url' && <span className="text-[#FF1B1B]">*</span>}
-                </label>
-                <input
-                  id="nlp-url-input"
-                  type="text"
-                  value={urlInput}
-                  onChange={(e) => setUrlInput(e.target.value)}
-                  placeholder="https://example-suspicious-domain.top/login"
-                  className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2.5 text-xs font-mono text-[#F5F5F5] placeholder:text-[#888888]/60 focus:outline-none focus:border-[#00D4FF]"
-                />
-              </div>
-
-              {errorMsg && (
-                <div className="p-3 rounded-lg bg-[#FF1B1B]/15 border border-[#FF1B1B]/40 text-xs text-[#FF1B1B] flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 shrink-0" />
-                  <span>{errorMsg}</span>
-                </div>
-              )}
-
-              <div className="flex items-center gap-2.5">
-                <button
-                  type="button"
-                  onClick={handleAnalyze}
-                  disabled={analyzing}
-                  className="flex-1 py-2.5 px-4 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#03030A] text-xs font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
-                >
-                  {analyzing ? (
-                    <>
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Running Live Analysis...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="w-3.5 h-3.5" /> Analyze Input
-                    </>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMsgText('')
-                    setUrlInput('')
-                    setResult(null)
-                    setErrorMsg(null)
-                    setCertStatus(null)
-                  }}
-                  className="px-3.5 py-2.5 rounded-lg bg-[#03030A] hover:bg-[#121222] border border-[#1A1A2E] text-xs font-medium text-[#888888] hover:text-[#F5F5F5] transition-colors cursor-pointer"
-                >
-                  Clear
-                </button>
-              </div>
-            </div>
-          </TerminalCard>
-
-          {/* Levenshtein Typosquatting Check (runs deterministically on input URLs) */}
-          <TerminalCard
-            title="Levenshtein Domain Spoofing Check"
-            label="DETERMINISTIC MATH"
-            labelColor="cyan"
-          >
-            {typosquatMatches.length === 0 ? (
-              <p className="text-xs text-[#888888]">
-                Enter or paste a URL above to compute edit-distance similarity against official Indian banking and `.gov.in` domains.
-              </p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead>
-                    <tr className="border-b border-[#1A1A2E] text-[10px] font-mono uppercase text-[#888888]">
-                      <th className="py-2 pr-3">Observed Host</th>
-                      <th className="py-2 pr-3">Nearest Official</th>
-                      <th className="py-2 pr-3">Edit Dist</th>
-                      <th className="py-2">Assessment</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#1A1A2E]">
-                    {typosquatMatches.map((m) => (
-                      <tr key={m.host}>
-                        <td className="py-2.5 pr-3 font-mono text-[#F5F5F5]">{m.host}</td>
-                        <td className="py-2.5 pr-3 font-mono text-[#888888]">{m.closestOfficial}</td>
-                        <td className="py-2.5 pr-3 font-mono font-bold text-[#F5F5F5]">{m.distance}</td>
-                        <td className="py-2.5">
-                          {m.classification === 'EXACT_OFFICIAL' ? (
-                            <span className="px-2 py-0.5 rounded bg-[#00D4FF]/15 border border-[#00D4FF]/30 text-[#00D4FF] font-mono text-[10px]">
-                              OFFICIAL MATCH
-                            </span>
-                          ) : m.classification === 'TYPOSQUAT_SUSPECT' ? (
-                            <span className="px-2 py-0.5 rounded bg-[#FF1B1B]/15 border border-[#FF1B1B]/35 text-[#FF1B1B] font-mono text-[10px]">
-                              SPOOF SUSPECT
-                            </span>
-                          ) : (
-                            <span className="px-2 py-0.5 rounded bg-[#FF9F1C]/15 border border-[#FF9F1C]/35 text-[#FF9F1C] font-mono text-[10px]">
-                              UNVERIFIED HOST
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </TerminalCard>
-        </div>
-
-        {/* Right: Structured Analytical Results Table */}
-        <div className="xl:col-span-7 space-y-5">
-          <TerminalCard
-            title="Forensic Verdict & Statutory Triage Report"
-            label={result ? result.provider.toUpperCase() : 'AWAITING ANALYSIS'}
-            labelColor={result ? 'green' : 'white'}
-          >
-            {!result && !analyzing && (
-              <div className="py-14 text-center space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-[#03030A] border border-[#1A1A2E] mx-auto flex items-center justify-center text-[#888888]">
-                  <Sparkles className="w-6 h-6 text-[#FF9F1C]" />
-                </div>
-                <div className="text-sm font-semibold text-[#F5F5F5]">
-                  No Input Analyzed Yet
-                </div>
-                <p className="text-xs text-[#888888] max-w-md mx-auto leading-relaxed">
-                  Paste a suspicious message or URL on the left (or select an example chip) and click{' '}
-                  <strong className="text-[#FF9F1C]">Analyze Input</strong> to invoke the live BharatCode harness and threat-intel feeds.
-                </p>
-              </div>
-            )}
-
-            {analyzing && (
-              <div className="py-16 text-center space-y-3">
-                <RefreshCw className="w-7 h-7 animate-spin text-[#00D4FF] mx-auto" />
-                <div className="text-xs font-mono text-[#00D4FF]">
-                  Executing BharatCode NLP triage + URLhaus/OpenPhish/SafeBrowsing checks...
-                </div>
-              </div>
-            )}
-
-            {result && verdictTone && !analyzing && (
-              <div className="space-y-5">
-                {/* Verdict Banner */}
-                <div className={`p-4 rounded-lg border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${verdictTone.bg}`}>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <ShieldAlert className={`w-4 h-4 ${verdictTone.text}`} />
-                      <span className={`font-mono text-xs font-bold ${verdictTone.text}`}>
-                        {result.verdict}
-                      </span>
-                    </div>
-                    <div className="text-xs text-[#F5F5F5]/85">
-                      {result.threatType} · Category: <strong className="font-mono">{result.category}</strong>
-                    </div>
-                  </div>
-                  <div className="text-left sm:text-right font-mono">
-                    <div className="text-[10px] text-[#888888] uppercase">Model Confidence</div>
-                    <div className={`text-xl font-bold ${verdictTone.text}`}>{result.confidence}</div>
-                  </div>
-                </div>
-
-                {/* Formal Assessment Matrix Table */}
-                <div className="overflow-x-auto rounded-lg border border-[#1A1A2E]">
+              {lookalikeChecks.length > 0 && (
+                <div className="overflow-x-auto rounded-lg border border-[#E5E7EB]">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-[#03030A] border-b border-[#1A1A2E] text-[10px] font-mono uppercase text-[#888888]">
-                        <th className="py-2.5 px-4">Forensic Dimension</th>
-                        <th className="py-2.5 px-4">Score / Telemetry</th>
-                        <th className="py-2.5 px-4">Interpretation</th>
+                      <tr className="bg-[#F8F9FA] border-b border-[#E5E7EB] text-[#6B7280]">
+                        <th className="py-2 px-3">Website Host Found</th>
+                        <th className="py-2 px-3">Closest Official Website</th>
+                        <th className="py-2 px-3">Edit Distance</th>
+                        <th className="py-2 px-3">Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#1A1A2E] bg-[#03030A]/40">
-                      <tr>
-                        <td className="py-2.5 px-4 font-semibold text-[#F5F5F5]">Psychological Urgency</td>
-                        <td className="py-2.5 px-4 font-mono font-bold text-[#FF9F1C]">{result.urgencyScore} / 100</td>
-                        <td className="py-2.5 px-4 text-[#888888]">Time-pressure / account-freeze coercion cues</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2.5 px-4 font-semibold text-[#F5F5F5]">Authority Impersonation</td>
-                        <td className="py-2.5 px-4 font-mono font-bold text-[#FF9F1C]">{result.impersonationScore} / 100</td>
-                        <td className="py-2.5 px-4 text-[#888888]">Bank, RBI, Telecom, Police, or Tax spoofing signals</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2.5 px-4 font-semibold text-[#F5F5F5]">Link Infrastructure Risk</td>
-                        <td className="py-2.5 px-4 font-mono font-bold text-[#FF1B1B]">{result.linkRiskScore} / 100</td>
-                        <td className="py-2.5 px-4 text-[#888888]">TLD risk, IP/punycode patterns &amp; reputation feeds</td>
-                      </tr>
-                      <tr>
-                        <td className="py-2.5 px-4 font-semibold text-[#F5F5F5]">Inference Provenance</td>
-                        <td className="py-2.5 px-4 font-mono text-[#00D4FF]">{result.model} ({result.latencyMs}ms)</td>
-                        <td className="py-2.5 px-4 font-mono text-[11px] text-[#888888]">
-                          {result.requestId ? `x-request-id: ${result.requestId}` : 'Deterministic Fallback Kernel'}
-                        </td>
-                      </tr>
+                    <tbody className="divide-y divide-[#E5E7EB]">
+                      {lookalikeChecks.map((m) => (
+                        <tr key={m.host}>
+                          <td className="py-2 px-3 font-mono text-[#1A1A1A]">{m.host}</td>
+                          <td className="py-2 px-3 font-mono text-[#6B7280]">{m.closestOfficial}</td>
+                          <td className="py-2 px-3 font-mono">{m.distance}</td>
+                          <td className="py-2 px-3">
+                            {m.isOfficial ? (
+                              <span className="text-[#15803D] font-semibold">Official Website</span>
+                            ) : m.isLookalike ? (
+                              <span className="text-[#DC2626] font-semibold">Lookalike Spoof</span>
+                            ) : (
+                              <span className="text-[#D97706] font-semibold">External / Unverified</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
+              )}
 
-                {/* Detected Indicators */}
-                <div className="space-y-2">
-                  <div className="text-[11px] font-mono uppercase tracking-wider text-[#888888] font-semibold">
-                    Detected Forensic Flags
-                  </div>
-                  <ul className="space-y-1.5">
-                    {result.flags.map((flag, idx) => (
-                      <li
-                        key={idx}
-                        className="p-2.5 rounded-lg bg-[#03030A] border border-[#1A1A2E] text-xs text-[#F5F5F5] flex items-start gap-2"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#00D4FF] shrink-0 mt-0.5" />
-                        <span>{flag}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* URL Reputation Table */}
-                {result.urlReputations && result.urlReputations.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="text-[11px] font-mono uppercase tracking-wider text-[#888888] font-semibold">
-                      URL Threat-Intelligence Matrix
-                    </div>
-                    <div className="overflow-x-auto rounded-lg border border-[#1A1A2E]">
-                      <table className="w-full text-left text-[11px] font-mono border-collapse">
-                        <thead>
-                          <tr className="bg-[#03030A] border-b border-[#1A1A2E] text-[#888888]">
-                            <th className="py-2 px-3">URL</th>
-                            <th className="py-2 px-3">URLhaus</th>
-                            <th className="py-2 px-3">OpenPhish</th>
-                            <th className="py-2 px-3">SafeBrowsing</th>
-                            <th className="py-2 px-3">VirusTotal</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-[#1A1A2E]">
-                          {result.urlReputations.map((rep) => (
-                            <tr key={rep.url} className="bg-[#03030A]/30">
-                              <td className="py-2 px-3 text-[#F5F5F5] max-w-[180px] truncate">{rep.url}</td>
-                              <td className="py-2 px-3 text-[#00D4FF]">{rep.urlhaus.status}</td>
-                              <td className="py-2 px-3 text-[#00D4FF]">{rep.openPhish.status}</td>
-                              <td className="py-2 px-3 text-[#888888]">{rep.safeBrowsing.status}</td>
-                              <td className="py-2 px-3 text-[#888888]">{rep.virusTotal.status}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                )}
-
-                {/* Recommended Action & Export Strip */}
-                <div className="p-3.5 rounded-lg bg-[#03030A] border border-[#00D4FF]/30 text-xs text-[#F5F5F5] leading-relaxed">
-                  <strong className="text-[#00D4FF] font-mono uppercase text-[11px] block mb-1">
-                    Recommended Statutory Action
-                  </strong>
-                  {result.recommendation}
-                </div>
-
-                {/* Action Buttons: BSA §63 PDF, JSON, Generate FIR */}
-                <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-[#1A1A2E]">
-                  <button
-                    type="button"
-                    onClick={handleExportBsa63Pdf}
-                    disabled={exportingCert}
-                    className="px-4 py-2 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#03030A] text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    {exportingCert ? 'Generating PDF...' : 'Export BSA 2023 §63 PDF'}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleExportJson}
-                    className="px-3.5 py-2 rounded-lg bg-[#03030A] hover:bg-[#121222] border border-[#1A1A2E] text-[#F5F5F5] text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
-                  >
-                    <FileJson className="w-3.5 h-3.5 text-[#00D4FF]" />
-                    Export JSON
-                  </button>
-
-                  <Link
-                    href="/incident"
-                    className="ml-auto px-4 py-2 rounded-lg bg-[#00D4FF]/15 hover:bg-[#00D4FF]/25 border border-[#00D4FF]/35 text-[#00D4FF] text-xs font-bold flex items-center gap-1.5 transition-colors"
-                  >
-                    Generate FIR Draft <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
-
-                {certStatus && (
-                  <div className="p-2.5 rounded bg-[#00D4FF]/10 border border-[#00D4FF]/30 font-mono text-[11px] text-[#00D4FF] flex items-center gap-2">
-                    <Lock className="w-3.5 h-3.5 shrink-0" />
-                    <span>{certStatus}</span>
-                  </div>
-                )}
-
-                {/* Honest Accuracy Disclaimer */}
-                <p className="text-[11px] font-mono text-[#888888] border-t border-[#1A1A2E] pt-3">
-                  Disclaimer: AI-assisted indication — verify manually before legal action. Deterministic SHA-256 and Levenshtein calculations execute locally.
-                </p>
+              <div className="text-[11px] font-mono text-[#6B7280]">
+                Engine: {result.provider} ({result.model}) · Latency: {result.latencyMs}ms
+                {result.requestId ? ` · x-request-id: ${result.requestId}` : ''}
               </div>
-            )}
-          </TerminalCard>
-        </div>
-      </div>
+            </div>
+          }
+        />
+      )}
     </div>
   )
 }

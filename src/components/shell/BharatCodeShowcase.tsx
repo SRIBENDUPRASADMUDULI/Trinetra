@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
   Cpu, ShieldCheck, Zap, ArrowRight, RefreshCw,
-  CheckCircle2, Lock, Terminal, Sparkles, AlertTriangle, Activity
+  CheckCircle2, Lock, Sparkles, AlertTriangle, Activity
 } from 'lucide-react'
 import { useLang } from '@/lib/i18n-context'
 
@@ -24,7 +24,6 @@ interface TelemetrySnapshot {
   activeModel: string
   fallbackModel: string
   lastGatewayStatus?: string
-  bharatcodeReachable?: boolean
 }
 
 export function BharatCodeShowcase() {
@@ -42,7 +41,6 @@ export function BharatCodeShowcase() {
     provider: string
     model: string
     latencyMs: number
-    requestId?: string | null
     redactedPreview?: string
   } | null>(null)
 
@@ -79,7 +77,6 @@ export function BharatCodeShowcase() {
     }
   }, [])
 
-  // Auto-dispatch live probe on load + refresh telemetry periodically
   useEffect(() => {
     runLivePing()
     const id = setInterval(refreshTelemetry, 10000)
@@ -103,7 +100,6 @@ export function BharatCodeShowcase() {
           provider: data.analysis.provider,
           model: data.analysis.model,
           latencyMs: data.analysis.latencyMs,
-          requestId: data.analysis.requestId,
           redactedPreview: demoInput.replace(/\b\d{12}\b/g, '[REDACTED-GOVT-ID]'),
         })
         refreshTelemetry()
@@ -118,172 +114,160 @@ export function BharatCodeShowcase() {
   const isPlanUpgrade = probe?.status === 'PLAN_UPGRADE_402' || telemetry?.lastGatewayStatus === 'PLAN_UPGRADE_402'
 
   return (
-    <section className="relative rounded-xl bg-[#0A0A12]/95 border border-[#00D4FF]/45 p-6 lg:p-7 backdrop-blur-md shadow-[0_0_32px_rgba(0,212,255,0.16)] overflow-hidden">
-      {/* Top Cinematic Highlight Accent Strip */}
-      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#FF1B1B] via-[#FF9F1C] to-[#00D4FF]" />
-
+    <section className="rounded-xl bg-[#FFFFFF] border-2 border-[#BFDBFE] p-5 sm:p-6 shadow-xs">
       <div className="space-y-5">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#1A1A2E] pb-5">
-          <div className="space-y-2">
+        {/* Highlighted Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#E5E7EB] pb-4">
+          <div className="space-y-1.5">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#00D4FF]/15 border border-[#00D4FF]/50 text-[11px] font-mono font-bold text-[#00D4FF] uppercase tracking-wider shadow-[0_0_12px_rgba(0,212,255,0.2)]">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EFF6FF] border border-[#BFDBFE] text-[11px] font-semibold text-[#2563EB]">
                 <Cpu className="w-3.5 h-3.5" />
-                {t('BHARATCODE API · AI HARNESS ENGINE', 'भारतकोड एपीआई · एआई हार्नेस इंजन')}
+                {t('Powered by BharatCode AI Harness', 'भारतकोड एआई हार्नेस द्वारा संचालित')}
               </span>
-              <span className="px-2.5 py-1 rounded bg-[#03030A] border border-[#00FF9D]/35 text-[10px] font-mono text-[#00FF9D]">
-                DPDP ACT §2023 · store: false
+              <span className="px-2.5 py-1 rounded-full bg-[#F0FDF4] border border-[#BBF7D0] text-[11px] font-medium text-[#15803D]">
+                Private · No Chat Stored
               </span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#03030A] border border-[#1A1A2E] text-[10px] font-mono text-[#F5F5F5]">
-                <Activity className="w-3 h-3 text-[#00FF9D]" />
-                API Calls: <strong>{telemetry?.totalCalls ?? 0}</strong>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F8F9FA] border border-[#E5E7EB] text-[11px] text-[#4B5563]">
+                <Activity className="w-3 h-3 text-[#2563EB]" />
+                Requests: <strong className="text-[#1A1A1A]">{telemetry?.totalCalls ?? 0}</strong>
                 {' · '}
-                bharatcode.ai RTT:{' '}
-                <strong className="text-[#00FF9D]">
+                Response Time:{' '}
+                <strong className="font-mono text-[#15803D]">
                   {(probe?.latencyMs || telemetry?.latencyMs || 0) > 0
                     ? `${probe?.latencyMs || telemetry?.latencyMs}ms`
-                    : 'Probing...'}
+                    : 'Checking...'}
                 </strong>
               </span>
             </div>
-            <h2 className="text-lg sm:text-xl font-bold text-[#F5F5F5] font-serif">
+            <h2 className="text-lg font-bold text-[#1A1A1A]">
               {t(
-                'BharatCode AI Multi-Model Gateway & Deterministic Fail-Safe Pipeline',
-                'भारतकोड एआई मल्टी-मॉडल गेटवे एवं डिटरमिनिस्टिक फेल-सेफ पाइपलाइन'
+                'Smart Safety Engine with Automatic Privacy Protection',
+                'स्वचालित गोपनीयता सुरक्षा के साथ स्मार्ट सुरक्षा इंजन'
               )}
             </h2>
-            <p className="text-xs text-[#888888] max-w-3xl leading-relaxed">
+            <p className="text-xs text-[#6B7280] max-w-3xl">
               {t(
-                'Live requests execute against BHARATCODE_API_KEY (qwen-3.8-27b -> deepseek-v4.1-flash) with automatic Aadhaar/PAN PII masking, offensive prompt filtering, and zero-hallucination deterministic failover.',
-                'BHARATCODE_API_KEY पर लाइव अनुरोध (qwen-3.8-27b -> deepseek-v4.1-flash), स्वचालित आधार/पैन मास्किंग और डिटरमिनिस्टिक फेलओवर के साथ।'
+                'Live checks go through your BharatCode API key (qwen-3.8-27b & deepseek-v4.1-flash). Personal Aadhaar and bank card numbers are hidden automatically before AI analysis.',
+                'लाइव जांच आपकी भारतकोड एपीआई कुंजी के माध्यम से होती है, और एआई विश्लेषण से पहले आधार व कार्ड नंबर अपने-आप छिप जाते हैं।'
               )}
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             <button
               onClick={runLivePing}
               disabled={pinging}
-              className="px-4 py-2 rounded-lg bg-[#00D4FF] hover:bg-[#00b8de] text-[#03030A] text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer shadow-[0_0_18px_rgba(0,212,255,0.35)]"
+              className="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${pinging ? 'animate-spin' : ''}`} />
-              {pinging ? 'Sending Request...' : 'Ping BharatCode API'}
+              {pinging ? 'Checking Connection...' : 'Test BharatCode API'}
             </button>
             <Link
               href="/mentor"
-              className="px-4 py-2 rounded-lg bg-[#03030A] hover:border-[#00D4FF]/60 border border-[#1A1A2E] text-[#F5F5F5] text-xs font-medium flex items-center gap-1.5 transition-colors"
+              className="px-4 py-2 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E5E7EB] text-[#1A1A1A] text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
-              Open AI Copilot <ArrowRight className="w-3.5 h-3.5 text-[#00D4FF]" />
+              Ask AI Assistant <ArrowRight className="w-3.5 h-3.5 text-[#2563EB]" />
             </Link>
           </div>
         </div>
 
+        {/* 3 Plain Steps */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg bg-[#03030A] border border-[#00D4FF]/25 space-y-2">
+          <div className="p-4 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[#00D4FF] font-bold">
-                Stage 01 · Guardrails
-              </span>
-              <ShieldCheck className="w-4 h-4 text-[#00D4FF]" />
+              <span className="text-[11px] font-semibold text-[#2563EB]">Step 1 · Privacy Shield</span>
+              <ShieldCheck className="w-4 h-4 text-[#2563EB]" />
             </div>
-            <div className="text-sm font-semibold text-[#F5F5F5]">PII &amp; Injection Shield</div>
-            <p className="text-[11px] text-[#888888] leading-relaxed">
-              Automatically masks 12-digit Govt IDs as{' '}
-              <code className="text-[#00FF9D] font-mono">[REDACTED-GOVT-ID]</code> and blocks jailbreaks under IT Act §66.
+            <div className="text-sm font-semibold text-[#1A1A1A]">Hides Sensitive IDs</div>
+            <p className="text-xs text-[#6B7280]">
+              Replaces 12-digit ID numbers with{' '}
+              <code className="font-mono text-[#15803D] bg-[#F0FDF4] px-1 rounded">[REDACTED-GOVT-ID]</code> automatically.
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-[#03030A] border border-[#FF9F1C]/25 space-y-2">
+          <div className="p-4 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[#FF9F1C] font-bold">
-                Stage 02 · Model Cascade
-              </span>
-              <Zap className="w-4 h-4 text-[#FF9F1C]" />
+              <span className="text-[11px] font-semibold text-[#D97706]">Step 2 · Smart Fallback</span>
+              <Zap className="w-4 h-4 text-[#D97706]" />
             </div>
-            <div className="text-sm font-semibold text-[#F5F5F5]">Multi-Model Failover</div>
-            <p className="text-[11px] text-[#888888] leading-relaxed">
-              Routes <code className="text-[#F5F5F5] font-mono">qwen-3.8-27b</code> &rarr;{' '}
-              <code className="text-[#F5F5F5] font-mono">deepseek-v4.1-flash</code> &rarr; Zero-Hallucination Kernel.
+            <div className="text-sm font-semibold text-[#1A1A1A]">Always Gives an Answer</div>
+            <p className="text-xs text-[#6B7280]">
+              Tries BharatCode AI models first and falls back smoothly to rule-based checks if offline.
             </p>
           </div>
 
-          <div className="p-4 rounded-lg bg-[#03030A] border border-[#00FF9D]/25 space-y-2">
+          <div className="p-4 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-[#00FF9D] font-bold">
-                Stage 03 · Legal Provenance
-              </span>
-              <Lock className="w-4 h-4 text-[#00FF9D]" />
+              <span className="text-[11px] font-semibold text-[#15803D]">Step 3 · Proof Ready</span>
+              <Lock className="w-4 h-4 text-[#15803D]" />
             </div>
-            <div className="text-sm font-semibold text-[#F5F5F5]">BSA 2023 §63 Binding</div>
-            <p className="text-[11px] text-[#888888] leading-relaxed">
-              Every inference records gateway <code className="text-[#00FF9D] font-mono">x-request-id</code>, IST timestamp, and SHA-256 hash.
+            <div className="text-sm font-semibold text-[#1A1A1A]">Verified Evidence PDF</div>
+            <p className="text-xs text-[#6B7280]">
+              Attaches an IST timestamp and digital fingerprint (SHA-256) to every saved report.
             </p>
           </div>
         </div>
 
-        <div className="p-4 rounded-lg bg-[#03030A] border border-[#1A1A2E] space-y-3">
+        {/* Live Try Bar */}
+        <div className="p-4 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
-            <div className="flex items-center gap-2 text-xs font-mono text-[#00D4FF] shrink-0 font-semibold">
-              <Terminal className="w-3.5 h-3.5" />
-              <span>HARNESS TEST:</span>
-            </div>
+            <span className="text-xs font-semibold text-[#1A1A1A] shrink-0">
+              Try Privacy &amp; Scam Test:
+            </span>
             <input
               type="text"
               value={demoInput}
               onChange={(e) => setDemoInput(e.target.value)}
-              aria-label="Test AI harness with SMS and Govt ID"
-              className="flex-1 bg-[#0A0A12] border border-[#1A1A2E] rounded-lg px-3 py-2 text-xs font-mono text-[#F5F5F5] focus:outline-none focus:border-[#00D4FF]"
+              aria-label="Test privacy redaction and scam check"
+              className="flex-1 bg-[#FFFFFF] border border-[#E5E7EB] rounded-lg px-3 py-2 text-xs text-[#1A1A1A] focus:outline-none focus:border-[#2563EB]"
             />
             <button
               onClick={runLiveHarnessDemo}
               disabled={demoRunning}
-              className="px-4 py-2 rounded-lg bg-[#FF1B1B] hover:bg-[#e01414] text-[#F5F5F5] text-xs font-bold flex items-center justify-center gap-1.5 shrink-0 transition-colors cursor-pointer shadow-[0_0_16px_rgba(255,27,27,0.3)]"
+              className="px-4 py-2 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shrink-0 transition-colors cursor-pointer"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              {demoRunning ? 'Running...' : 'Run Pipeline'}
+              {demoRunning ? 'Checking...' : 'Run Live Check'}
             </button>
           </div>
 
           {demoOutput && (
-            <div className="p-3 rounded-lg bg-[#0A0A12] border border-[#00FF9D]/35 flex flex-col gap-1.5 text-xs font-mono">
+            <div className="p-3 rounded-lg bg-[#FFFFFF] border border-[#BBF7D0] flex flex-col gap-1.5 text-xs">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2 text-[#00FF9D] font-bold">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
+                <div className="flex items-center gap-2 text-[#15803D] font-bold">
+                  <CheckCircle2 className="w-4 h-4" />
                   <span>{demoOutput.verdict} ({demoOutput.confidence})</span>
                 </div>
-                <div className="flex items-center gap-3 text-[11px] text-[#888888]">
-                  <span>Provider: <strong className="text-[#F5F5F5]">{demoOutput.provider}</strong></span>
-                  <span>Model: <strong className="text-[#FF9F1C]">{demoOutput.model}</strong></span>
-                  <span>RTT: <strong className="text-[#00FF9D]">{demoOutput.latencyMs}ms</strong></span>
+                <div className="flex items-center gap-3 text-[11px] text-[#6B7280]">
+                  <span>Engine: <strong className="text-[#1A1A1A]">{demoOutput.model}</strong></span>
+                  <span className="font-mono">{demoOutput.latencyMs}ms</span>
                 </div>
               </div>
-              <div className="text-[11px] text-[#888888] break-all">
-                Sanitized Input: <span className="text-[#F5F5F5]">{demoOutput.redactedPreview}</span>
+              <div className="text-[11px] text-[#6B7280] break-all">
+                Hidden ID Preview: <span className="font-mono text-[#1A1A1A]">{demoOutput.redactedPreview}</span>
               </div>
             </div>
           )}
 
           {probe && (
             <div
-              className={`p-3 rounded-lg border text-xs font-mono flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
+              className={`p-3 rounded-lg border text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${
                 probe.connected
-                  ? 'bg-[#00FF9D]/10 border-[#00FF9D]/35 text-[#00FF9D]'
-                  : 'bg-[#FF9F1C]/10 border-[#FF9F1C]/35 text-[#FF9F1C]'
+                  ? 'bg-[#F0FDF4] border-[#BBF7D0] text-[#15803D]'
+                  : 'bg-[#FFFBEB] border-[#FDE68A] text-[#92400E]'
               }`}
             >
               <div className="flex items-center gap-2">
                 {probe.connected ? (
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
                 ) : (
-                  <AlertTriangle className="w-4 h-4 shrink-0" />
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-[#D97706]" />
                 )}
                 <span>
-                  Live Key Probe: <strong>{probe.status}</strong> ({probe.model}) · {probe.latencyMs}ms
-                  {isPlanUpgrade ? ' · Key reached bharatcode.ai (verify student email or upgrade Lite for OK_200)' : ''}
+                  API Status: <strong>{probe.status}</strong> ({probe.model}) · {probe.latencyMs}ms
+                  {isPlanUpgrade ? ' · Connected to bharatcode.ai (verify student email or upgrade Lite for OK_200 AI responses)' : ''}
                 </span>
               </div>
-              {probe.requestId && (
-                <span className="text-[10px] text-[#888888]">x-request-id: {probe.requestId}</span>
-              )}
             </div>
           )}
         </div>
