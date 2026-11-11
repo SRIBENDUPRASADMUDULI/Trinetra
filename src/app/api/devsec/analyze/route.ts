@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { callAIHarness } from '@/lib/ai-harness'
-import { SYSTEM_PROMPTS } from '@/lib/llm'
+import { callAIHarness, sanitizeInput, checkDefensiveSafety } from '@/lib/ai-harness'
+import { streamLLM, SYSTEM_PROMPTS } from '@/lib/llm'
 
 export interface PrivacyFinding {
   category: string
@@ -80,9 +80,10 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const mode = body?.mode === 'sast' ? 'sast' : 'privacy'
-    const text = typeof body?.text === 'string' ? body.text.trim() : ''
+    const wantStream = Boolean(body?.stream)
+    const rawText = typeof body?.text === 'string' ? body.text.trim() : ''
 
-    if (text.length < 10) {
+    if (rawText.length < 10) {
       return NextResponse.json(
         { success: false, error: 'Input must be at least 10 characters' },
         { status: 400 }
@@ -90,14 +91,69 @@ export async function POST(req: NextRequest) {
     }
 
     if (mode === 'sast') {
-      const harnessRes = await callAIHarness(
-        [{ role: 'user', content: `Audit this code for vulnerabilities and provide patched code:\n\n${text.slice(0, 4000)}` }],
-        {
-          systemPrompt: SYSTEM_PROMPTS.DEVSEC,
-          temperature: 0.2,
-          maxTokens: 1200,
-        }
-      )
+      const { sanitized } = sanitizeInput(rawText.slice(0, 4000))
+      const safety = checkDefensiveSafety(sanitized)
+      if (!safety.safe && safety.refusal) {
+        return NextResponse.json({ success: false, error: safety.refusal }, { status: 400 })
+      }
+
+      const promptMsgs = [{ role: 'user' as const, content: `Audit this code for vulnerabilities and provide patched code:\n\n${sanitized}` }]
+
+      if (wantStream) {
+        const encoder = new TextEncoder()
+        const readable = new ReadableStream({
+          async start(controller) {
+            const sendChunk = (token: string) => {
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ token })}\n\n`))
+            }
+            try {
+              let emitted = false
+              for await (const token of streamLLM(promptMsgs, SYSTEM_PROMPTS.DEVSEC)) {
+                if (token.includes('[LLM_OFFLINE]')) break
+                emitted = true
+                sendChunk(token)
+              }
+              if (!emitted) {
+                const fallback = await callAIHarness(promptMsgs, {
+                  systemPrompt: SYSTEM_PROMPTS.DEVSEC,
+                  temperature: 0.2,
+                  maxTokens: 1200,
+                })
+                for (const piece of fallback.content.match(/.{1,18}(\s|$)|\S+/g) ?? [fallback.content]) {
+                  sendChunk(piece)
+                  await new Promise(r => setTimeout(r, 12))
+                }
+              }
+            } catch {
+              const fallback = await callAIHarness(promptMsgs, {
+                systemPrompt: SYSTEM_PROMPTS.DEVSEC,
+                temperature: 0.2,
+                maxTokens: 1200,
+              })
+              for (const piece of fallback.content.match(/.{1,18}(\s|$)|\S+/g) ?? [fallback.content]) {
+                sendChunk(piece)
+                await new Promise(r => setTimeout(r, 12))
+              }
+            } finally {
+              controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+              controller.close()
+            }
+          },
+        })
+        return new Response(readable, {
+          headers: {
+            'Content-Type': 'text/event-stream; charset=utf-8',
+            'Cache-Control': 'no-cache, no-transform',
+            Connection: 'keep-alive',
+          },
+        })
+      }
+
+      const harnessRes = await callAIHarness(promptMsgs, {
+        systemPrompt: SYSTEM_PROMPTS.DEVSEC,
+        temperature: 0.2,
+        maxTokens: 1200,
+      })
       return NextResponse.json({
         success: true,
         mode: 'sast',
@@ -108,10 +164,10 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    const fallbackFindings = scanPrivacyDeterministically(text)
+    const fallbackFindings = scanPrivacyDeterministically(rawText)
     try {
       const harnessRes = await callAIHarness(
-        [{ role: 'user', content: `Audit this Privacy Policy / Terms & Conditions under DPDP Act 2023:\n\n${text.slice(0, 3500)}` }],
+        [{ role: 'user', content: `Audit this Privacy Policy / Terms & Conditions under DPDP Act 2023:\n\n${rawText.slice(0, 3500)}` }],
         {
           systemPrompt: PRIVACY_JSON_PROMPT,
           temperature: 0.2,

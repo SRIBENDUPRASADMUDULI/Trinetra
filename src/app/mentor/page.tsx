@@ -4,6 +4,7 @@ import {
   Send, RotateCcw, Copy, Check, Terminal, Eye,
   Sparkles, Cpu, ShieldCheck, HelpCircle, Activity
 } from 'lucide-react'
+import { consumeTokenStream } from '@/lib/sse-stream'
 
 interface Message {
   id: string
@@ -83,16 +84,33 @@ export default function MentorPage() {
     setInput('')
     setErrorBanner(null)
     setLoading(true)
+    const agentId = `a-${Date.now()}`
     try {
       const res = await fetch('/api/mentor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [{ role: 'user', content: text.trim() }] }),
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: text.trim() }],
+          stream: true,
+        }),
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      const data = await res.json()
-      const agentMsg: Message = { id: `a-${Date.now()}`, role: 'agent', content: data.content, ts: timestamp() }
-      setMessages(prev => [...prev, agentMsg])
+
+      const contentType = res.headers.get('content-type') || ''
+      if (contentType.includes('text/event-stream')) {
+        const agentTs = timestamp()
+        setMessages(prev => [...prev, { id: agentId, role: 'agent', content: '', ts: agentTs }])
+        setLoading(false)
+        await consumeTokenStream(res, accumulated => {
+          setMessages(prev =>
+            prev.map(m => (m.id === agentId ? { ...m, content: accumulated } : m))
+          )
+        })
+      } else {
+        const data = await res.json()
+        const agentMsg: Message = { id: agentId, role: 'agent', content: data.content, ts: timestamp() }
+        setMessages(prev => [...prev, agentMsg])
+      }
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : 'Connection failed'
       setErrorBanner(`SecOps Copilot request failed (${errMsg}). Check API configuration.`)
@@ -172,7 +190,7 @@ export default function MentorPage() {
             </button>
             <span className="text-[11px] font-mono font-bold px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              120B KERNEL READY
+              STREAMING READY
             </span>
           </div>
         </div>
@@ -265,6 +283,9 @@ export default function MentorPage() {
 
         {/* Input Bar */}
         <div className="p-4 bg-[#0F1523]/90 border-t border-white/[0.08] flex-shrink-0">
+          <p className="text-[10px] text-slate-500 mb-2 px-1">
+            AI-assisted indication — verify legal citations and remediation commands manually before action.
+          </p>
           <div className="flex items-center gap-3 bg-white/[0.04] border border-white/[0.08] focus-within:border-rose-500/60 rounded-full px-4 py-2 transition-colors">
             <input
               ref={inputRef}

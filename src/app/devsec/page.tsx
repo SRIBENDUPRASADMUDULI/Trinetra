@@ -4,6 +4,7 @@ import { TerminalCard } from '@/components/ui/terminal-card'
 import { StatusBadge } from '@/components/ui/status-badge'
 import { SAST_PAIRS } from '@/lib/datasets/sast-loader'
 import { Copy, Check, ShieldAlert, ShieldCheck, Code, Sparkles, AlertTriangle, FileText } from 'lucide-react'
+import { consumeTokenStream } from '@/lib/sse-stream'
 
 const SAMPLE_POLICIES = [
   {
@@ -85,13 +86,23 @@ export default function DevSecPage() {
       const res = await fetch('/api/devsec/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'sast', text: customCode.trim() }),
+        body: JSON.stringify({ mode: 'sast', text: customCode.trim(), stream: true }),
       })
-      const data = await res.json()
-      if (!res.ok || !data.success) {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
         throw new Error(data.error || 'Custom SAST audit failed')
       }
-      setSastReport(data.report)
+      const contentType = res.headers.get('content-type') || ''
+      if (contentType.includes('text/event-stream')) {
+        setSastLoading(false)
+        setSastReport('')
+        await consumeTokenStream(res, accumulated => {
+          setSastReport(accumulated)
+        })
+      } else {
+        const data = await res.json()
+        setSastReport(data.report)
+      }
     } catch (err: unknown) {
       setSastError(err instanceof Error ? err.message : 'Unable to audit source code')
     } finally {
@@ -128,6 +139,11 @@ export default function DevSecPage() {
             <span>8 VULN PAIRS</span>
           </div>
         </div>
+      </div>
+
+      <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 text-xs flex items-center gap-2">
+        <AlertTriangle size={14} className="text-amber-400 shrink-0" />
+        <span><strong>AI-Assisted Indication:</strong> SAST &amp; DPDP Act audit results require manual engineering and legal review before production deployment.</span>
       </div>
 
       {/* Mode Tabs */}
