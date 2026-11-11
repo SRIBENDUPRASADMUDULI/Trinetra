@@ -79,6 +79,14 @@ Be technical, tactical, and specific with command line utilities, paths, and pro
         SYSTEM_PROMPTS.PLAYBOOK
       )
 
+      if (
+        llmResponse.model === 'deterministic/kernel' ||
+        llmResponse.model === 'deterministic-security-heuristics' ||
+        llmResponse.content.includes('[DETERMINISTIC_SECURITY_KERNEL]')
+      ) {
+        throw new Error('Engage domain-specific SANS PICERL template fallback')
+      }
+
       return NextResponse.json({
         success: true,
         playbookId,

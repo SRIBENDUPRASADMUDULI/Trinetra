@@ -77,8 +77,10 @@ const telemetryState: AIHarnessTelemetry = {
 }
 
 export function getAIHarnessTelemetry(): AIHarnessTelemetry {
+  const hasKey = !!(env.BHARATCODE_API_KEY || env.LLM_API_KEY)
   return {
     ...telemetryState,
+    status: hasKey ? telemetryState.status : 'offline',
     baseUrl: env.BHARATCODE_BASE_URL,
     activeModel: env.BHARATCODE_MODEL || 'qwen-3.8-27b',
     fallbackModel: env.BHARATCODE_FALLBACK_MODEL || 'deepseek-v4.1-flash',
@@ -517,14 +519,29 @@ export async function pingBharatCode(): Promise<{
       }
     }
 
-    const err = await res.text().catch(() => '')
+    const errRaw = await res.text().catch(() => '')
+    let parsedMsg = errRaw
+    try {
+      const parsed = JSON.parse(errRaw)
+      if (parsed?.error?.message) parsedMsg = parsed.error.message
+    } catch {
+      // keep raw error text
+    }
+
+    if (res.status === 402 || res.status === 429) {
+      telemetryState.status = 'fallback'
+      telemetryState.latencyMs = latencyMs
+    } else if (res.status === 401 || res.status === 403) {
+      telemetryState.status = 'offline'
+    }
+
     return {
       connected: false,
       model,
       latencyMs,
       requestId,
-      status: `HTTP_${res.status}`,
-      note: `BharatCode API responded: ${err.slice(0, 120)}`,
+      status: res.status === 402 ? 'PLAN_UPGRADE_402' : `HTTP_${res.status}`,
+      note: parsedMsg.slice(0, 240),
     }
   } catch (err: any) {
     return {

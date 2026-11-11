@@ -41,8 +41,9 @@
 
 html {
   height: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   background-color: #1E2235;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -51,8 +52,17 @@ body {
   font-family: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.6;
-  min-height: 100%;
-  overflow-x: hidden;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+/* Hide scrollbars cleanly where horizontal/vertical rails scroll */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Modern Minimalist Scrollbars */
@@ -100,7 +110,7 @@ a {
 
 .glass-card {
   background-color: #262B40;
-  border-radius: 1rem; /* rounded-2xl */
+  border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -119,4 +129,88 @@ a {
 
 .tooltip-animate {
   animation: tooltip-fade 0.15s ease-out forwards;
+}
+
+/* =========================================================================
+   Responsive Media Queries (Mobile, Tablet, Compact Laptops & Accessibility)
+   ========================================================================= */
+
+/* Compact laptop screens (e.g. 1280x720 / 1366x768) */
+@media (max-height: 760px) {
+  [role="dialog"] > div {
+    max-height: calc(100dvh - 1.5rem);
+  }
+}
+
+/* Tablet and below (<= 1024px) */
+@media (max-width: 1024px) {
+  body {
+    font-size: 13.5px;
+  }
+
+  .glass-card {
+    border-radius: 0.875rem;
+  }
+}
+
+/* Mobile viewports (<= 768px) */
+@media (max-width: 768px) {
+  body {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  main {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  pre,
+  code {
+    word-break: break-word;
+  }
+}
+
+/* Narrow smartphones (<= 480px) */
+@media (max-width: 480px) {
+  .glass-card {
+    border-radius: 0.75rem;
+  }
+
+  h1 {
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Touch devices: prevent sticky hover elevation */
+@media (hover: none) {
+  .glass-card:hover {
+    transform: none;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print optimization for FIR & Forensic PDF exports */
+@media print {
+  aside,
+  header {
+    display: none !important;
+  }
+
+  body,
+  main {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
 }

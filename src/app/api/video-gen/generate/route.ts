@@ -18,7 +18,14 @@ export async function POST(req: NextRequest) {
 
     try {
       const llmRes = await callLLM([{ role: 'user', content: userPrompt }], systemPrompt)
-      if (llmRes && llmRes.content && !llmRes.content.includes('[LLM_OFFLINE]')) {
+      if (
+        llmRes &&
+        llmRes.content &&
+        llmRes.model !== 'deterministic/kernel' &&
+        llmRes.model !== 'deterministic-security-heuristics' &&
+        !llmRes.content.includes('[LLM_OFFLINE]') &&
+        !llmRes.content.includes('[DETERMINISTIC_SECURITY_KERNEL]')
+      ) {
         const cleaned = llmRes.content.replace(/^```(json)?/m, '').replace(/```$/m, '').trim()
         script = JSON.parse(cleaned)
       }

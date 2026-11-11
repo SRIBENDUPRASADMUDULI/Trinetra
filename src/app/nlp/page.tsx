@@ -3,14 +3,33 @@ import React, { useState } from 'react'
 import { TerminalCard } from '@/components/ui/terminal-card'
 import { extractUrlFeatures, type UrlFeatures } from '@/lib/crypto-utils'
 import {
-  Search, AlertTriangle, ShieldCheck, ShieldAlert,
-  CheckCircle2, ArrowRight, Sparkles, ExternalLink, Globe, MessageSquare
+  ShieldAlert,
+  Sparkles,
+  Globe,
+  MessageSquare,
 } from 'lucide-react'
+
+interface SampleAnalysis {
+  title?: string
+  text?: string
+  verdict?: string
+  category: string
+  confidence: string
+  threatType: string
+  flags: string[]
+  recommendation: string
+  urgencyScore: number
+  impersonationScore: number
+  linkRiskScore: number
+  provider?: string
+  model?: string
+}
 
 const SCAM_SAMPLES = [
   {
     title: 'SBI KYC Expiry Scam (SMS / WhatsApp)',
     text: 'प्रिय ग्राहक, आपका SBI खाता आज रात 12:00 बजे ब्लॉक कर दिया जाएगा। तुरंत अपना आधार और पैन अपडेट करें: http://sbi-kyc-update-portal.xyz/verify नहीं करने पर आपका बैलेंस फ्रीज हो जाएगा। — SBI Helpdesk Team',
+    verdict: 'HIGH CONFIDENCE PHISHING SCAM',
     category: 'BANKING FRAUD',
     confidence: '96.4%',
     threatType: 'Credential Harvesting & Urgency Coercion',
@@ -27,6 +46,7 @@ const SCAM_SAMPLES = [
   {
     title: 'Electricity Disconnection Warning',
     text: 'Dear Consumer, Your electricity connection will be DISCONNECTED tonight at 9:30 PM from the power sub-station because previous bill was not updated. Please immediately contact power officer at +91-9876543210 or settle bill: http://bijli-bill-payment.site/pay',
+    verdict: 'HIGH CONFIDENCE PHISHING SCAM',
     category: 'UTILITY SCAM',
     confidence: '94.2%',
     threatType: 'Utility Disconnection Extortion',
@@ -43,6 +63,7 @@ const SCAM_SAMPLES = [
   {
     title: 'Income Tax Refund Approval Notice',
     text: 'Income Tax Department Notice: Your tax refund of Rs 18,420 has been approved. Please verify your bank account details within 24 hours to receive direct deposit in UPI: http://incometax-refund-portal.online/claim?ref=ITX998472',
+    verdict: 'HIGH CONFIDENCE PHISHING SCAM',
     category: 'GOVT IMPERSONATION',
     confidence: '97.1%',
     threatType: 'Govt Portal Phishing & Account Takeover',
@@ -65,28 +86,47 @@ const DEMO_URLS = [
 ]
 
 export default function NLPPage() {
-  // Pre-populate with realistic dummy data so the UI is immediately alive and symmetrical
-  const [selectedSampleIdx, setSelectedSampleIdx] = useState(0)
+  const [selectedSampleIdx, setSelectedSampleIdx] = useState<number | null>(0)
   const [msgText, setMsgText] = useState(SCAM_SAMPLES[0].text)
   const [msgLoading, setMsgLoading] = useState(false)
+  const [analysisResult, setAnalysisResult] = useState<SampleAnalysis>(SCAM_SAMPLES[0])
   const [activeTab, setActiveTab] = useState<'message' | 'url'>('message')
 
-  // URL inspection dummy data pre-loaded
   const [url, setUrl] = useState(DEMO_URLS[0].url)
   const [urlFeatures, setUrlFeatures] = useState<UrlFeatures | null>(() => extractUrlFeatures(DEMO_URLS[0].url))
   const [urlLoading, setUrlLoading] = useState(false)
 
-  const activeSample = SCAM_SAMPLES[selectedSampleIdx]
-
   function handleSelectSample(idx: number) {
     setSelectedSampleIdx(idx)
     setMsgText(SCAM_SAMPLES[idx].text)
-    setMsgLoading(true)
-    setTimeout(() => setMsgLoading(false), 300)
+    setAnalysisResult(SCAM_SAMPLES[idx])
   }
 
   function handleCustomMessageChange(val: string) {
     setMsgText(val)
+    if (selectedSampleIdx !== null && val !== SCAM_SAMPLES[selectedSampleIdx]?.text) {
+      setSelectedSampleIdx(null)
+    }
+  }
+
+  async function scanMessage() {
+    if (!msgText.trim()) return
+    setMsgLoading(true)
+    try {
+      const res = await fetch('/api/nlp/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: msgText.trim() }),
+      })
+      const data = await res.json()
+      if (data.success && data.analysis) {
+        setAnalysisResult(data.analysis)
+      }
+    } catch {
+      // Keep current analysis state on network hiccup
+    } finally {
+      setMsgLoading(false)
+    }
   }
 
   function analyzeUrl(targetUrl?: string) {
@@ -96,7 +136,7 @@ export default function NLPPage() {
     setTimeout(() => {
       setUrlFeatures(extractUrlFeatures(query.trim()))
       setUrlLoading(false)
-    }, 400)
+    }, 250)
   }
 
   function handleSelectUrl(targetUrl: string) {
@@ -104,20 +144,22 @@ export default function NLPPage() {
     analyzeUrl(targetUrl)
   }
 
+  const isBenignVerdict = analysisResult.verdict?.toUpperCase().includes('BENIGN')
+
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
-      {/* Header Banner - Symmetrical & Clean */}
-      <div className="p-6 rounded-2xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
+    <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
+      {/* Header Banner */}
+      <div className="p-4 sm:p-6 rounded-2xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-5">
         <div className="space-y-1.5 max-w-2xl">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 font-mono text-[11px] font-bold">
-              08 // NLP PHISHING & LINK RISK
+              08 // NLP PHISHING &amp; LINK RISK
             </span>
-            <span className="text-slate-600 text-xs">•</span>
+            <span className="text-slate-600 text-xs hidden sm:inline">•</span>
             <span className="text-[11px] font-mono text-slate-300">ENG · HIN · HINGLISH</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            NLP Phishing & Link Risk Inspector
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+            NLP Phishing &amp; Link Risk Inspector
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
             Inspect suspicious SMS, WhatsApp forwards, email warnings, and web links to detect social engineering, banking impersonation, and fraudulent infrastructure in real-time.
@@ -125,51 +167,51 @@ export default function NLPPage() {
         </div>
 
         <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2">
+          <div className="px-3.5 sm:px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>HEURISTIC ENGINE 100%</span>
+            <span>{analysisResult.provider === 'bharatcode' ? 'BHARATCODE NLP LIVE' : 'HEURISTIC ENGINE 100%'}</span>
           </div>
         </div>
       </div>
 
       {/* Navigation Switcher Pills */}
-      <div className="flex p-1 rounded-full bg-white/[0.04] border border-white/[0.08] w-fit">
+      <div className="flex flex-wrap sm:flex-nowrap p-1 rounded-2xl sm:rounded-full bg-white/[0.04] border border-white/[0.08] w-full sm:w-fit gap-1 sm:gap-0">
         <button
           onClick={() => setActiveTab('message')}
-          className={`px-5 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 ${
+          className={`flex-1 sm:flex-initial justify-center px-4 sm:px-5 py-2 rounded-xl sm:rounded-full text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === 'message'
               ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-white shadow-md shadow-indigo-950/40'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <MessageSquare size={14} />
-          <span>SMS & WhatsApp Message Scanner</span>
+          <MessageSquare size={14} className="shrink-0" />
+          <span>SMS &amp; WhatsApp Message Scanner</span>
         </button>
         <button
           onClick={() => setActiveTab('url')}
-          className={`px-5 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-2 ${
+          className={`flex-1 sm:flex-initial justify-center px-4 sm:px-5 py-2 rounded-xl sm:rounded-full text-xs font-semibold transition-all flex items-center gap-2 cursor-pointer ${
             activeTab === 'url'
               ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-white shadow-md shadow-indigo-950/40'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Globe size={14} />
-          <span>Deep Link & URL Risk Engine</span>
+          <Globe size={14} className="shrink-0" />
+          <span>Deep Link &amp; URL Risk Engine</span>
         </button>
       </div>
 
       {/* ========================================================== */}
-      {/* TAB 1: SMS & WHATSAPP MESSAGE SCANNER (SYMMETRICAL GRID)   */}
+      {/* TAB 1: SMS & WHATSAPP MESSAGE SCANNER                      */}
       {/* ========================================================== */}
       {activeTab === 'message' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          {/* Left Column: Input & Test Scenarios (5 cols) */}
-          <div className="lg:col-span-6 flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch">
+          {/* Left Column: Input & Test Scenarios */}
+          <div className="lg:col-span-6 flex flex-col min-w-0">
             <TerminalCard title="Message Analysis Input" label="PAYLOAD" labelColor="red" className="flex-1">
               <div className="space-y-4 text-xs flex flex-col h-full">
                 {/* 1-Click Preset Samples */}
                 <div>
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                     <span className="text-slate-400 font-medium">Select a test scenario (1-click):</span>
                     <span className="text-[11px] font-mono text-rose-400">Benchmark Threat Vectors</span>
                   </div>
@@ -178,21 +220,21 @@ export default function NLPPage() {
                       <button
                         key={idx}
                         onClick={() => handleSelectSample(idx)}
-                        className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between group ${
+                        className={`w-full text-left p-3 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-2 group cursor-pointer ${
                           selectedSampleIdx === idx
                             ? 'bg-indigo-500/15 border-indigo-500/30 shadow-sm shadow-indigo-950/20'
                             : 'bg-white/[0.02] hover:bg-white/[0.05] border-white/[0.06]'
                         }`}
                       >
-                        <div>
+                        <div className="min-w-0 flex-1">
                           <p className={`font-semibold text-xs ${selectedSampleIdx === idx ? 'text-white' : 'text-slate-200 group-hover:text-indigo-300'}`}>
                             {sample.title}
                           </p>
-                          <p className="text-[11px] text-slate-400 truncate max-w-sm mt-0.5 font-normal">
-                            {sample.text.slice(0, 55)}...
+                          <p className="text-[11px] text-slate-400 truncate mt-0.5 font-normal">
+                            {sample.text}
                           </p>
                         </div>
-                        <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-white/[0.06] text-slate-300 font-semibold flex-shrink-0">
+                        <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-white/[0.06] text-slate-300 font-semibold shrink-0 w-fit">
                           {sample.category}
                         </span>
                       </button>
@@ -215,12 +257,9 @@ export default function NLPPage() {
                 </div>
 
                 <button
-                  onClick={() => {
-                    setMsgLoading(true)
-                    setTimeout(() => setMsgLoading(false), 500)
-                  }}
+                  onClick={scanMessage}
                   disabled={msgLoading || !msgText.trim()}
-                  className="w-full py-3 px-6 font-semibold text-xs text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 rounded-full shadow-lg shadow-indigo-950/40 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 px-6 font-semibold text-xs text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50 rounded-full shadow-lg shadow-indigo-950/40 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Sparkles size={14} />
                   <span>{msgLoading ? 'Analyzing NLP Markers...' : 'Scan Message for Social Engineering'}</span>
@@ -229,26 +268,44 @@ export default function NLPPage() {
             </TerminalCard>
           </div>
 
-          {/* Right Column: Threat Breakdown (6 cols, perfectly symmetrical) */}
-          <div className="lg:col-span-6 flex flex-col">
+          {/* Right Column: Threat Breakdown */}
+          <div className="lg:col-span-6 flex flex-col min-w-0">
             <TerminalCard title="Threat Breakdown & Analysis" label="AUDITED" labelColor="green" className="flex-1">
               <div className="space-y-4 text-xs">
                 {/* Alert Banner */}
-                <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-950/20 via-slate-900/40 to-transparent border border-rose-500/20 flex items-start gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-rose-500/15 border border-rose-500/25 flex items-center justify-center text-rose-300 flex-shrink-0 mt-0.5">
+                <div
+                  className={`p-4 rounded-2xl border flex items-start gap-3.5 ${
+                    isBenignVerdict
+                      ? 'bg-gradient-to-r from-emerald-950/20 via-slate-900/40 to-transparent border-emerald-500/20'
+                      : 'bg-gradient-to-r from-rose-950/20 via-slate-900/40 to-transparent border-rose-500/20'
+                  }`}
+                >
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 border ${
+                      isBenignVerdict
+                        ? 'bg-emerald-500/15 border-emerald-500/25 text-emerald-300'
+                        : 'bg-rose-500/15 border-rose-500/25 text-rose-300'
+                    }`}
+                  >
                     <ShieldAlert size={20} />
                   </div>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+                  <div className="space-y-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="font-bold text-sm text-white">
-                        HIGH CONFIDENCE PHISHING SCAM
+                        {analysisResult.verdict || 'HIGH CONFIDENCE PHISHING SCAM'}
                       </span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300 border border-rose-500/25 font-bold">
-                        {activeSample.confidence}
+                      <span
+                        className={`text-[10px] font-mono px-2 py-0.5 rounded-full border font-bold ${
+                          isBenignVerdict
+                            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25'
+                            : 'bg-rose-500/15 text-rose-300 border-rose-500/25'
+                        }`}
+                      >
+                        {analysisResult.confidence}
                       </span>
                     </div>
                     <p className="text-xs text-slate-300 leading-relaxed font-normal">
-                      Identified as <strong>{activeSample.threatType}</strong> targeting Indian consumers through synthetic urgency cues.
+                      Identified as <strong>{analysisResult.threatType}</strong> ({analysisResult.category}).
                     </p>
                   </div>
                 </div>
@@ -256,37 +313,43 @@ export default function NLPPage() {
                 {/* Threat Indicators Metrics */}
                 <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-3">
                   <span className="text-xs font-bold text-slate-200 block uppercase tracking-wider font-mono">
-                    Psychological & Technical Risk Meters
+                    Psychological &amp; Technical Risk Meters
                   </span>
 
                   <div className="space-y-2.5">
                     <div>
-                      <div className="flex justify-between text-[11px] mb-1">
+                      <div className="flex justify-between gap-2 text-[11px] mb-1">
                         <span className="text-slate-400">Manufactured Panic / Urgency Pressure</span>
-                        <span className="text-rose-400 font-mono font-bold">{activeSample.urgencyScore}% [CRITICAL]</span>
+                        <span className="text-rose-400 font-mono font-bold shrink-0">
+                          {analysisResult.urgencyScore}% [{analysisResult.urgencyScore >= 70 ? 'CRITICAL' : analysisResult.urgencyScore >= 40 ? 'ELEVATED' : 'LOW'}]
+                        </span>
                       </div>
                       <div className="h-2 w-full bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
-                        <div className="h-full bg-gradient-to-r from-rose-500 to-rose-600 rounded-full" style={{ width: `${activeSample.urgencyScore}%` }} />
+                        <div className="h-full bg-gradient-to-r from-rose-500 to-rose-600 rounded-full transition-all" style={{ width: `${analysisResult.urgencyScore}%` }} />
                       </div>
                     </div>
 
                     <div>
-                      <div className="flex justify-between text-[11px] mb-1">
+                      <div className="flex justify-between gap-2 text-[11px] mb-1">
                         <span className="text-slate-400">Authority / Institutional Impersonation</span>
-                        <span className="text-rose-400 font-mono font-bold">{activeSample.impersonationScore}% [CRITICAL]</span>
+                        <span className="text-rose-400 font-mono font-bold shrink-0">
+                          {analysisResult.impersonationScore}% [{analysisResult.impersonationScore >= 70 ? 'CRITICAL' : analysisResult.impersonationScore >= 40 ? 'ELEVATED' : 'LOW'}]
+                        </span>
                       </div>
                       <div className="h-2 w-full bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
-                        <div className="h-full bg-gradient-to-r from-rose-500 to-rose-600 rounded-full" style={{ width: `${activeSample.impersonationScore}%` }} />
+                        <div className="h-full bg-gradient-to-r from-rose-500 to-rose-600 rounded-full transition-all" style={{ width: `${analysisResult.impersonationScore}%` }} />
                       </div>
                     </div>
 
                     <div>
-                      <div className="flex justify-between text-[11px] mb-1">
-                        <span className="text-slate-400">Link Typosquatting & Unofficial TLD</span>
-                        <span className="text-amber-400 font-mono font-bold">{activeSample.linkRiskScore}% [ELEVATED]</span>
+                      <div className="flex justify-between gap-2 text-[11px] mb-1">
+                        <span className="text-slate-400">Link Typosquatting &amp; Unofficial TLD</span>
+                        <span className="text-amber-400 font-mono font-bold shrink-0">
+                          {analysisResult.linkRiskScore}% [{analysisResult.linkRiskScore >= 70 ? 'CRITICAL' : analysisResult.linkRiskScore >= 40 ? 'ELEVATED' : 'LOW'}]
+                        </span>
                       </div>
                       <div className="h-2 w-full bg-white/[0.04] rounded-full overflow-hidden border border-white/[0.06]">
-                        <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full" style={{ width: `${activeSample.linkRiskScore}%` }} />
+                        <div className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full transition-all" style={{ width: `${analysisResult.linkRiskScore}%` }} />
                       </div>
                     </div>
                   </div>
@@ -298,10 +361,10 @@ export default function NLPPage() {
                     Detected Forensic Red Flags:
                   </span>
                   <ul className="space-y-1.5 text-slate-300">
-                    {activeSample.flags.map((flag, i) => (
+                    {analysisResult.flags.map((flag, i) => (
                       <li key={i} className="flex items-start gap-2 leading-relaxed">
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-400 mt-1.5 flex-shrink-0" />
-                        <span>{flag}</span>
+                        <span className="break-words">{flag}</span>
                       </li>
                     ))}
                   </ul>
@@ -311,7 +374,7 @@ export default function NLPPage() {
                 <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-slate-300 space-y-1">
                   <span className="font-bold text-emerald-300 block">Recommended Action Protocol:</span>
                   <p className="leading-relaxed">
-                    {activeSample.recommendation}
+                    {analysisResult.recommendation}
                   </p>
                 </div>
               </div>
@@ -321,12 +384,11 @@ export default function NLPPage() {
       )}
 
       {/* ========================================================== */}
-      {/* TAB 2: DEEP LINK & URL SCANNER (SYMMETRICAL GRID)          */}
+      {/* TAB 2: DEEP LINK & URL SCANNER                             */}
       {/* ========================================================== */}
       {activeTab === 'url' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-          {/* Left Column: URL Input & Demos (5 cols) */}
-          <div className="lg:col-span-6 flex flex-col">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch">
+          <div className="lg:col-span-6 flex flex-col min-w-0">
             <TerminalCard title="URL Inspection Input" label="WEB LINK" labelColor="red" className="flex-1">
               <div className="space-y-4 text-xs flex flex-col h-full">
                 {/* One Click URL Samples */}
@@ -339,14 +401,14 @@ export default function NLPPage() {
                       <button
                         key={idx}
                         onClick={() => handleSelectUrl(demo.url)}
-                        className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between group ${
+                        className={`w-full text-left p-3 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 group cursor-pointer ${
                           url === demo.url
                             ? 'bg-indigo-500/15 border-indigo-500/30 shadow-sm'
                             : 'bg-white/[0.02] hover:bg-white/[0.05] border-white/[0.06]'
                         }`}
                       >
-                        <span className="font-mono text-xs text-indigo-300 truncate max-w-xs">{demo.url}</span>
-                        <span className="text-[10px] text-slate-400">{demo.label}</span>
+                        <span className="font-mono text-xs text-indigo-300 truncate min-w-0">{demo.url}</span>
+                        <span className="text-[10px] text-slate-400 shrink-0">{demo.label}</span>
                       </button>
                     ))}
                   </div>
@@ -357,19 +419,19 @@ export default function NLPPage() {
                   <label className="text-slate-300 block font-medium">
                     Or enter any web address:
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={url}
                       onChange={e => setUrl(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') analyzeUrl() }}
                       placeholder="https://suspicious-website.xyz/login?ref=..."
-                      className="flex-1 p-3 bg-white/[0.04] border border-white/[0.08] rounded-xl font-mono text-xs text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-500 transition-colors"
+                      className="flex-1 min-w-0 p-3 bg-white/[0.04] border border-white/[0.08] rounded-xl font-mono text-xs text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-500 transition-colors"
                     />
                     <button
                       onClick={() => analyzeUrl()}
                       disabled={urlLoading || !url.trim()}
-                      className="px-5 font-semibold text-xs text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-40 rounded-xl shadow-md transition-all"
+                      className="px-5 py-3 sm:py-0 font-semibold text-xs text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-40 rounded-xl shadow-md transition-all cursor-pointer shrink-0"
                     >
                       {urlLoading ? '...' : 'Inspect'}
                     </button>
@@ -387,26 +449,25 @@ export default function NLPPage() {
             </TerminalCard>
           </div>
 
-          {/* Right Column: URL Features Report (6 cols) */}
-          <div className="lg:col-span-6 flex flex-col">
+          <div className="lg:col-span-6 flex flex-col min-w-0">
             <TerminalCard title="Link Risk Intelligence Report" label="LEXICAL AUDIT" labelColor="green" className="flex-1">
               {urlFeatures ? (
                 <div className="space-y-4 text-xs">
                   {/* Score Banner */}
-                  <div className={`p-4 rounded-2xl border flex items-center justify-between ${
+                  <div className={`p-4 rounded-2xl border flex items-center justify-between gap-3 ${
                     urlFeatures.riskScore > 60
                       ? 'bg-rose-500/10 border-rose-500/30 text-rose-300'
                       : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
                   }`}>
-                    <div className="space-y-1">
+                    <div className="space-y-1 min-w-0">
                       <p className="font-bold text-sm">
                         {urlFeatures.riskScore > 60 ? 'MALICIOUS / HIGH RISK DOMAIN' : 'BENIGN / LOW RISK DOMAIN'}
                       </p>
-                      <p className="text-xs text-slate-400 font-mono truncate max-w-sm">
+                      <p className="text-xs text-slate-400 font-mono truncate">
                         Target: {url}
                       </p>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                       <span className="text-2xl font-extrabold font-mono">{urlFeatures.riskScore}</span>
                       <span className="text-xs text-slate-500 block">/ 100 Risk</span>
                     </div>
@@ -418,7 +479,7 @@ export default function NLPPage() {
                       Extracted Lexical Markers
                     </span>
 
-                    <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3 text-xs">
                       <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.04]">
                         <span className="text-slate-500 block text-[11px]">Shannon Entropy:</span>
                         <strong className="text-white font-mono">{urlFeatures.entropy.toFixed(2)}</strong>

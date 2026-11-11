@@ -248,17 +248,22 @@ export async function* streamLLM(
     ...messages,
   ]
 
-  const response = await fetch(`${env.LLM_BASE_URL}/chat/completions`, {
+  const baseUrl = (env.BHARATCODE_BASE_URL || env.LLM_BASE_URL).replace(/\/+$/, '')
+  const apiKey = env.BHARATCODE_API_KEY || env.LLM_API_KEY
+  const model = env.BHARATCODE_MODEL || env.LLM_MODEL
+
+  const response = await fetch(`${baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${env.LLM_API_KEY}`,
+      'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: env.LLM_MODEL,
+      model,
       messages: allMessages,
       temperature: 0.3,
       max_tokens: 2048,
+      store: false,
       stream: true,
     }),
   })

@@ -117,22 +117,20 @@ export function Sidebar() {
 
   return (
     <aside
-      className="fixed top-0 left-0 h-screen w-16 bg-[#181B2A] border-r border-white/[0.06] flex flex-col items-center py-3 z-50 select-none justify-between overflow-hidden"
+      className="fixed bottom-0 left-0 right-0 h-14 w-full md:top-0 md:bottom-auto md:right-auto md:h-screen md:w-16 bg-[#181B2A]/95 md:bg-[#181B2A] backdrop-blur-md md:backdrop-blur-none border-t md:border-t-0 md:border-r border-white/[0.08] flex flex-row md:flex-col items-center px-2 md:px-0 md:py-3 z-50 select-none md:justify-between overflow-x-auto md:overflow-visible no-scrollbar"
       aria-label="Primary Navigation Rail"
     >
-      {/* TOP: Brand Monogram Badge */}
-      <div className="flex flex-col items-center gap-3 w-full shrink-0">
+      {/* TOP (Desktop) / LEFT (Mobile): Brand Monogram Badge */}
+      <div className="flex flex-row md:flex-col items-center gap-2 md:gap-3 shrink-0 mr-1 md:mr-0 md:w-full">
         <Link
           href="/"
           className="group relative flex items-center justify-center cursor-pointer"
           title="TRINETRA Sovereign Cyber Intelligence"
         >
-          {/* Rounded Coral-Pink Square Badge with 'TR' Monogram */}
-          <div className="w-10 h-10 rounded-xl bg-[#FF5A79] flex items-center justify-center font-bold text-white text-base shadow-md shadow-[#FF5A79]/30 transition-transform group-hover:scale-105 active:scale-95">
+          <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-[#FF5A79] flex items-center justify-center font-bold text-white text-sm md:text-base shadow-md shadow-[#FF5A79]/30 transition-transform group-hover:scale-105 active:scale-95">
             TR
           </div>
-          {/* Brand Hover Tooltip */}
-          <div className="absolute left-16 ml-2 px-3 py-1.5 rounded-xl bg-[#262B40] border border-white/10 text-white text-xs font-semibold whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 flex items-center gap-2">
+          <div className="hidden md:flex absolute left-16 ml-2 px-3 py-1.5 rounded-xl bg-[#262B40] border border-white/10 text-white text-xs font-semibold whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 items-center gap-2">
             <span>TRINETRA</span>
             <span className="text-[10px] font-mono text-[#FF5A79] bg-[#FF5A79]/15 px-1.5 py-0.5 rounded">
               SOC 2.4
@@ -141,8 +139,8 @@ export function Sidebar() {
         </Link>
       </div>
 
-      {/* CENTER: All 12 Operational Module Icons (Scrollable with Hidden Bar) */}
-      <nav className="flex-1 overflow-y-auto no-scrollbar w-full px-2 py-2 flex flex-col items-center gap-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* CENTER: All 12 Operational Module Icons */}
+      <nav className="flex-1 overflow-x-auto md:overflow-x-visible md:overflow-y-auto no-scrollbar md:w-full px-1 md:px-2 md:py-2 flex flex-row md:flex-col items-center gap-1.5">
         {ALL_12_MODULES.map(item => {
           const isActive =
             item.path === '/'
@@ -150,12 +148,12 @@ export function Sidebar() {
               : pathname === item.path || pathname?.startsWith(item.path + '/')
 
           return (
-            <div key={item.id} className="relative group w-full flex justify-center">
+            <div key={item.id} className="relative group shrink-0 md:w-full flex justify-center">
               <Link
                 href={item.path}
-                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-[#FF5A79] text-white shadow-md shadow-[#FF5A79]/35 font-bold scale-105'
+                    ? 'bg-[#FF5A79] text-white shadow-md shadow-[#FF5A79]/35 font-bold md:scale-105'
                     : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
                 }`}
                 aria-label={item.label}
@@ -163,8 +161,8 @@ export function Sidebar() {
                 <item.Icon size={18} className="shrink-0" />
               </Link>
 
-              {/* Hover Flyout Tooltip */}
-              <div className="absolute left-16 ml-2 px-3 py-1.5 rounded-xl bg-[#262B40] border border-white/10 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-50 whitespace-nowrap flex flex-col gap-0.5">
+              {/* Desktop Hover Flyout Tooltip */}
+              <div className="hidden md:flex absolute left-16 ml-2 px-3 py-1.5 rounded-xl bg-[#262B40] border border-white/10 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-50 whitespace-nowrap flex-col gap-0.5">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-white font-sans">
                     {item.label}
@@ -182,9 +180,8 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* BOTTOM: Operational Status & Node Identifier */}
-      <div className="flex flex-col items-center gap-2 w-full px-2 pt-2 border-t border-white/[0.06] shrink-0">
-        {/* Live Operational Status Dot */}
+      {/* BOTTOM: Operational Status & Node Identifier (Desktop Rail Only) */}
+      <div className="hidden md:flex flex-col items-center gap-2 w-full px-2 pt-2 border-t border-white/[0.06] shrink-0">
         <div className="relative group flex items-center justify-center">
           <div className="w-8 h-8 rounded-lg bg-[#262B40] flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -195,7 +192,6 @@ export function Sidebar() {
           </div>
         </div>
 
-        {/* Node Identifier */}
         <div
           className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[10px] font-mono font-bold text-slate-400"
           title="Sovereign Node IN-DEL-01"
