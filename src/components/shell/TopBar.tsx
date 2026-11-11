@@ -27,6 +27,7 @@ const TOP_NAV_TABS: TopNavTab[] = [
   { id: 'deepfake-xai', label: 'Deepfake XAI', path: '/deepfake-xai' },
   { id: 'academy', label: 'Cyber Range', path: '/academy' },
   { id: 'devsec', label: 'DevSecOps', path: '/devsec' },
+  { id: 'research', label: 'Research', path: '/research' },
 ]
 
 export function TopBar() {

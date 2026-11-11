@@ -132,6 +132,15 @@ const ALL_MODULES: CommandItem[] = [
     Icon: Video,
   },
   {
+    id: '12',
+    title: '12 // Research & OSS Stack',
+    sub: '10 peer-reviewed papers, DOIs & HuggingFace/GitHub models',
+    path: '/research',
+    category: 'Intelligence',
+    tag: 'CITATIONS',
+    Icon: Shield,
+  },
+  {
     id: '11',
     title: '11 // Deepfake XAI',
     sub: 'CGFD, FADI & Grad-CAM explainability with BNS §319(2) briefs',
