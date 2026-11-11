@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Scale,
   Video,
+  BookOpen,
 } from 'lucide-react'
 
 interface RailItem {
@@ -25,91 +26,20 @@ interface RailItem {
   Icon: React.ComponentType<{ size?: number; className?: string }>
 }
 
-const ALL_12_MODULES: RailItem[] = [
-  {
-    id: '00',
-    label: '00 // Command Center',
-    sub: 'National SOC & Threat Posture',
-    path: '/',
-    Icon: Home,
-  },
-  {
-    id: '01',
-    label: '01 // Cyber Range',
-    sub: 'Mission Briefings & Hex Stream',
-    path: '/academy',
-    Icon: GraduationCap,
-  },
-  {
-    id: '02',
-    label: '02 // AI SecOps Copilot',
-    sub: 'BharatCode Defense Assistant',
-    path: '/mentor',
-    Icon: Bot,
-  },
-  {
-    id: '03',
-    label: '03 // DevSecOps',
-    sub: 'Code Audit & Privacy Check',
-    path: '/devsec',
-    Icon: Code2,
-  },
-  {
-    id: '04',
-    label: '04 // Incident Crisis & FIR',
-    sub: 'BNS 2023 & IT Act Dossiers',
-    path: '/incident',
-    Icon: AlertOctagon,
-  },
-  {
-    id: '05',
-    label: '05 // Forensics Lab',
-    sub: 'EXIF Scrub & GPS Forensics',
-    path: '/exif',
-    Icon: Microscope,
-  },
-  {
-    id: '06',
-    label: '06 // Sentinel Guard',
-    sub: 'k-Anonymity Identity Audits',
-    path: '/breach',
-    Icon: KeyRound,
-  },
-  {
-    id: '07',
-    label: '07 // Threat Radar',
-    sub: 'NCIIPC & CERT-In Feed',
-    path: '/intel',
-    Icon: Radar,
-  },
-  {
-    id: '08',
-    label: '08 // NLP Phishing Scan',
-    sub: 'Lure Detection & URL Entropy',
-    path: '/nlp',
-    Icon: MessageSquare,
-  },
-  {
-    id: '09',
-    label: '09 // Cyber-IR Engine',
-    sub: 'BNS 2023 FIR & SANS Playbooks',
-    path: '/cyber-ir',
-    Icon: Scale,
-  },
-  {
-    id: '10',
-    label: '10 // Video Studio',
-    sub: 'Incident Briefing Video Vault',
-    path: '/video-gen',
-    Icon: Video,
-  },
-  {
-    id: '11',
-    label: '11 // Deepfake XAI',
-    sub: 'CGFD & FADI Forensic Evidence',
-    path: '/deepfake-xai',
-    Icon: ScanFace,
-  },
+const ALL_DEPARTMENTS: RailItem[] = [
+  { id: '00', label: '00 // National SOC', sub: 'DEF CON Posture & Sector Health', path: '/', Icon: Home },
+  { id: '01', label: '01 // Cyber Range & Training', sub: 'CTF Exercises & Packet Analysis', path: '/academy', Icon: GraduationCap },
+  { id: '02', label: '02 // AI Operations Copilot', sub: 'BharatCode Streaming SecOps Chat', path: '/mentor', Icon: Bot },
+  { id: '03', label: '03 // Secure Code Auditor', sub: 'SAST CWE Audit & DPDP Compliance', path: '/devsec', Icon: Code2 },
+  { id: '04', label: '04 // Incident Response & FIR', sub: 'BNS 2023 Drafting & BSA §63 Cert', path: '/incident', Icon: AlertOctagon },
+  { id: '05', label: '05 // Digital Forensics', sub: 'EXIF Scrub & Evidence Hash Chain', path: '/exif', Icon: Microscope },
+  { id: '06', label: '06 // Identity & Breach Monitor', sub: 'k-Anonymity SHA-1 Leak Audit', path: '/breach', Icon: KeyRound },
+  { id: '07', label: '07 // Threat Intelligence', sub: 'CVE Registry & MITRE ATT&CK', path: '/intel', Icon: Radar },
+  { id: '08', label: '08 // Phishing & Link Inspector', sub: 'Live SMS/URL & Reputation Desk', path: '/nlp', Icon: MessageSquare },
+  { id: '09', label: '09 // IR Playbook Engine', sub: 'SANS PICERL & Statutory FIR', path: '/cyber-ir', Icon: Scale },
+  { id: '10', label: '10 // Incident Video Briefing', sub: 'Briefing Synthesis Studio', path: '/video-gen', Icon: Video },
+  { id: '11', label: '11 // Deepfake Forensics', sub: 'Grad-CAM, CGFD & FADI Evidence', path: '/deepfake-xai', Icon: ScanFace },
+  { id: '12', label: '12 // Research & Citations', sub: 'Academic Sources & OSS Stack', path: '/research', Icon: BookOpen },
 ]
 
 export function Sidebar() {
@@ -117,31 +47,31 @@ export function Sidebar() {
 
   return (
     <aside
-      className="fixed bottom-0 left-0 right-0 h-14 w-full md:top-0 md:bottom-auto md:right-auto md:h-screen md:w-16 bg-[#181B2A]/95 md:bg-[#181B2A] backdrop-blur-md md:backdrop-blur-none border-t md:border-t-0 md:border-r border-white/[0.08] flex flex-row md:flex-col items-center px-2 md:px-0 md:py-3 z-50 select-none md:justify-between overflow-x-auto md:overflow-visible no-scrollbar"
-      aria-label="Primary Navigation Rail"
+      className="fixed bottom-0 left-0 right-0 h-14 w-full md:top-0 md:bottom-auto md:right-auto md:h-screen md:w-16 bg-[#071222] border-t md:border-t-0 md:border-r border-[#233554] flex flex-row md:flex-col items-center px-2 md:px-0 md:py-3 z-50 select-none md:justify-between overflow-x-auto md:overflow-visible no-scrollbar"
+      aria-label="Primary Department Navigation Rail"
     >
-      {/* TOP (Desktop) / LEFT (Mobile): Brand Monogram Badge */}
+      {/* Emblem / Monogram Badge */}
       <div className="flex flex-row md:flex-col items-center gap-2 md:gap-3 shrink-0 mr-1 md:mr-0 md:w-full">
         <Link
           href="/"
           className="group relative flex items-center justify-center cursor-pointer"
-          title="TRINETRA Sovereign Cyber Intelligence"
+          title="TRINETRA — National Cyber Defense Console"
         >
-          <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-[#FF5A79] flex items-center justify-center font-bold text-white text-sm md:text-base shadow-md shadow-[#FF5A79]/30 transition-transform group-hover:scale-105 active:scale-95">
+          <div className="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-[#172A45] border border-[#FF9F1C]/60 flex items-center justify-center font-bold text-[#FF9F1C] text-sm md:text-base shadow-sm transition-colors group-hover:bg-[#FF9F1C] group-hover:text-[#0A192F]">
             TR
           </div>
-          <div className="hidden md:flex absolute left-16 ml-2 px-3 py-1.5 rounded-xl bg-[#262B40] border border-white/10 text-white text-xs font-semibold whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 items-center gap-2">
-            <span>TRINETRA</span>
-            <span className="text-[10px] font-mono text-[#FF5A79] bg-[#FF5A79]/15 px-1.5 py-0.5 rounded">
-              SOC 2.4
+          <div className="hidden md:flex absolute left-16 ml-2 px-3 py-1.5 rounded-lg bg-[#172A45] border border-[#233554] text-[#F8F9FA] text-xs font-semibold whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 items-center gap-2">
+            <span>TRINETRA · त्रिनेत्र</span>
+            <span className="text-[10px] font-mono text-[#FF9F1C] bg-[#FF9F1C]/10 px-1.5 py-0.5 rounded border border-[#FF9F1C]/30">
+              IT ACT §70A
             </span>
           </div>
         </Link>
       </div>
 
-      {/* CENTER: All 12 Operational Module Icons */}
+      {/* Department Navigation Links */}
       <nav className="flex-1 overflow-x-auto md:overflow-x-visible md:overflow-y-auto no-scrollbar md:w-full px-1 md:px-2 md:py-2 flex flex-row md:flex-col items-center gap-1.5">
-        {ALL_12_MODULES.map(item => {
+        {ALL_DEPARTMENTS.map(item => {
           const isActive =
             item.path === '/'
               ? pathname === '/'
@@ -151,27 +81,24 @@ export function Sidebar() {
             <div key={item.id} className="relative group shrink-0 md:w-full flex justify-center">
               <Link
                 href={item.path}
-                className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                className={`w-9 h-9 md:w-10 md:h-10 rounded-lg flex items-center justify-center transition-all cursor-pointer border ${
                   isActive
-                    ? 'bg-[#FF5A79] text-white shadow-md shadow-[#FF5A79]/35 font-bold md:scale-105'
-                    : 'text-slate-400 hover:text-white hover:bg-white/[0.06]'
+                    ? 'bg-[#FF9F1C] text-[#0A192F] border-[#FF9F1C] font-bold'
+                    : 'text-[#8D99AE] border-transparent hover:text-[#F8F9FA] hover:bg-[#172A45] hover:border-[#233554]'
                 }`}
                 aria-label={item.label}
               >
-                <item.Icon size={18} className="shrink-0" />
+                <item.Icon size={17} className="shrink-0" />
               </Link>
 
-              {/* Desktop Hover Flyout Tooltip */}
-              <div className="hidden md:flex absolute left-16 ml-2 px-3 py-1.5 rounded-xl bg-[#262B40] border border-white/10 shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-50 whitespace-nowrap flex-col gap-0.5">
+              <div className="hidden md:flex absolute left-16 ml-2 px-3 py-1.5 rounded-lg bg-[#172A45] border border-[#233554] shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-150 z-50 whitespace-nowrap flex-col gap-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-white font-sans">
+                  <span className="text-xs font-bold text-[#F8F9FA] font-sans">
                     {item.label}
                   </span>
-                  {isActive && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#FF5A79]" />
-                  )}
+                  {isActive && <span className="w-1.5 h-1.5 rounded-full bg-[#FF9F1C]" />}
                 </div>
-                <span className="text-[10px] text-slate-400 font-sans">
+                <span className="text-[10px] text-[#8D99AE] font-sans">
                   {item.sub}
                 </span>
               </div>
@@ -180,21 +107,11 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* BOTTOM: Operational Status & Node Identifier (Desktop Rail Only) */}
-      <div className="hidden md:flex flex-col items-center gap-2 w-full px-2 pt-2 border-t border-white/[0.06] shrink-0">
-        <div className="relative group flex items-center justify-center">
-          <div className="w-8 h-8 rounded-lg bg-[#262B40] flex items-center justify-center text-slate-300 hover:text-white transition-colors cursor-pointer">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          </div>
-          <div className="absolute left-16 ml-2 px-3 py-1.5 rounded-xl bg-[#262B40] border border-white/10 text-xs text-slate-200 whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50">
-            <div className="font-semibold text-emerald-400">12 Engines Armed</div>
-            <div className="text-[10px] text-slate-400">Sovereign Defense Grid Active</div>
-          </div>
-        </div>
-
+      {/* Operational Jurisdiction Identifier (Desktop Rail Only) */}
+      <div className="hidden md:flex flex-col items-center gap-2 w-full px-2 pt-2 border-t border-[#233554] shrink-0">
         <div
-          className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center text-[10px] font-mono font-bold text-slate-400"
-          title="Sovereign Node IN-DEL-01"
+          className="w-8 h-8 rounded-lg bg-[#172A45] border border-[#233554] flex items-center justify-center text-[10px] font-mono font-bold text-[#00A896]"
+          title="Jurisdiction: Republic of India (CERT-In / BNS 2023)"
         >
           IN
         </div>

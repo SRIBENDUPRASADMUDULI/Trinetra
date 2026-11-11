@@ -61,7 +61,7 @@ const telemetryState: AIHarnessTelemetry = {
   fallbackModel: env.BHARATCODE_FALLBACK_MODEL || 'deepseek-v4.1-flash',
   models: ['qwen-3.8-27b', 'deepseek-v4.1-flash'],
   status: 'connected',
-  latencyMs: 148,
+  latencyMs: 0,
   totalCalls: 0,
   lastRequestId: null,
   lastTimestamp: new Date().toISOString(),
@@ -71,7 +71,7 @@ const telemetryState: AIHarnessTelemetry = {
     statutoryEnforced: true,
   },
   tokenBudget: {
-    estimatedUsed: 1420,
+    estimatedUsed: 0,
     capacity: 8192,
   },
 }

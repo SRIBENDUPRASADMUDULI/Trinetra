@@ -1,34 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-canvas:           #1E2235;
-  --color-surface:          #262B40;
-  --color-surface-hover:    #2E344E;
-  --color-surface-border:   rgba(255, 255, 255, 0.08);
+  /* Official Indian Government Cyber Design System */
+  --color-canvas:           #0A192F;
+  --color-surface:          #172A45;
+  --color-surface-hover:    #1E3554;
+  --color-surface-border:   #233554;
 
-  --color-coral:            #FF5A79;
-  --color-coral-hover:      #FF4065;
-  --color-coral-subtle:     rgba(255, 90, 121, 0.15);
+  --color-saffron:          #FF9F1C;
+  --color-saffron-hover:    #F08C00;
+  --color-teal:             #00A896;
+  --color-critical:         #D64045;
+  --color-success:          #2E8B57;
 
-  --color-pastel-mint:      #CBE8BA;
-  --color-pastel-mint-bar:  #2E7D32;
-  --color-pastel-peach:     #F3C19D;
-  --color-pastel-peach-bar: #D84315;
-  --color-pastel-sky:       #9ED5F0;
-  --color-pastel-sky-bar:   #1565C0;
+  --color-text-primary:     #F8F9FA;
+  --color-text-muted:       #8D99AE;
 
-  --color-obsidian:         #1E2235;
-  --color-obsidian-surface: #262B40;
-  --color-obsidian-card:    #262B40;
-  --color-obsidian-border:  rgba(255, 255, 255, 0.08);
-
-  --color-primary:          #FF5A79;
-  --color-primary-light:    #FF7D96;
-  --color-primary-dark:     #E03D5E;
-
-  --font-sans: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+  --font-sans: var(--font-sans), 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-serif), 'IBM Plex Serif', Georgia, serif;
+  --font-mono: var(--font-mono), 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+  --font-hindi: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
 }
 
 :root {
@@ -42,18 +33,26 @@
 html {
   height: 100%;
   overflow-x: clip;
-  background-color: #1E2235;
+  background-color: #0A192F;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background-color: #1E2235;
-  color: #F1F5F9;
-  font-family: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  background-color: #0A192F;
+  color: #F8F9FA;
+  font-family: var(--font-sans), 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.6;
   min-height: 100dvh;
   overflow-x: clip;
+}
+
+.font-legal {
+  font-family: var(--font-serif), 'IBM Plex Serif', Georgia, serif;
+}
+
+.font-hindi {
+  font-family: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
 }
 
 /* Hide scrollbars cleanly where horizontal/vertical rails scroll */
@@ -65,35 +64,35 @@ body {
   display: none;
 }
 
-/* Modern Minimalist Scrollbars */
+/* Minimal Official Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #1E2235;
+  background: #0A192F;
 }
 ::-webkit-scrollbar-thumb {
-  background: #333A54;
-  border-radius: 9999px;
+  background: #233554;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #464E6E;
+  background: #334E7A;
 }
 * {
   scrollbar-width: thin;
-  scrollbar-color: #333A54 #1E2235;
+  scrollbar-color: #233554 #0A192F;
 }
 
 /* Selection */
 ::selection {
-  background-color: rgba(255, 90, 121, 0.35);
+  background-color: rgba(255, 159, 28, 0.3);
   color: #FFFFFF;
 }
 
 /* Focus */
 :focus-visible {
-  outline: 2px solid rgba(255, 90, 121, 0.6);
+  outline: 2px solid #FF9F1C;
   outline-offset: 2px;
 }
 
@@ -102,23 +101,23 @@ a {
   text-decoration: none;
 }
 
-/* Executive Surface Utilities */
+/* Official Portal Surface Utilities */
 .glass-panel {
-  background: #1E2235;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: #0A192F;
+  border: 1px solid #233554;
 }
 
 .glass-card {
-  background-color: #262B40;
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  background-color: #172A45;
+  border-radius: 0.75rem;
+  border: 1px solid #233554;
+  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 14px 30px -8px rgba(0, 0, 0, 0.35);
+  border-color: #36507A;
+  box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.45);
 }
 
 /* Tooltip animations */
@@ -135,25 +134,18 @@ a {
    Responsive Media Queries (Mobile, Tablet, Compact Laptops & Accessibility)
    ========================================================================= */
 
-/* Compact laptop screens (e.g. 1280x720 / 1366x768) */
 @media (max-height: 760px) {
   [role="dialog"] > div {
     max-height: calc(100dvh - 1.5rem);
   }
 }
 
-/* Tablet and below (<= 1024px) */
 @media (max-width: 1024px) {
   body {
     font-size: 13.5px;
   }
-
-  .glass-card {
-    border-radius: 0.875rem;
-  }
 }
 
-/* Mobile viewports (<= 768px) */
 @media (max-width: 768px) {
   body {
     font-size: 13px;
@@ -170,26 +162,22 @@ a {
   }
 }
 
-/* Narrow smartphones (<= 480px) */
 @media (max-width: 480px) {
   .glass-card {
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
   }
 
   h1 {
-    letter-spacing: -0.02em;
+    letter-spacing: -0.015em;
   }
 }
 
-/* Touch devices: prevent sticky hover elevation */
 @media (hover: none) {
   .glass-card:hover {
     transform: none;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
   }
 }
 
-/* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -199,10 +187,10 @@ a {
   }
 }
 
-/* Print optimization for FIR & Forensic PDF exports */
 @media print {
   aside,
-  header {
+  header,
+  footer {
     display: none !important;
   }
 
