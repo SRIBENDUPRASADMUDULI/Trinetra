@@ -156,8 +156,39 @@ export default function NLPPage() {
     if (!analysisResult) return
     setExportingCert(true)
     try {
-      const timestampIso = new Date().toISOString()
       const targetPayload = activeTab === 'url' ? url : msgText
+      try {
+        const res = await fetch('/api/certificate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sourcePanel: '08 // NLP Phishing & Link Risk',
+            payload: targetPayload,
+            verdict: analysisResult.verdict,
+            confidence: analysisResult.confidence,
+            category: analysisResult.category,
+            flags: analysisResult.flags,
+            requestId: analysisResult.requestId,
+            model: analysisResult.model,
+          }),
+        })
+        const data = await res.json()
+        if (res.ok && data.success && data.certificate) {
+          const a = document.createElement('a')
+          a.href = data.certificate.downloadUrl
+          a.download = `TRINETRA_${data.certificate.certId}.pdf`
+          a.click()
+          setEvidenceReceipt({
+            certId: data.certificate.certId,
+            sha256Hash: data.certificate.sha256Hash,
+            timestampIso: data.certificate.timestampIso,
+          })
+          return
+        }
+      } catch {
+        // Fallback to local Web Crypto PDF signing if API unavailable
+      }
+      const timestampIso = new Date().toISOString()
       const canonicalRecord = JSON.stringify({
         platform: 'TRINETRA CyberShield Bharat',
         statute: 'Bharatiya Sakshya Adhiniyam (BSA) 2023 Section 63',
