@@ -39,7 +39,12 @@ export default function DevSecPage() {
   const [copied, setCopied] = useState(false)
   const [privacyText, setPrivacyText] = useState(SAMPLE_POLICIES[0].text)
   const [analyzing, setAnalyzing] = useState(false)
+  const [privacyError, setPrivacyError] = useState<string | null>(null)
   const [privacyResults, setPrivacyResults] = useState(PRIVACY_MOCK)
+  const [customCode, setCustomCode] = useState('')
+  const [sastLoading, setSastLoading] = useState(false)
+  const [sastError, setSastError] = useState<string | null>(null)
+  const [sastReport, setSastReport] = useState<string | null>(null)
 
   function handleCopy() {
     navigator.clipboard.writeText(selectedPair.patchedCode)
@@ -50,9 +55,48 @@ export default function DevSecPage() {
   async function analyzePrivacy() {
     if (!privacyText.trim()) return
     setAnalyzing(true)
-    await new Promise(r => setTimeout(r, 1400))
-    setPrivacyResults(PRIVACY_MOCK)
-    setAnalyzing(false)
+    setPrivacyError(null)
+    try {
+      const res = await fetch('/api/devsec/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'privacy', text: privacyText.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Privacy policy analysis failed')
+      }
+      if (Array.isArray(data.findings)) {
+        setPrivacyResults(data.findings)
+      }
+    } catch (err: unknown) {
+      setPrivacyError(err instanceof Error ? err.message : 'Unable to audit policy text')
+    } finally {
+      setAnalyzing(false)
+    }
+  }
+
+  async function auditCustomCode() {
+    if (!customCode.trim()) return
+    setSastLoading(true)
+    setSastError(null)
+    setSastReport(null)
+    try {
+      const res = await fetch('/api/devsec/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode: 'sast', text: customCode.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Custom SAST audit failed')
+      }
+      setSastReport(data.report)
+    } catch (err: unknown) {
+      setSastError(err instanceof Error ? err.message : 'Unable to audit source code')
+    } finally {
+      setSastLoading(false)
+    }
   }
 
   return (
@@ -208,6 +252,43 @@ export default function DevSecPage() {
             </TerminalCard>
           </div>
 
+          {/* Live Custom Code SAST Audit */}
+          <TerminalCard title="Live Custom Source Code Audit (BharatCode AI)" label="INTERACTIVE SAST" labelColor="amber">
+            <div className="space-y-3 text-xs">
+              <textarea
+                value={customCode}
+                onChange={e => setCustomCode(e.target.value)}
+                rows={4}
+                placeholder="Paste any Python, JS/TS, PHP, or SQL snippet to check for CWE vulnerabilities and receive patched code..."
+                className="w-full p-3 bg-slate-950 border border-slate-700 rounded-sm font-mono text-xs text-slate-200 placeholder:text-slate-600 outline-none focus:border-indigo-500"
+              />
+              {sastError && (
+                <div className="p-2.5 rounded-sm bg-rose-500/10 border border-rose-500/30 text-rose-300">{sastError}</div>
+              )}
+              <div className="flex justify-end">
+                <button
+                  onClick={auditCustomCode}
+                  disabled={sastLoading || customCode.trim().length < 10}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-mono text-xs font-bold rounded-sm cursor-pointer"
+                >
+                  {sastLoading ? '[AUDITING SOURCE CODE...]' : '[RUN LIVE SAST AUDIT]'}
+                </button>
+              </div>
+              {sastLoading && (
+                <div className="space-y-2 animate-pulse p-3 bg-slate-950 rounded-sm border border-slate-800">
+                  <div className="h-3 bg-slate-800 rounded w-1/2" />
+                  <div className="h-3 bg-slate-800 rounded w-5/6" />
+                  <div className="h-3 bg-slate-800 rounded w-2/3" />
+                </div>
+              )}
+              {sastReport && !sastLoading && (
+                <pre className="p-4 bg-slate-950 border border-slate-800 rounded-sm font-mono text-xs text-slate-200 whitespace-pre-wrap max-h-80 overflow-y-auto">
+                  {sastReport}
+                </pre>
+              )}
+            </div>
+          </TerminalCard>
+
           {/* Unified Diff View */}
           <TerminalCard title="Git Diff Representation" label="[CHANGESET]" labelColor="cyan" noPadding>
             <div className="p-4 bg-slate-950 font-mono text-xs leading-relaxed overflow-x-auto">
@@ -265,6 +346,12 @@ export default function DevSecPage() {
                 />
               </div>
 
+              {privacyError && (
+                <div className="p-3 rounded-sm bg-rose-500/10 border border-rose-500/30 text-rose-300 font-mono text-xs">
+                  {privacyError}
+                </div>
+              )}
+
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className="font-mono text-xs text-slate-500">{privacyText.length} characters loaded</span>
                 <button
@@ -285,6 +372,13 @@ export default function DevSecPage() {
             labelColor="red"
             noPadding
           >
+            {analyzing ? (
+              <div className="p-4 space-y-3 animate-pulse">
+                <div className="h-10 bg-slate-900 rounded" />
+                <div className="h-10 bg-slate-900 rounded" />
+                <div className="h-10 bg-slate-900 rounded" />
+              </div>
+            ) : (
             <div className="overflow-x-auto font-mono text-xs">
               <table className="w-full">
                 <thead className="bg-slate-900 text-slate-400 border-b border-slate-800">
@@ -310,6 +404,7 @@ export default function DevSecPage() {
                 </tbody>
               </table>
             </div>
+            )}
           </TerminalCard>
         </div>
       )}

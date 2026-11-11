@@ -358,8 +358,8 @@ export default function DeepfakeXaiPage() {
             <StatusBadge
               label={
                 data?.pythonAvailable
-                  ? `LIVE RUNTIME · ${data.pythonVersion ?? 'PYTHON'}`
-                  : 'STATIC BASELINE MODE'
+                  ? `LIVE PYTHON RUNTIME · ${data.pythonVersion ?? 'PYTHON'}`
+                  : 'RESEARCH BENCHMARK OUTPUT (STATIC)'
               }
               variant={data?.pythonAvailable ? 'ok' : 'warning'}
               blink={data?.pythonAvailable}
@@ -410,6 +410,25 @@ export default function DeepfakeXaiPage() {
           )
         })}
       </div>
+
+      <div className="p-3 sm:p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-200 text-xs flex items-start sm:items-center gap-2.5">
+        <AlertTriangle size={15} className="text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
+        <span>
+          <strong>{data?.pythonAvailable ? 'AI-Assisted Forensic Indication:' : 'Research Benchmark Viewer:'}</strong>{' '}
+          {data?.pythonAvailable
+            ? 'Probabilistic Grad-CAM & faithfulness estimation — verify manually before legal or enforcement action.'
+            : 'Displaying pre-computed research benchmark outputs (StyleGAN2 / FaceSwapAE / StableDiffusion) because the local PyTorch inference server is not attached in serverless mode. AI-assisted indication — verify manually before legal action.'}
+        </span>
+      </div>
+
+      {loading && !data && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-pulse">
+          <div className="h-24 rounded-2xl bg-white/[0.04]" />
+          <div className="h-24 rounded-2xl bg-white/[0.04]" />
+          <div className="h-24 rounded-2xl bg-white/[0.04]" />
+          <div className="h-24 rounded-2xl bg-white/[0.04]" />
+        </div>
+      )}
 
       {loadError && (
         <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-xs flex items-center gap-2">

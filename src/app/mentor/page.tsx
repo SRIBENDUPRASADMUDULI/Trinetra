@@ -65,6 +65,7 @@ export default function MentorPage() {
   const [messages, setMessages] = useState<Message[]>(INITIAL_CONVERSATION)
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [errorBanner, setErrorBanner] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -78,6 +79,7 @@ export default function MentorPage() {
     const userMsg: Message = { id: `u-${Date.now()}`, role: 'user', content: text.trim(), ts: timestamp() }
     setMessages(prev => [...prev, userMsg])
     setInput('')
+    setErrorBanner(null)
     setLoading(true)
     try {
       const res = await fetch('/api/mentor', {
@@ -85,13 +87,16 @@ export default function MentorPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: [{ role: 'user', content: text.trim() }] }),
       })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const data = await res.json()
       const agentMsg: Message = { id: `a-${Date.now()}`, role: 'agent', content: data.content, ts: timestamp() }
       setMessages(prev => [...prev, agentMsg])
-    } catch {
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : 'Connection failed'
+      setErrorBanner(`SecOps Copilot request failed (${errMsg}). Check API configuration.`)
       setMessages(prev => [...prev, {
         id: `e-${Date.now()}`, role: 'agent', ts: timestamp(),
-        content: '[ERROR] Connection to AI kernel failed. Check network and LLM_API_KEY configuration.',
+        content: '[ERROR] Connection to AI kernel failed. Check network and BHARATCODE_API_KEY configuration.',
       }])
     } finally {
       setLoading(false)
@@ -188,14 +193,25 @@ export default function MentorPage() {
             </div>
           ))}
 
+          {errorBanner && (
+            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center justify-between gap-2">
+              <span>{errorBanner}</span>
+              <button onClick={() => setErrorBanner(null)} className="text-[10px] underline cursor-pointer">Dismiss</button>
+            </div>
+          )}
+
           {loading && (
             <div className="flex gap-4 max-w-xl">
               <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
                 <Eye size={16} />
               </div>
-              <div className="p-4 rounded-2xl glass-card text-xs text-slate-400 flex items-center gap-2">
-                <span>Synthesizing tactical defense response</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
+              <div className="p-4 rounded-2xl glass-card text-xs text-slate-400 space-y-2 flex-1 animate-pulse">
+                <div className="flex items-center gap-2">
+                  <span>Synthesizing tactical defense response</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
+                </div>
+                <div className="h-2.5 bg-white/[0.06] rounded w-5/6" />
+                <div className="h-2.5 bg-white/[0.05] rounded w-2/3" />
               </div>
             </div>
           )}
