@@ -183,6 +183,7 @@ export default function IncidentPage() {
   const [firText, setFirText] = useState<string | null>(null)
   const [certReceipt, setCertReceipt] = useState<{ certId: string; sha256Hash: string; timestampIso: string } | null>(null)
   const [exportingCert, setExportingCert] = useState(false)
+  const [attachedEvidence, setAttachedEvidence] = useState<{ name: string; sizeKb: number; sha256: string } | null>(null)
   const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<FIRFormData>({
     defaultValues: {
       itActSections: ['43', '66', '66D'],
@@ -228,13 +229,28 @@ export default function IncidentPage() {
     setValue('bsaSections', ['63_4'])
   }
 
+  async function handleEvidenceFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const buf = await file.arrayBuffer()
+    const hashBuf = await crypto.subtle.digest('SHA-256', buf)
+    const hex = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('')
+    setAttachedEvidence({ name: file.name, sizeKb: Math.max(1, Math.round(file.size / 1024)), sha256: hex })
+  }
+
   async function onSubmit(data: FIRFormData) {
     setCertReceipt(null)
     try {
+      const enriched = {
+        ...data,
+        evidenceDescription: attachedEvidence
+          ? `${data.evidenceDescription}\n\n[Attached Evidence File: ${attachedEvidence.name} (${attachedEvidence.sizeKb} KB) | SHA-256: ${attachedEvidence.sha256}]`
+          : data.evidenceDescription,
+      }
       const res = await fetch('/api/incident', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(enriched),
       })
       const json = await res.json()
       if (res.ok && json.success && json.usedAI && json.firDraft) {
@@ -242,7 +258,13 @@ export default function IncidentPage() {
         return
       }
     } catch {}
-    setFirText(generateFIR(data))
+    const enrichedData = attachedEvidence
+      ? {
+          ...data,
+          evidenceDescription: `${data.evidenceDescription}\n\n[Attached Evidence File: ${attachedEvidence.name} (${attachedEvidence.sizeKb} KB) | SHA-256: ${attachedEvidence.sha256}]`,
+        }
+      : data
+    setFirText(generateFIR(enrichedData))
   }
 
   async function exportBsa63Certificate() {
@@ -682,6 +704,22 @@ export default function IncidentPage() {
                         })}
                       </div>
                     </div>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.08] space-y-2">
+                    <label className="text-slate-300 font-medium block text-xs">
+                      Attach Supporting Evidence (Screenshot / Bank PDF / Log — hashed locally via SHA-256)
+                    </label>
+                    <input
+                      type="file"
+                      onChange={handleEvidenceFile}
+                      className="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-white/10 file:text-xs file:font-semibold file:bg-white/[0.06] file:text-slate-200 hover:file:bg-white/[0.1] cursor-pointer"
+                    />
+                    {attachedEvidence && (
+                      <div className="text-[11px] font-mono text-emerald-300 break-all">
+                        Attached: {attachedEvidence.name} ({attachedEvidence.sizeKb} KB) · SHA-256: {attachedEvidence.sha256}
+                      </div>
+                    )}
                   </div>
 
                   <div>
