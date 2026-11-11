@@ -81,7 +81,7 @@ export function AIHarnessBar() {
         setTelemetry(data.telemetry)
       }
     } catch {
-      // silent telemetry background poll
+      // silent background poll
     }
   }
 
@@ -117,32 +117,31 @@ export function AIHarnessBar() {
   const isOffline = telemetry.status === 'offline'
 
   const statusTone = isOffline
-    ? { dot: 'bg-[#D64045]', text: 'text-[#D64045]', badge: 'bg-[#D64045]/10 border-[#D64045]/30 text-[#D64045]', label: 'OFFLINE' }
+    ? { dot: 'bg-[#FF1B1B]', text: 'text-[#FF1B1B]', badge: 'bg-[#FF1B1B]/10 border-[#FF1B1B]/40 text-[#FF1B1B]', label: 'OFFLINE' }
     : isFallback
-      ? { dot: 'bg-[#FF9F1C]', text: 'text-[#FF9F1C]', badge: 'bg-[#FF9F1C]/10 border-[#FF9F1C]/30 text-[#FF9F1C]', label: 'FALLBACK' }
-      : { dot: 'bg-[#00A896]', text: 'text-[#00A896]', badge: 'bg-[#00A896]/10 border-[#00A896]/30 text-[#00A896]', label: 'CONNECTED' }
+      ? { dot: 'bg-[#FF9F1C]', text: 'text-[#FF9F1C]', badge: 'bg-[#FF9F1C]/10 border-[#FF9F1C]/40 text-[#FF9F1C]', label: 'FALLBACK' }
+      : { dot: 'bg-[#00FF9D]', text: 'text-[#00FF9D]', badge: 'bg-[#00FF9D]/10 border-[#00FF9D]/35 text-[#00FF9D]', label: 'CONNECTED' }
 
   const modalContent =
     modalOpen && mounted
       ? createPortal(
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
-            <div className="bg-[#172A45] border border-[#233554] rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-              {/* Modal Header */}
-              <div className="px-6 py-4 bg-[#0A192F] border-b border-[#233554] flex items-center justify-between">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+            <div className="bg-[#0A0A12] border border-[#1A1A2E] rounded-xl w-full max-w-2xl shadow-[0_0_36px_rgba(0,212,255,0.2)] overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="px-6 py-4 bg-[#03030A] border-b border-[#1A1A2E] flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-[#00A896]/10 border border-[#00A896]/30 flex items-center justify-center text-[#00A896]">
+                  <div className="w-9 h-9 rounded-lg bg-[#00D4FF]/10 border border-[#00D4FF]/35 flex items-center justify-center text-[#00D4FF]">
                     <Cpu className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-sm font-bold text-[#F8F9FA] font-serif">
+                      <h3 className="text-sm font-bold text-[#F5F5F5] font-serif">
                         {t('BharatCode AI Multi-Model Harness', 'भारतकोड एआई मल्टी-मॉडल हार्नेस')}
                       </h3>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#00A896]/15 text-[#00A896] border border-[#00A896]/30">
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#00FF9D]/10 text-[#00FF9D] border border-[#00FF9D]/30">
                         STATELESS · STORE: FALSE
                       </span>
                     </div>
-                    <p className="text-[11px] font-mono text-[#8D99AE] mt-0.5">
+                    <p className="text-[11px] font-mono text-[#888888] mt-0.5">
                       Endpoint: {telemetry.baseUrl}
                     </p>
                   </div>
@@ -150,127 +149,122 @@ export function AIHarnessBar() {
                 <button
                   onClick={() => setModalOpen(false)}
                   aria-label="Close AI Diagnostics"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[#8D99AE] hover:text-[#F8F9FA] hover:bg-[#1E3554] transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-[#888888] hover:text-[#F5F5F5] hover:bg-[#1A1A2E] transition-colors cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* Modal Body */}
               <div className="p-6 space-y-5 overflow-y-auto">
-                {/* Active Routing Topology */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div className="p-3.5 rounded-lg bg-[#0A192F] border border-[#00A896]/30">
+                  <div className="p-3.5 rounded-lg bg-[#03030A] border border-[#00D4FF]/35">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] font-mono uppercase text-[#8D99AE]">Primary Route</span>
+                      <span className="text-[10px] font-mono uppercase text-[#888888]">Primary Route</span>
                       <span className={`w-2 h-2 rounded-full ${statusTone.dot}`} />
                     </div>
-                    <div className="font-mono text-xs font-bold text-[#F8F9FA]">{telemetry.activeModel}</div>
-                    <div className="text-[10px] text-[#8D99AE] mt-1">Deep SecOps & Statutory FIR</div>
+                    <div className="font-mono text-xs font-bold text-[#F5F5F5]">{telemetry.activeModel}</div>
+                    <div className="text-[10px] text-[#888888] mt-1">Deep SecOps & Statutory FIR</div>
                   </div>
 
-                  <div className="p-3.5 rounded-lg bg-[#0A192F] border border-[#233554]">
+                  <div className="p-3.5 rounded-lg bg-[#03030A] border border-[#1A1A2E]">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] font-mono uppercase text-[#8D99AE]">Sub-Sec Fast</span>
+                      <span className="text-[10px] font-mono uppercase text-[#888888]">Sub-Sec Fast</span>
                       <Zap className="w-3 h-3 text-[#FF9F1C]" />
                     </div>
-                    <div className="font-mono text-xs font-bold text-[#F8F9FA]">{telemetry.fallbackModel}</div>
-                    <div className="text-[10px] text-[#8D99AE] mt-1">Low-latency triage fallback</div>
+                    <div className="font-mono text-xs font-bold text-[#F5F5F5]">{telemetry.fallbackModel}</div>
+                    <div className="text-[10px] text-[#888888] mt-1">Low-latency triage fallback</div>
                   </div>
 
-                  <div className="p-3.5 rounded-lg bg-[#0A192F] border border-[#233554]">
+                  <div className="p-3.5 rounded-lg bg-[#03030A] border border-[#1A1A2E]">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-[10px] font-mono uppercase text-[#8D99AE]">Deterministic Core</span>
-                      <Lock className="w-3 h-3 text-[#00A896]" />
+                      <span className="text-[10px] font-mono uppercase text-[#888888]">Deterministic Core</span>
+                      <Lock className="w-3 h-3 text-[#00FF9D]" />
                     </div>
-                    <div className="font-mono text-xs font-bold text-[#F8F9FA]">Security Kernel</div>
-                    <div className="text-[10px] text-[#8D99AE] mt-1">BNS 2023 / SHA-256 / PICERL</div>
+                    <div className="font-mono text-xs font-bold text-[#F5F5F5]">Security Kernel</div>
+                    <div className="text-[10px] text-[#888888] mt-1">BNS 2023 / SHA-256 / PICERL</div>
                   </div>
                 </div>
 
-                {/* Live Telemetry Metrics (No Fake Defaults) */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="p-3 rounded-lg bg-[#0A192F] border border-[#233554]">
-                    <div className="text-[10px] font-mono text-[#8D99AE] uppercase">Latency</div>
-                    <div className="text-base font-mono font-bold text-[#00A896] mt-1">
+                  <div className="p-3 rounded-lg bg-[#03030A] border border-[#1A1A2E]">
+                    <div className="text-[10px] font-mono text-[#888888] uppercase">Latency</div>
+                    <div className="text-base font-mono font-bold text-[#00FF9D] mt-1">
                       {telemetry.latencyMs > 0 ? `${telemetry.latencyMs} ms` : 'Awaiting call'}
                     </div>
-                    <div className="text-[10px] text-[#8D99AE]">Live probe RTT</div>
+                    <div className="text-[10px] text-[#888888]">Live probe RTT</div>
                   </div>
-                  <div className="p-3 rounded-lg bg-[#0A192F] border border-[#233554]">
-                    <div className="text-[10px] font-mono text-[#8D99AE] uppercase">Session Calls</div>
-                    <div className="text-base font-mono font-bold text-[#F8F9FA] mt-1">
+                  <div className="p-3 rounded-lg bg-[#03030A] border border-[#1A1A2E]">
+                    <div className="text-[10px] font-mono text-[#888888] uppercase">Session Calls</div>
+                    <div className="text-base font-mono font-bold text-[#F5F5F5] mt-1">
                       {telemetry.totalCalls}
-                      <span className="text-xs font-normal text-[#8D99AE]"> reqs</span>
+                      <span className="text-xs font-normal text-[#888888]"> reqs</span>
                     </div>
-                    <div className="text-[10px] text-[#8D99AE]">
+                    <div className="text-[10px] text-[#888888]">
                       {telemetry.totalCalls === 0 ? 'Awaiting live calls' : 'Observed in runtime'}
                     </div>
                   </div>
-                  <div className="p-3 rounded-lg bg-[#0A192F] border border-[#233554]">
-                    <div className="text-[10px] font-mono text-[#8D99AE] uppercase">PII Masked</div>
-                    <div className="text-base font-mono font-bold text-[#00A896] mt-1">
+                  <div className="p-3 rounded-lg bg-[#03030A] border border-[#1A1A2E]">
+                    <div className="text-[10px] font-mono text-[#888888] uppercase">PII Masked</div>
+                    <div className="text-base font-mono font-bold text-[#00D4FF] mt-1">
                       {telemetry.guardrails.piiMaskedCount}
                     </div>
-                    <div className="text-[10px] text-[#8D99AE]">[REDACTED-GOVT-ID]</div>
+                    <div className="text-[10px] text-[#888888]">[REDACTED-GOVT-ID]</div>
                   </div>
-                  <div className="p-3 rounded-lg bg-[#0A192F] border border-[#233554]">
-                    <div className="text-[10px] font-mono text-[#8D99AE] uppercase">Blocked Probes</div>
-                    <div className="text-base font-mono font-bold text-[#FF9F1C] mt-1">
+                  <div className="p-3 rounded-lg bg-[#03030A] border border-[#1A1A2E]">
+                    <div className="text-[10px] font-mono text-[#888888] uppercase">Blocked Probes</div>
+                    <div className="text-base font-mono font-bold text-[#FF1B1B] mt-1">
                       {telemetry.guardrails.injectionBlockedCount}
                     </div>
-                    <div className="text-[10px] text-[#8D99AE]">Sec. 66 IT Act Guard</div>
+                    <div className="text-[10px] text-[#888888]">Sec. 66 IT Act Guard</div>
                   </div>
                 </div>
 
-                {/* Guardrail Compliance Matrix */}
-                <div className="p-4 rounded-lg bg-[#0A192F] border border-[#00A896]/25 space-y-2.5">
+                <div className="p-4 rounded-lg bg-[#03030A] border border-[#00D4FF]/25 space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs font-semibold text-[#00A896]">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-[#00D4FF]">
                       <ShieldCheck className="w-4 h-4" />
                       Active Sovereign Defense Guardrails (DPDP Act 2023)
                     </div>
                     {telemetry.lastRequestId && (
-                      <span className="text-[10px] font-mono text-[#8D99AE]">
+                      <span className="text-[10px] font-mono text-[#888888]">
                         Last ID: {telemetry.lastRequestId.slice(0, 14)}
                       </span>
                     )}
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#F8F9FA]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#F5F5F5]">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#00A896] shrink-0" />
-                      <span>Stateless Execution (<code className="text-[#00A896] font-mono">store: false</code>)</span>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF9D] shrink-0" />
+                      <span>Stateless Execution (<code className="text-[#00FF9D] font-mono">store: false</code>)</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#00A896] shrink-0" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF9D] shrink-0" />
                       <span>12-Digit Govt ID &amp; PAN Redaction</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#00A896] shrink-0" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF9D] shrink-0" />
                       <span>Offensive Exploit Refusal Filter</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#00A896] shrink-0" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#00FF9D] shrink-0" />
                       <span>BSA 2023 §63 Hash Provenance Ready</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Live Ping Diagnostic */}
-                <div className="p-4 rounded-lg bg-[#0A192F] border border-[#233554] space-y-3">
+                <div className="p-4 rounded-lg bg-[#03030A] border border-[#1A1A2E] space-y-3">
                   <div className="flex items-center justify-between gap-3 flex-wrap">
                     <div>
-                      <div className="text-xs font-semibold text-[#F8F9FA]">
+                      <div className="text-xs font-semibold text-[#F5F5F5]">
                         {t('Live Gateway Health Probe', 'लाइव गेटवे स्वास्थ्य जांच')}
                       </div>
-                      <div className="text-[11px] text-[#8D99AE]">
+                      <div className="text-[11px] text-[#888888]">
                         Dispatches a stateless probe to verify BharatCode RTT and x-request-id headers.
                       </div>
                     </div>
                     <button
                       onClick={handlePing}
                       disabled={pinging}
-                      className="px-4 py-2 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#0A192F] text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-50 cursor-pointer"
+                      className="px-4 py-2 rounded-lg bg-[#00D4FF] hover:bg-[#00b8de] text-[#03030A] text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-50 cursor-pointer shadow-[0_0_16px_rgba(0,212,255,0.3)]"
                     >
                       <RefreshCw className={`w-3.5 h-3.5 ${pinging ? 'animate-spin' : ''}`} />
                       {pinging ? 'Probing...' : 'Ping BharatCode'}
@@ -281,8 +275,8 @@ export function AIHarnessBar() {
                     <div
                       className={`p-3 rounded-lg border font-mono text-xs ${
                         pingResult.connected
-                          ? 'bg-[#00A896]/10 border-[#00A896]/30 text-[#00A896]'
-                          : 'bg-[#FF9F1C]/10 border-[#FF9F1C]/30 text-[#FF9F1C]'
+                          ? 'bg-[#00FF9D]/10 border-[#00FF9D]/35 text-[#00FF9D]'
+                          : 'bg-[#FF9F1C]/10 border-[#FF9F1C]/35 text-[#FF9F1C]'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -297,12 +291,12 @@ export function AIHarnessBar() {
                         <span>RTT: {pingResult.latencyMs} ms</span>
                       </div>
                       {pingResult.requestId && (
-                        <div className="mt-1 text-[11px] text-[#8D99AE]">
+                        <div className="mt-1 text-[11px] text-[#888888]">
                           x-request-id: {pingResult.requestId}
                         </div>
                       )}
                       {pingResult.note && (
-                        <div className="mt-1.5 text-[11px] text-[#F8F9FA]/85 font-sans">
+                        <div className="mt-1.5 text-[11px] text-[#F5F5F5]/85 font-sans">
                           {pingResult.note}
                         </div>
                       )}
@@ -311,12 +305,11 @@ export function AIHarnessBar() {
                 </div>
               </div>
 
-              {/* Footer */}
-              <div className="px-6 py-3 bg-[#0A192F] border-t border-[#233554] flex items-center justify-between text-[11px] text-[#8D99AE]">
+              <div className="px-6 py-3 bg-[#03030A] border-t border-[#1A1A2E] flex items-center justify-between text-[11px] text-[#888888]">
                 <span className="font-mono">Active Node: TRINETRA-SOC-DELHI-01</span>
                 <button
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-1.5 rounded-lg bg-[#172A45] border border-[#233554] hover:border-[#00A896]/50 text-[#F8F9FA] font-medium transition-colors cursor-pointer"
+                  className="px-4 py-1.5 rounded-lg bg-[#0A0A12] border border-[#1A1A2E] hover:border-[#00D4FF]/50 text-[#F5F5F5] font-medium transition-colors cursor-pointer"
                 >
                   Close Diagnostics
                 </button>
@@ -331,7 +324,7 @@ export function AIHarnessBar() {
     <>
       <button
         onClick={() => setModalOpen(true)}
-        className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-[#172A45] hover:bg-[#1E3554] border border-[#233554] hover:border-[#00A896]/40 transition-colors group cursor-pointer"
+        className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-[#03030A] hover:border-[#00D4FF]/50 border border-[#1A1A2E] transition-colors group cursor-pointer"
         title="Inspect BharatCode AI Gateway Diagnostics"
       >
         <span className="relative flex h-2 w-2">
@@ -342,16 +335,16 @@ export function AIHarnessBar() {
         </span>
 
         <div className="flex items-center gap-1.5 text-xs font-mono">
-          <span className="font-semibold text-[#F8F9FA] hidden sm:inline">AI Gateway</span>
-          <span className="text-[#8D99AE] hidden sm:inline">/</span>
+          <span className="font-semibold text-[#F5F5F5] hidden sm:inline">AI Gateway</span>
+          <span className="text-[#888888] hidden sm:inline">/</span>
           <span className={`${statusTone.text} font-medium truncate max-w-[115px]`}>
             {telemetry.activeModel}
           </span>
         </div>
 
-        <div className="hidden lg:flex items-center gap-1.5 pl-2 border-l border-[#233554] text-[10px] font-mono text-[#8D99AE]">
-          <Activity className="w-3 h-3 text-[#00A896]" />
-          <span>{telemetry.latencyMs > 0 ? `${telemetry.latencyMs}ms` : 'IDLE'}</span>
+        <div className="hidden lg:flex items-center gap-1.5 pl-2 border-l border-[#1A1A2E] text-[10px] font-mono text-[#888888]">
+          <Activity className="w-3 h-3 text-[#00D4FF]" />
+          <span className="text-[#00FF9D]">{telemetry.latencyMs > 0 ? `${telemetry.latencyMs}ms` : 'IDLE'}</span>
           <span className={`ml-0.5 px-1.5 py-0.5 rounded border text-[9px] font-semibold ${statusTone.badge}`}>
             {statusTone.label}
           </span>

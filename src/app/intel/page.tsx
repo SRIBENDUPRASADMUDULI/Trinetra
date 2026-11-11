@@ -5,6 +5,7 @@ import { FAMILY_ENDPOINTS } from '@/data/mock/family-endpoints'
 import { TerminalCard } from '@/components/ui/terminal-card'
 import { StatusBadge } from '@/components/ui/status-badge'
 import { Pause, Play, RefreshCw, Radar, ChevronDown, ChevronUp } from 'lucide-react'
+import { ThreatGlobe } from '@/components/three/ThreatGlobe'
 
 const CASE_STUDIES = [
   {
@@ -88,7 +89,7 @@ export default function IntelPage() {
   const patchColor = (p: string) => ({ UP_TO_DATE: '#10b981', OUTDATED: '#f59e0b', CRITICAL: '#f43f5e' })[p] ?? '#94a3b8'
 
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-6">
       {/* Symmetrical Behance-style Header Banner */}
       <div className="p-6 rounded-2xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-2xl">
@@ -119,7 +120,12 @@ export default function IntelPage() {
         </div>
       </div>
 
-      {/* Live Feed */}
+      {/* 3D Geospatial Threat Globe + Live Feed Split */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+        <div className="xl:col-span-5">
+          <ThreatGlobe />
+        </div>
+        <div className="xl:col-span-7">
       <TerminalCard title="Live Sector Attack Telemetry Feed"
         label="[LIVE_FEED]" labelColor="red" noPadding
         headerRight={
@@ -168,6 +174,9 @@ export default function IntelPage() {
           ))}
         </div>
       </TerminalCard>
+
+        </div>
+      </div>
 
       {/* Case Studies */}
       <TerminalCard title="Declassified Intrusion Case Archives (MITRE ATT&CK Mapped)" label="[DECLASS_ARCHIVE]" labelColor="amber" noPadding>

@@ -16,6 +16,9 @@
     "@radix-ui/react-slot": "^1.3.3",
     "@radix-ui/react-tabs": "^1.1.21",
     "@radix-ui/react-tooltip": "^1.2.16",
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
+    "@types/three": "^0.187.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "core-js": "^3.50.0",
@@ -28,6 +31,7 @@
     "react-dom": "19.2.8",
     "react-hook-form": "^7.88.0",
     "tailwind-merge": "^3.7.0",
+    "three": "^0.187.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {

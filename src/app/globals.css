@@ -1,25 +1,33 @@
 @import "tailwindcss";
 
 @theme {
-  /* Official Indian Government Cyber Design System */
-  --color-canvas:           #0A192F;
-  --color-surface:          #172A45;
-  --color-surface-hover:    #1E3554;
-  --color-surface-border:   #233554;
+  /* TRINETRA Cinematic 3D Cyber Palette */
+  --color-trinetra-void:      #03030A;
+  --color-trinetra-dark:      #0A0A12;
+  --color-trinetra-border:    #1A1A2E;
+  --color-trinetra-white:     #F5F5F5;
+  --color-trinetra-gray:      #888888;
+  --color-trinetra-red:       #FF1B1B;
+  --color-trinetra-blue:      #00D4FF;
+  --color-trinetra-saffron:   #FF9F1C;
+  --color-trinetra-cyan:      #00FF9D;
+  --color-trinetra-newsprint: #666666;
 
-  --color-saffron:          #FF9F1C;
-  --color-saffron-hover:    #F08C00;
-  --color-teal:             #00A896;
-  --color-critical:         #D64045;
-  --color-success:          #2E8B57;
+  /* Semantic Aliases */
+  --color-canvas:             #03030A;
+  --color-surface:            #0A0A12;
+  --color-surface-hover:      #121222;
+  --color-surface-border:     #1A1A2E;
 
-  --color-text-primary:     #F8F9FA;
-  --color-text-muted:       #8D99AE;
-
-  --font-sans: var(--font-sans), 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-serif: var(--font-serif), 'IBM Plex Serif', Georgia, serif;
-  --font-mono: var(--font-mono), 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
+  --font-sans:  var(--font-sans), 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-serif), 'Playfair Display', Georgia, serif;
+  --font-mono:  var(--font-mono), 'JetBrains Mono', ui-monospace, 'Cascadia Code', monospace;
   --font-hindi: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
+
+  /* 3D Depth Shadows */
+  --shadow-3d-red:     0 0 20px rgba(255, 27, 27, 0.35), 0 0 40px rgba(255, 27, 27, 0.16);
+  --shadow-3d-blue:    0 0 20px rgba(0, 212, 255, 0.35), 0 0 40px rgba(0, 212, 255, 0.16);
+  --shadow-3d-saffron: 0 0 20px rgba(255, 159, 28, 0.35), 0 0 40px rgba(255, 159, 28, 0.16);
 }
 
 :root {
@@ -33,14 +41,14 @@
 html {
   height: 100%;
   overflow-x: clip;
-  background-color: #0A192F;
+  background-color: #03030A;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background-color: #0A192F;
-  color: #F8F9FA;
-  font-family: var(--font-sans), 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  background-color: #03030A;
+  color: #F5F5F5;
+  font-family: var(--font-sans), 'Inter', ui-sans-serif, system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.6;
   min-height: 100dvh;
@@ -48,11 +56,21 @@ body {
 }
 
 .font-legal {
-  font-family: var(--font-serif), 'IBM Plex Serif', Georgia, serif;
+  font-family: var(--font-serif), 'Playfair Display', Georgia, serif;
 }
 
 .font-hindi {
   font-family: var(--font-hindi), 'Noto Sans Devanagari', sans-serif;
+}
+
+/* Newsprint Halftone + Cinematic Grid Texture */
+.newsprint-overlay {
+  background-image:
+    radial-gradient(rgba(102, 102, 102, 0.14) 1px, transparent 0),
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(rgba(255, 27, 27, 0.02) 1px, transparent 1px);
+  background-size: 24px 24px, 100% 4px, 96px 96px, 96px 96px;
 }
 
 /* Hide scrollbars cleanly where horizontal/vertical rails scroll */
@@ -64,35 +82,35 @@ body {
   display: none;
 }
 
-/* Minimal Official Scrollbars */
+/* Minimal Cinematic Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0A192F;
+  background: #03030A;
 }
 ::-webkit-scrollbar-thumb {
-  background: #233554;
+  background: #1A1A2E;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334E7A;
+  background: #00D4FF;
 }
 * {
   scrollbar-width: thin;
-  scrollbar-color: #233554 #0A192F;
+  scrollbar-color: #1A1A2E #03030A;
 }
 
 /* Selection */
 ::selection {
-  background-color: rgba(255, 159, 28, 0.3);
+  background-color: rgba(0, 212, 255, 0.28);
   color: #FFFFFF;
 }
 
 /* Focus */
 :focus-visible {
-  outline: 2px solid #FF9F1C;
+  outline: 2px solid #00D4FF;
   outline-offset: 2px;
 }
 
@@ -101,23 +119,25 @@ a {
   text-decoration: none;
 }
 
-/* Official Portal Surface Utilities */
+/* Cinema Dark Surface Utilities */
 .glass-panel {
-  background-color: #0A192F;
-  border: 1px solid #233554;
+  background-color: rgba(10, 10, 18, 0.88);
+  border: 1px solid #1A1A2E;
+  backdrop-filter: blur(12px);
 }
 
 .glass-card {
-  background-color: #172A45;
+  background-color: rgba(10, 10, 18, 0.9);
   border-radius: 0.75rem;
-  border: 1px solid #233554;
-  box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.35);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  border: 1px solid #1A1A2E;
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .glass-card:hover {
-  border-color: #36507A;
-  box-shadow: 0 6px 20px -6px rgba(0, 0, 0, 0.45);
+  border-color: rgba(0, 212, 255, 0.42);
+  box-shadow: 0 0 24px -6px rgba(0, 212, 255, 0.25), 0 16px 36px -14px rgba(0, 0, 0, 0.9);
 }
 
 /* Tooltip animations */
@@ -190,7 +210,8 @@ a {
 @media print {
   aside,
   header,
-  footer {
+  footer,
+  canvas {
     display: none !important;
   }
 

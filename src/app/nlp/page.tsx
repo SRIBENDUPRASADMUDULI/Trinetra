@@ -262,8 +262,8 @@ export default function NlpInspectorPage() {
     const v = result.verdict.toUpperCase()
     if (v.includes('HIGH') || v.includes('PHISHING') || v.includes('MALICIOUS')) {
       return {
-        bg: 'bg-[#D64045]/15 border-[#D64045]/40',
-        text: 'text-[#D64045]',
+        bg: 'bg-[#FF1B1B]/15 border-[#FF1B1B]/40',
+        text: 'text-[#FF1B1B]',
         badge: 'HIGH RISK SCAM',
       }
     }
@@ -275,8 +275,8 @@ export default function NlpInspectorPage() {
       }
     }
     return {
-      bg: 'bg-[#00A896]/15 border-[#00A896]/40',
-      text: 'text-[#00A896]',
+      bg: 'bg-[#00D4FF]/15 border-[#00D4FF]/40',
+      text: 'text-[#00D4FF]',
       badge: 'LOW RISK / BENIGN',
     }
   }, [result])
@@ -284,21 +284,21 @@ export default function NlpInspectorPage() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <section className="rounded-xl bg-[#172A45] border border-[#233554] p-6">
+      <section className="rounded-xl bg-[#0A0A12] border border-[#1A1A2E] p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-1 rounded bg-[#0A192F] border border-[#233554] text-[10px] font-mono font-bold text-[#FF9F1C]">
+              <span className="px-2.5 py-1 rounded bg-[#03030A] border border-[#1A1A2E] text-[10px] font-mono font-bold text-[#FF9F1C]">
                 08 // PHISHING &amp; LINK INSPECTOR
               </span>
-              <span className="px-2.5 py-1 rounded bg-[#00A896]/15 border border-[#00A896]/35 text-[10px] font-mono text-[#00A896]">
+              <span className="px-2.5 py-1 rounded bg-[#00D4FF]/15 border border-[#00D4FF]/35 text-[10px] font-mono text-[#00D4FF]">
                 BharatCode Live Analysis · URLhaus · OpenPhish · Levenshtein Spoof Check
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-[#F8F9FA] font-serif">
+            <h1 className="text-2xl font-bold text-[#F5F5F5] font-serif">
               {t('SMS, Email & Suspicious URL Forensic Triage', 'एसएमएस, ईमेल और संदिग्ध लिंक फोरेंसिक निरीक्षण')}
             </h1>
-            <p className="text-xs text-[#8D99AE] max-w-3xl">
+            <p className="text-xs text-[#888888] max-w-3xl">
               {t(
                 'Inspect multilingual Indian cyber fraud messages (English, Hindi, Hinglish) and evaluate URL domains against official banking/government registers.',
                 'भारतीय साइबर धोखाधड़ी संदेशों और संदिग्ध लिंक का आधिकारिक बैंकिंग एवं सरकारी डोमेन के साथ विश्लेषण करें।'
@@ -311,8 +311,8 @@ export default function NlpInspectorPage() {
               onClick={() => setActiveTab('sms')}
               className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border transition-colors cursor-pointer ${
                 activeTab === 'sms'
-                  ? 'bg-[#FF9F1C] text-[#0A192F] border-[#FF9F1C]'
-                  : 'bg-[#0A192F] text-[#8D99AE] border-[#233554] hover:text-[#F8F9FA]'
+                  ? 'bg-[#FF9F1C] text-[#03030A] border-[#FF9F1C]'
+                  : 'bg-[#03030A] text-[#888888] border-[#1A1A2E] hover:text-[#F5F5F5]'
               }`}
             >
               <MailWarning className="w-3.5 h-3.5" /> SMS / Email Text
@@ -321,8 +321,8 @@ export default function NlpInspectorPage() {
               onClick={() => setActiveTab('url')}
               className={`px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 border transition-colors cursor-pointer ${
                 activeTab === 'url'
-                  ? 'bg-[#FF9F1C] text-[#0A192F] border-[#FF9F1C]'
-                  : 'bg-[#0A192F] text-[#8D99AE] border-[#233554] hover:text-[#F8F9FA]'
+                  ? 'bg-[#FF9F1C] text-[#03030A] border-[#FF9F1C]'
+                  : 'bg-[#03030A] text-[#888888] border-[#1A1A2E] hover:text-[#F5F5F5]'
               }`}
             >
               <Link2 className="w-3.5 h-3.5" /> URL Reputation Scan
@@ -343,7 +343,7 @@ export default function NlpInspectorPage() {
             <div className="space-y-4">
               {/* Example Autofill Chips */}
               <div className="space-y-1.5">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-[#8D99AE]">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#888888]">
                   Load Example Input (Autofill only — click Analyze to run):
                 </span>
                 <div className="flex flex-wrap gap-1.5">
@@ -357,7 +357,7 @@ export default function NlpInspectorPage() {
                             setUrlInput(ex.url)
                             setErrorMsg(null)
                           }}
-                          className="px-2.5 py-1 rounded bg-[#0A192F] hover:bg-[#1E3554] border border-[#233554] text-[11px] font-mono text-[#00A896] transition-colors cursor-pointer"
+                          className="px-2.5 py-1 rounded bg-[#03030A] hover:bg-[#121222] border border-[#1A1A2E] text-[11px] font-mono text-[#00D4FF] transition-colors cursor-pointer"
                         >
                           + {ex.label}
                         </button>
@@ -370,7 +370,7 @@ export default function NlpInspectorPage() {
                             setUrlInput(ex.url)
                             setErrorMsg(null)
                           }}
-                          className="px-2.5 py-1 rounded bg-[#0A192F] hover:bg-[#1E3554] border border-[#233554] text-[11px] font-mono text-[#00A896] transition-colors cursor-pointer"
+                          className="px-2.5 py-1 rounded bg-[#03030A] hover:bg-[#121222] border border-[#1A1A2E] text-[11px] font-mono text-[#00D4FF] transition-colors cursor-pointer"
                         >
                           + {ex.label}
                         </button>
@@ -381,10 +381,10 @@ export default function NlpInspectorPage() {
               {activeTab === 'sms' && (
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
-                    <label htmlFor="nlp-msg-input" className="font-semibold text-[#F8F9FA]">
-                      Suspicious Message Content <span className="text-[#D64045]">*</span>
+                    <label htmlFor="nlp-msg-input" className="font-semibold text-[#F5F5F5]">
+                      Suspicious Message Content <span className="text-[#FF1B1B]">*</span>
                     </label>
-                    <span className="font-mono text-[11px] text-[#8D99AE]">
+                    <span className="font-mono text-[11px] text-[#888888]">
                       {msgText.length} / {MAX_CHARS}
                     </span>
                   </div>
@@ -395,14 +395,14 @@ export default function NlpInspectorPage() {
                     value={msgText}
                     onChange={(e) => setMsgText(e.target.value)}
                     placeholder="Paste suspected phishing SMS, WhatsApp forward, or email text here..."
-                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] p-3 text-xs font-mono text-[#F8F9FA] placeholder:text-[#8D99AE]/60 focus:outline-none focus:border-[#00A896]"
+                    className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] p-3 text-xs font-mono text-[#F5F5F5] placeholder:text-[#888888]/60 focus:outline-none focus:border-[#00D4FF]"
                   />
                 </div>
               )}
 
               <div className="space-y-1.5">
-                <label htmlFor="nlp-url-input" className="block text-xs font-semibold text-[#F8F9FA]">
-                  Target / Extracted URL {activeTab === 'url' && <span className="text-[#D64045]">*</span>}
+                <label htmlFor="nlp-url-input" className="block text-xs font-semibold text-[#F5F5F5]">
+                  Target / Extracted URL {activeTab === 'url' && <span className="text-[#FF1B1B]">*</span>}
                 </label>
                 <input
                   id="nlp-url-input"
@@ -410,12 +410,12 @@ export default function NlpInspectorPage() {
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
                   placeholder="https://example-suspicious-domain.top/login"
-                  className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2.5 text-xs font-mono text-[#F8F9FA] placeholder:text-[#8D99AE]/60 focus:outline-none focus:border-[#00A896]"
+                  className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2.5 text-xs font-mono text-[#F5F5F5] placeholder:text-[#888888]/60 focus:outline-none focus:border-[#00D4FF]"
                 />
               </div>
 
               {errorMsg && (
-                <div className="p-3 rounded-lg bg-[#D64045]/15 border border-[#D64045]/40 text-xs text-[#D64045] flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-[#FF1B1B]/15 border border-[#FF1B1B]/40 text-xs text-[#FF1B1B] flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>{errorMsg}</span>
                 </div>
@@ -426,7 +426,7 @@ export default function NlpInspectorPage() {
                   type="button"
                   onClick={handleAnalyze}
                   disabled={analyzing}
-                  className="flex-1 py-2.5 px-4 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#0A192F] text-xs font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
+                  className="flex-1 py-2.5 px-4 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#03030A] text-xs font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
                 >
                   {analyzing ? (
                     <>
@@ -447,7 +447,7 @@ export default function NlpInspectorPage() {
                     setErrorMsg(null)
                     setCertStatus(null)
                   }}
-                  className="px-3.5 py-2.5 rounded-lg bg-[#0A192F] hover:bg-[#1E3554] border border-[#233554] text-xs font-medium text-[#8D99AE] hover:text-[#F8F9FA] transition-colors cursor-pointer"
+                  className="px-3.5 py-2.5 rounded-lg bg-[#03030A] hover:bg-[#121222] border border-[#1A1A2E] text-xs font-medium text-[#888888] hover:text-[#F5F5F5] transition-colors cursor-pointer"
                 >
                   Clear
                 </button>
@@ -462,33 +462,33 @@ export default function NlpInspectorPage() {
             labelColor="cyan"
           >
             {typosquatMatches.length === 0 ? (
-              <p className="text-xs text-[#8D99AE]">
+              <p className="text-xs text-[#888888]">
                 Enter or paste a URL above to compute edit-distance similarity against official Indian banking and `.gov.in` domains.
               </p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-[#233554] text-[10px] font-mono uppercase text-[#8D99AE]">
+                    <tr className="border-b border-[#1A1A2E] text-[10px] font-mono uppercase text-[#888888]">
                       <th className="py-2 pr-3">Observed Host</th>
                       <th className="py-2 pr-3">Nearest Official</th>
                       <th className="py-2 pr-3">Edit Dist</th>
                       <th className="py-2">Assessment</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#233554]">
+                  <tbody className="divide-y divide-[#1A1A2E]">
                     {typosquatMatches.map((m) => (
                       <tr key={m.host}>
-                        <td className="py-2.5 pr-3 font-mono text-[#F8F9FA]">{m.host}</td>
-                        <td className="py-2.5 pr-3 font-mono text-[#8D99AE]">{m.closestOfficial}</td>
-                        <td className="py-2.5 pr-3 font-mono font-bold text-[#F8F9FA]">{m.distance}</td>
+                        <td className="py-2.5 pr-3 font-mono text-[#F5F5F5]">{m.host}</td>
+                        <td className="py-2.5 pr-3 font-mono text-[#888888]">{m.closestOfficial}</td>
+                        <td className="py-2.5 pr-3 font-mono font-bold text-[#F5F5F5]">{m.distance}</td>
                         <td className="py-2.5">
                           {m.classification === 'EXACT_OFFICIAL' ? (
-                            <span className="px-2 py-0.5 rounded bg-[#00A896]/15 border border-[#00A896]/30 text-[#00A896] font-mono text-[10px]">
+                            <span className="px-2 py-0.5 rounded bg-[#00D4FF]/15 border border-[#00D4FF]/30 text-[#00D4FF] font-mono text-[10px]">
                               OFFICIAL MATCH
                             </span>
                           ) : m.classification === 'TYPOSQUAT_SUSPECT' ? (
-                            <span className="px-2 py-0.5 rounded bg-[#D64045]/15 border border-[#D64045]/35 text-[#D64045] font-mono text-[10px]">
+                            <span className="px-2 py-0.5 rounded bg-[#FF1B1B]/15 border border-[#FF1B1B]/35 text-[#FF1B1B] font-mono text-[10px]">
                               SPOOF SUSPECT
                             </span>
                           ) : (
@@ -515,13 +515,13 @@ export default function NlpInspectorPage() {
           >
             {!result && !analyzing && (
               <div className="py-14 text-center space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-[#0A192F] border border-[#233554] mx-auto flex items-center justify-center text-[#8D99AE]">
+                <div className="w-12 h-12 rounded-xl bg-[#03030A] border border-[#1A1A2E] mx-auto flex items-center justify-center text-[#888888]">
                   <Sparkles className="w-6 h-6 text-[#FF9F1C]" />
                 </div>
-                <div className="text-sm font-semibold text-[#F8F9FA]">
+                <div className="text-sm font-semibold text-[#F5F5F5]">
                   No Input Analyzed Yet
                 </div>
-                <p className="text-xs text-[#8D99AE] max-w-md mx-auto leading-relaxed">
+                <p className="text-xs text-[#888888] max-w-md mx-auto leading-relaxed">
                   Paste a suspicious message or URL on the left (or select an example chip) and click{' '}
                   <strong className="text-[#FF9F1C]">Analyze Input</strong> to invoke the live BharatCode harness and threat-intel feeds.
                 </p>
@@ -530,8 +530,8 @@ export default function NlpInspectorPage() {
 
             {analyzing && (
               <div className="py-16 text-center space-y-3">
-                <RefreshCw className="w-7 h-7 animate-spin text-[#00A896] mx-auto" />
-                <div className="text-xs font-mono text-[#00A896]">
+                <RefreshCw className="w-7 h-7 animate-spin text-[#00D4FF] mx-auto" />
+                <div className="text-xs font-mono text-[#00D4FF]">
                   Executing BharatCode NLP triage + URLhaus/OpenPhish/SafeBrowsing checks...
                 </div>
               </div>
@@ -548,46 +548,46 @@ export default function NlpInspectorPage() {
                         {result.verdict}
                       </span>
                     </div>
-                    <div className="text-xs text-[#F8F9FA]/85">
+                    <div className="text-xs text-[#F5F5F5]/85">
                       {result.threatType} · Category: <strong className="font-mono">{result.category}</strong>
                     </div>
                   </div>
                   <div className="text-left sm:text-right font-mono">
-                    <div className="text-[10px] text-[#8D99AE] uppercase">Model Confidence</div>
+                    <div className="text-[10px] text-[#888888] uppercase">Model Confidence</div>
                     <div className={`text-xl font-bold ${verdictTone.text}`}>{result.confidence}</div>
                   </div>
                 </div>
 
                 {/* Formal Assessment Matrix Table */}
-                <div className="overflow-x-auto rounded-lg border border-[#233554]">
+                <div className="overflow-x-auto rounded-lg border border-[#1A1A2E]">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-[#0A192F] border-b border-[#233554] text-[10px] font-mono uppercase text-[#8D99AE]">
+                      <tr className="bg-[#03030A] border-b border-[#1A1A2E] text-[10px] font-mono uppercase text-[#888888]">
                         <th className="py-2.5 px-4">Forensic Dimension</th>
                         <th className="py-2.5 px-4">Score / Telemetry</th>
                         <th className="py-2.5 px-4">Interpretation</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#233554] bg-[#0A192F]/40">
+                    <tbody className="divide-y divide-[#1A1A2E] bg-[#03030A]/40">
                       <tr>
-                        <td className="py-2.5 px-4 font-semibold text-[#F8F9FA]">Psychological Urgency</td>
+                        <td className="py-2.5 px-4 font-semibold text-[#F5F5F5]">Psychological Urgency</td>
                         <td className="py-2.5 px-4 font-mono font-bold text-[#FF9F1C]">{result.urgencyScore} / 100</td>
-                        <td className="py-2.5 px-4 text-[#8D99AE]">Time-pressure / account-freeze coercion cues</td>
+                        <td className="py-2.5 px-4 text-[#888888]">Time-pressure / account-freeze coercion cues</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 px-4 font-semibold text-[#F8F9FA]">Authority Impersonation</td>
+                        <td className="py-2.5 px-4 font-semibold text-[#F5F5F5]">Authority Impersonation</td>
                         <td className="py-2.5 px-4 font-mono font-bold text-[#FF9F1C]">{result.impersonationScore} / 100</td>
-                        <td className="py-2.5 px-4 text-[#8D99AE]">Bank, RBI, Telecom, Police, or Tax spoofing signals</td>
+                        <td className="py-2.5 px-4 text-[#888888]">Bank, RBI, Telecom, Police, or Tax spoofing signals</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 px-4 font-semibold text-[#F8F9FA]">Link Infrastructure Risk</td>
-                        <td className="py-2.5 px-4 font-mono font-bold text-[#D64045]">{result.linkRiskScore} / 100</td>
-                        <td className="py-2.5 px-4 text-[#8D99AE]">TLD risk, IP/punycode patterns &amp; reputation feeds</td>
+                        <td className="py-2.5 px-4 font-semibold text-[#F5F5F5]">Link Infrastructure Risk</td>
+                        <td className="py-2.5 px-4 font-mono font-bold text-[#FF1B1B]">{result.linkRiskScore} / 100</td>
+                        <td className="py-2.5 px-4 text-[#888888]">TLD risk, IP/punycode patterns &amp; reputation feeds</td>
                       </tr>
                       <tr>
-                        <td className="py-2.5 px-4 font-semibold text-[#F8F9FA]">Inference Provenance</td>
-                        <td className="py-2.5 px-4 font-mono text-[#00A896]">{result.model} ({result.latencyMs}ms)</td>
-                        <td className="py-2.5 px-4 font-mono text-[11px] text-[#8D99AE]">
+                        <td className="py-2.5 px-4 font-semibold text-[#F5F5F5]">Inference Provenance</td>
+                        <td className="py-2.5 px-4 font-mono text-[#00D4FF]">{result.model} ({result.latencyMs}ms)</td>
+                        <td className="py-2.5 px-4 font-mono text-[11px] text-[#888888]">
                           {result.requestId ? `x-request-id: ${result.requestId}` : 'Deterministic Fallback Kernel'}
                         </td>
                       </tr>
@@ -597,16 +597,16 @@ export default function NlpInspectorPage() {
 
                 {/* Detected Indicators */}
                 <div className="space-y-2">
-                  <div className="text-[11px] font-mono uppercase tracking-wider text-[#8D99AE] font-semibold">
+                  <div className="text-[11px] font-mono uppercase tracking-wider text-[#888888] font-semibold">
                     Detected Forensic Flags
                   </div>
                   <ul className="space-y-1.5">
                     {result.flags.map((flag, idx) => (
                       <li
                         key={idx}
-                        className="p-2.5 rounded-lg bg-[#0A192F] border border-[#233554] text-xs text-[#F8F9FA] flex items-start gap-2"
+                        className="p-2.5 rounded-lg bg-[#03030A] border border-[#1A1A2E] text-xs text-[#F5F5F5] flex items-start gap-2"
                       >
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#00A896] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#00D4FF] shrink-0 mt-0.5" />
                         <span>{flag}</span>
                       </li>
                     ))}
@@ -616,13 +616,13 @@ export default function NlpInspectorPage() {
                 {/* URL Reputation Table */}
                 {result.urlReputations && result.urlReputations.length > 0 && (
                   <div className="space-y-2">
-                    <div className="text-[11px] font-mono uppercase tracking-wider text-[#8D99AE] font-semibold">
+                    <div className="text-[11px] font-mono uppercase tracking-wider text-[#888888] font-semibold">
                       URL Threat-Intelligence Matrix
                     </div>
-                    <div className="overflow-x-auto rounded-lg border border-[#233554]">
+                    <div className="overflow-x-auto rounded-lg border border-[#1A1A2E]">
                       <table className="w-full text-left text-[11px] font-mono border-collapse">
                         <thead>
-                          <tr className="bg-[#0A192F] border-b border-[#233554] text-[#8D99AE]">
+                          <tr className="bg-[#03030A] border-b border-[#1A1A2E] text-[#888888]">
                             <th className="py-2 px-3">URL</th>
                             <th className="py-2 px-3">URLhaus</th>
                             <th className="py-2 px-3">OpenPhish</th>
@@ -630,14 +630,14 @@ export default function NlpInspectorPage() {
                             <th className="py-2 px-3">VirusTotal</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#233554]">
+                        <tbody className="divide-y divide-[#1A1A2E]">
                           {result.urlReputations.map((rep) => (
-                            <tr key={rep.url} className="bg-[#0A192F]/30">
-                              <td className="py-2 px-3 text-[#F8F9FA] max-w-[180px] truncate">{rep.url}</td>
-                              <td className="py-2 px-3 text-[#00A896]">{rep.urlhaus.status}</td>
-                              <td className="py-2 px-3 text-[#00A896]">{rep.openPhish.status}</td>
-                              <td className="py-2 px-3 text-[#8D99AE]">{rep.safeBrowsing.status}</td>
-                              <td className="py-2 px-3 text-[#8D99AE]">{rep.virusTotal.status}</td>
+                            <tr key={rep.url} className="bg-[#03030A]/30">
+                              <td className="py-2 px-3 text-[#F5F5F5] max-w-[180px] truncate">{rep.url}</td>
+                              <td className="py-2 px-3 text-[#00D4FF]">{rep.urlhaus.status}</td>
+                              <td className="py-2 px-3 text-[#00D4FF]">{rep.openPhish.status}</td>
+                              <td className="py-2 px-3 text-[#888888]">{rep.safeBrowsing.status}</td>
+                              <td className="py-2 px-3 text-[#888888]">{rep.virusTotal.status}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -647,20 +647,20 @@ export default function NlpInspectorPage() {
                 )}
 
                 {/* Recommended Action & Export Strip */}
-                <div className="p-3.5 rounded-lg bg-[#0A192F] border border-[#00A896]/30 text-xs text-[#F8F9FA] leading-relaxed">
-                  <strong className="text-[#00A896] font-mono uppercase text-[11px] block mb-1">
+                <div className="p-3.5 rounded-lg bg-[#03030A] border border-[#00D4FF]/30 text-xs text-[#F5F5F5] leading-relaxed">
+                  <strong className="text-[#00D4FF] font-mono uppercase text-[11px] block mb-1">
                     Recommended Statutory Action
                   </strong>
                   {result.recommendation}
                 </div>
 
                 {/* Action Buttons: BSA §63 PDF, JSON, Generate FIR */}
-                <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-[#233554]">
+                <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-[#1A1A2E]">
                   <button
                     type="button"
                     onClick={handleExportBsa63Pdf}
                     disabled={exportingCert}
-                    className="px-4 py-2 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#0A192F] text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
+                    className="px-4 py-2 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#03030A] text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" />
                     {exportingCert ? 'Generating PDF...' : 'Export BSA 2023 §63 PDF'}
@@ -669,29 +669,29 @@ export default function NlpInspectorPage() {
                   <button
                     type="button"
                     onClick={handleExportJson}
-                    className="px-3.5 py-2 rounded-lg bg-[#0A192F] hover:bg-[#1E3554] border border-[#233554] text-[#F8F9FA] text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+                    className="px-3.5 py-2 rounded-lg bg-[#03030A] hover:bg-[#121222] border border-[#1A1A2E] text-[#F5F5F5] text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
                   >
-                    <FileJson className="w-3.5 h-3.5 text-[#00A896]" />
+                    <FileJson className="w-3.5 h-3.5 text-[#00D4FF]" />
                     Export JSON
                   </button>
 
                   <Link
                     href="/incident"
-                    className="ml-auto px-4 py-2 rounded-lg bg-[#00A896]/15 hover:bg-[#00A896]/25 border border-[#00A896]/35 text-[#00A896] text-xs font-bold flex items-center gap-1.5 transition-colors"
+                    className="ml-auto px-4 py-2 rounded-lg bg-[#00D4FF]/15 hover:bg-[#00D4FF]/25 border border-[#00D4FF]/35 text-[#00D4FF] text-xs font-bold flex items-center gap-1.5 transition-colors"
                   >
                     Generate FIR Draft <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
 
                 {certStatus && (
-                  <div className="p-2.5 rounded bg-[#00A896]/10 border border-[#00A896]/30 font-mono text-[11px] text-[#00A896] flex items-center gap-2">
+                  <div className="p-2.5 rounded bg-[#00D4FF]/10 border border-[#00D4FF]/30 font-mono text-[11px] text-[#00D4FF] flex items-center gap-2">
                     <Lock className="w-3.5 h-3.5 shrink-0" />
                     <span>{certStatus}</span>
                   </div>
                 )}
 
                 {/* Honest Accuracy Disclaimer */}
-                <p className="text-[11px] font-mono text-[#8D99AE] border-t border-[#233554] pt-3">
+                <p className="text-[11px] font-mono text-[#888888] border-t border-[#1A1A2E] pt-3">
                   Disclaimer: AI-assisted indication — verify manually before legal action. Deterministic SHA-256 and Levenshtein calculations execute locally.
                 </p>
               </div>

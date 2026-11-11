@@ -339,21 +339,21 @@ export default function IncidentFirPage() {
   return (
     <div className="space-y-6">
       {/* Top 1930 Helpline + CERT-In 6-Hour Countdown Banner */}
-      <section className="rounded-xl bg-[#172A45] border border-[#233554] p-6">
+      <section className="rounded-xl bg-[#0A0A12] border border-[#1A1A2E] p-6">
         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-5">
           <div className="space-y-1.5 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="px-2.5 py-1 rounded bg-[#0A192F] border border-[#233554] text-[10px] font-mono font-bold text-[#FF9F1C]">
+              <span className="px-2.5 py-1 rounded bg-[#03030A] border border-[#1A1A2E] text-[10px] font-mono font-bold text-[#FF9F1C]">
                 04 // INCIDENT RESPONSE &amp; STATUTORY FIR
               </span>
-              <span className="px-2.5 py-1 rounded bg-[#00A896]/15 border border-[#00A896]/35 text-[10px] font-mono text-[#00A896]">
+              <span className="px-2.5 py-1 rounded bg-[#00D4FF]/15 border border-[#00D4FF]/35 text-[10px] font-mono text-[#00D4FF]">
                 BNS 2023 · IT Act 2000 · BSA 2023 §63 · cybercrime.gov.in Compatible
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-[#F8F9FA] font-serif">
+            <h1 className="text-2xl font-bold text-[#F5F5F5] font-serif">
               {t('National Cyber Incident Filing & Statutory FIR Desk', 'राष्ट्रीय साइबर घटना एवं वैधानिक एफआईआर डेस्क')}
             </h1>
-            <p className="text-xs text-[#8D99AE] leading-relaxed">
+            <p className="text-xs text-[#888888] leading-relaxed">
               {t(
                 'Generate structured FIR complaints mapped to Bharatiya Nyaya Sanhita (BNS 2023) & IT Act sections, compute client-side SHA-256 hashes, and export BSA 2023 §63 certificates.',
                 'भारतीय न्याय संहिता (बीएनएस 2023) और आईटी एक्ट धाराओं के अनुरूप एफआईआर ड्राफ्ट तथा बीएसए §63 प्रमाणपत्र तैयार करें।'
@@ -363,27 +363,27 @@ export default function IncidentFirPage() {
 
           {/* 1930 Emergency Callout & 6-Hour CERT-In SLA Countdown */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 shrink-0">
-            <div className="px-4 py-3 rounded-lg bg-[#0A192F] border border-[#D64045]/45 flex items-center gap-3">
-              <PhoneCall className="w-5 h-5 text-[#D64045] shrink-0" />
+            <div className="px-4 py-3 rounded-lg bg-[#03030A] border border-[#FF1B1B]/45 flex items-center gap-3">
+              <PhoneCall className="w-5 h-5 text-[#FF1B1B] shrink-0" />
               <div>
-                <div className="text-[10px] font-mono uppercase text-[#D64045] font-bold">
+                <div className="text-[10px] font-mono uppercase text-[#FF1B1B] font-bold">
                   Golden Hour Financial Freeze
                 </div>
-                <div className="text-base font-mono font-bold text-[#F8F9FA]">Call 1930 Now</div>
-                <div className="text-[10px] text-[#8D99AE]">cybercrime.gov.in</div>
+                <div className="text-base font-mono font-bold text-[#F5F5F5]">Call 1930 Now</div>
+                <div className="text-[10px] text-[#888888]">cybercrime.gov.in</div>
               </div>
             </div>
 
-            <div className="px-4 py-3 rounded-lg bg-[#0A192F] border border-[#FF9F1C]/45 flex items-center gap-3">
+            <div className="px-4 py-3 rounded-lg bg-[#03030A] border border-[#FF9F1C]/45 flex items-center gap-3">
               <Clock className="w-5 h-5 text-[#FF9F1C] shrink-0" />
               <div>
                 <div className="text-[10px] font-mono uppercase text-[#FF9F1C] font-bold">
                   CERT-In §70B(6) SLA
                 </div>
-                <div className="text-base font-mono font-bold text-[#F8F9FA] tabular-nums">
+                <div className="text-base font-mono font-bold text-[#F5F5F5] tabular-nums">
                   {formatDuration(certInSeconds)}
                 </div>
-                <div className="text-[10px] text-[#8D99AE]">6-Hour Mandatory Window</div>
+                <div className="text-[10px] text-[#888888]">6-Hour Mandatory Window</div>
               </div>
             </div>
           </div>
@@ -398,12 +398,12 @@ export default function IncidentFirPage() {
             label={reportMode === 'track' ? 'REPORT & TRACK' : 'ANONYMOUS REPORT'}
             labelColor={reportMode === 'track' ? 'amber' : 'cyan'}
             headerRight={
-              <div className="flex items-center gap-1 bg-[#0A192F] p-0.5 rounded-lg border border-[#233554]">
+              <div className="flex items-center gap-1 bg-[#03030A] p-0.5 rounded-lg border border-[#1A1A2E]">
                 <button
                   type="button"
                   onClick={() => setReportMode('track')}
                   className={`px-2.5 py-1 rounded text-[10px] font-mono font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
-                    reportMode === 'track' ? 'bg-[#FF9F1C] text-[#0A192F]' : 'text-[#8D99AE] hover:text-[#F8F9FA]'
+                    reportMode === 'track' ? 'bg-[#FF9F1C] text-[#03030A]' : 'text-[#888888] hover:text-[#F5F5F5]'
                   }`}
                 >
                   <UserCheck className="w-3 h-3" /> Track
@@ -412,7 +412,7 @@ export default function IncidentFirPage() {
                   type="button"
                   onClick={() => setReportMode('anonymous')}
                   className={`px-2.5 py-1 rounded text-[10px] font-mono font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
-                    reportMode === 'anonymous' ? 'bg-[#00A896] text-[#0A192F]' : 'text-[#8D99AE] hover:text-[#F8F9FA]'
+                    reportMode === 'anonymous' ? 'bg-[#00D4FF] text-[#03030A]' : 'text-[#888888] hover:text-[#F5F5F5]'
                   }`}
                 >
                   <EyeOff className="w-3 h-3" /> Anonymous
@@ -424,12 +424,12 @@ export default function IncidentFirPage() {
               {/* Jurisdiction */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
-                    {t('State / Union Territory', 'राज्य / केंद्र शासित प्रदेश')} <span className="text-[#D64045]">*</span>
+                  <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
+                    {t('State / Union Territory', 'राज्य / केंद्र शासित प्रदेश')} <span className="text-[#FF1B1B]">*</span>
                   </label>
                   <select
                     {...register('stateUt', { required: true })}
-                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                    className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#00D4FF]"
                   >
                     {INDIAN_STATES_UTS.map((s) => (
                       <option key={s} value={s}>
@@ -439,43 +439,43 @@ export default function IncidentFirPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
-                    {t('District / Cyber Police Station', 'जिला / साइबर थाना')} <span className="text-[#D64045]">*</span>
+                  <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
+                    {t('District / Cyber Police Station', 'जिला / साइबर थाना')} <span className="text-[#FF1B1B]">*</span>
                   </label>
                   <input
                     {...register('districtStation', { required: true })}
-                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                    className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#00D4FF]"
                   />
                 </div>
               </div>
 
               {/* Citizen Track Fields + Mobile OTP Verification */}
               {reportMode === 'track' && (
-                <div className="p-4 rounded-lg bg-[#0A192F]/70 border border-[#233554] space-y-4">
-                  <div className="text-[11px] font-mono uppercase text-[#00A896] font-semibold">
+                <div className="p-4 rounded-lg bg-[#03030A]/70 border border-[#1A1A2E] space-y-4">
+                  <div className="text-[11px] font-mono uppercase text-[#00D4FF] font-semibold">
                     {t('Complainant Verification (cybercrime.gov.in Citizen Flow)', 'शिकायतकर्ता सत्यापन')}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
-                        {t('Full Name', 'पूरा नाम')} <span className="text-[#D64045]">*</span>
+                      <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
+                        {t('Full Name', 'पूरा नाम')} <span className="text-[#FF1B1B]">*</span>
                       </label>
                       <input
                         {...register('complainantName', { required: reportMode === 'track' })}
                         placeholder="e.g. Rajesh Kumar Sharma"
-                        className="w-full rounded-lg bg-[#172A45] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                        className="w-full rounded-lg bg-[#0A0A12] border border-[#1A1A2E] px-3 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#00D4FF]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                      <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
                         {t('Email ID', 'ईमेल आईडी')}
                       </label>
                       <input
                         type="email"
                         {...register('complainantEmail')}
                         placeholder="citizen@example.in"
-                        className="w-full rounded-lg bg-[#172A45] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                        className="w-full rounded-lg bg-[#0A0A12] border border-[#1A1A2E] px-3 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#00D4FF]"
                       />
                     </div>
                   </div>
@@ -483,47 +483,47 @@ export default function IncidentFirPage() {
                   {/* Mobile + OTP Row */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
                     <div className="sm:col-span-5">
-                      <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
-                        {t('Mobile Number (+91)', 'मोबाइल नंबर')} <span className="text-[#D64045]">*</span>
+                      <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
+                        {t('Mobile Number (+91)', 'मोबाइल नंबर')} <span className="text-[#FF1B1B]">*</span>
                       </label>
                       <input
                         {...register('complainantPhone', { required: reportMode === 'track' })}
                         placeholder="9876543210"
-                        className="w-full rounded-lg bg-[#172A45] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                        className="w-full rounded-lg bg-[#0A0A12] border border-[#1A1A2E] px-3 py-2 text-xs font-mono text-[#F5F5F5] focus:outline-none focus:border-[#00D4FF]"
                       />
                     </div>
                     <div className="sm:col-span-3">
                       <button
                         type="button"
                         onClick={handleSendOtp}
-                        className="w-full py-2 px-3 rounded-lg bg-[#172A45] hover:bg-[#1E3554] border border-[#FF9F1C]/50 text-[#FF9F1C] text-xs font-semibold transition-colors cursor-pointer"
+                        className="w-full py-2 px-3 rounded-lg bg-[#0A0A12] hover:bg-[#121222] border border-[#FF9F1C]/50 text-[#FF9F1C] text-xs font-semibold transition-colors cursor-pointer"
                       >
                         Send OTP
                       </button>
                     </div>
                     <div className="sm:col-span-4">
-                      <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                      <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
                         {t('Aadhaar Last 4 Digits', 'आधार के अंतिम 4 अंक')}
                       </label>
                       <input
                         maxLength={4}
                         {...register('aadhaarLast4')}
                         placeholder="4321"
-                        className="w-full rounded-lg bg-[#172A45] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                        className="w-full rounded-lg bg-[#0A0A12] border border-[#1A1A2E] px-3 py-2 text-xs font-mono text-[#F5F5F5] focus:outline-none focus:border-[#00D4FF]"
                       />
                     </div>
                   </div>
 
                   {generatedOtp && (
-                    <div className="p-3 rounded-lg bg-[#172A45] border border-[#00A896]/35 flex flex-wrap items-center justify-between gap-2 text-xs">
-                      <div className="font-mono text-[#00A896]">
+                    <div className="p-3 rounded-lg bg-[#0A0A12] border border-[#00D4FF]/35 flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <div className="font-mono text-[#00D4FF]">
                         Session Demo OTP: <strong className="text-[#FF9F1C]">{generatedOtp}</strong>{' '}
-                        <span className="text-[10px] text-[#8D99AE]">
+                        <span className="text-[10px] text-[#888888]">
                           (Valid for {formatDuration(otpSecondsLeft)} / 30m limit)
                         </span>
                       </div>
                       {otpVerified ? (
-                        <span className="inline-flex items-center gap-1 text-[#00A896] font-mono font-bold">
+                        <span className="inline-flex items-center gap-1 text-[#00D4FF] font-mono font-bold">
                           <CheckCircle2 className="w-3.5 h-3.5" /> OTP VERIFIED
                         </span>
                       ) : (
@@ -533,12 +533,12 @@ export default function IncidentFirPage() {
                             value={otpInput}
                             onChange={(e) => setOtpInput(e.target.value)}
                             placeholder="Enter 6-digit OTP"
-                            className="w-28 rounded bg-[#0A192F] border border-[#233554] px-2 py-1 text-xs font-mono text-[#F8F9FA]"
+                            className="w-28 rounded bg-[#03030A] border border-[#1A1A2E] px-2 py-1 text-xs font-mono text-[#F5F5F5]"
                           />
                           <button
                             type="button"
                             onClick={handleVerifyOtp}
-                            className="px-2.5 py-1 rounded bg-[#00A896] text-[#0A192F] text-[11px] font-bold cursor-pointer"
+                            className="px-2.5 py-1 rounded bg-[#00D4FF] text-[#03030A] text-[11px] font-bold cursor-pointer"
                           >
                             Verify
                           </button>
@@ -552,12 +552,12 @@ export default function IncidentFirPage() {
               {/* Incident & Financial Metadata */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
-                    {t('Incident Category', 'अपराध श्रेणी')} <span className="text-[#D64045]">*</span>
+                  <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
+                    {t('Incident Category', 'अपराध श्रेणी')} <span className="text-[#FF1B1B]">*</span>
                   </label>
                   <select
                     {...register('attackType')}
-                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                    className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#00D4FF]"
                   >
                     <option value="UPI / Banking KYC Phishing Scam">UPI / Banking KYC Phishing Scam</option>
                     <option value="Deepfake Video KYC / Voice Impersonation">Deepfake / Voice Impersonation</option>
@@ -566,74 +566,74 @@ export default function IncidentFirPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
-                    {t('Incident Date', 'घटना तिथि')} <span className="text-[#D64045]">*</span>
+                  <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
+                    {t('Incident Date', 'घटना तिथि')} <span className="text-[#FF1B1B]">*</span>
                   </label>
                   <input
                     type="date"
                     {...register('incidentDate', { required: true })}
-                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA]"
+                    className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2 text-xs font-mono text-[#F5F5F5]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                  <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
                     {t('Time (IST)', 'समय (IST)')}
                   </label>
                   <input
                     type="time"
                     {...register('incidentTime')}
-                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA]"
+                    className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2 text-xs font-mono text-[#F5F5F5]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                  <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
                     {t('Bank / Payment Wallet', 'बैंक / पेमेंट वॉलेट')}
                   </label>
                   <input
                     {...register('victimBank')}
-                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA]"
+                    className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2 text-xs text-[#F5F5F5]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                  <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
                     {t('Loss Amount (INR)', 'नुकसान राशि (INR)')}
                   </label>
                   <input
                     {...register('lossAmount')}
                     placeholder="25000"
-                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA]"
+                    className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2 text-xs font-mono text-[#F5F5F5]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                  <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
                     {t('UTR / Transaction Reference', 'यूटीआर / लेनदेन आईडी')}
                   </label>
                   <input
                     {...register('transactionId')}
                     placeholder="428910348219"
-                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA]"
+                    className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2 text-xs font-mono text-[#F5F5F5]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
                   {t('Suspect URL / Phone / Attacker IP', 'संदिग्ध यूआरएल / फोन / आईपी')}
                 </label>
                 <input
                   {...register('attackerIp')}
                   placeholder="https://sbi-kyc-verif.top | +91-XXXXXXXXXX"
-                  className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA]"
+                  className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] px-3 py-2 text-xs font-mono text-[#F5F5F5]"
                 />
               </div>
 
               {/* Mandatory Incident Narrative */}
               <div>
-                <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
-                  {t('Detailed Incident Narrative', 'घटना का विस्तृत विवरण')} <span className="text-[#D64045]">*</span>
+                <label className="block text-xs font-semibold text-[#F5F5F5] mb-1">
+                  {t('Detailed Incident Narrative', 'घटना का विस्तृत विवरण')} <span className="text-[#FF1B1B]">*</span>
                 </label>
                 <textarea
                   rows={4}
@@ -642,27 +642,27 @@ export default function IncidentFirPage() {
                     minLength: { value: 10, message: 'Enter at least 10 characters describing the incident' },
                   })}
                   placeholder="Describe chronologically how the fraud or intrusion occurred, URLs clicked, and unauthorized debits..."
-                  className="w-full rounded-lg bg-[#0A192F] border border-[#233554] p-3 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                  className="w-full rounded-lg bg-[#03030A] border border-[#1A1A2E] p-3 text-xs text-[#F5F5F5] focus:outline-none focus:border-[#00D4FF]"
                 />
                 {errors.evidenceDescription && (
-                  <p className="text-[11px] text-[#D64045] mt-1">{errors.evidenceDescription.message}</p>
+                  <p className="text-[11px] text-[#FF1B1B] mt-1">{errors.evidenceDescription.message}</p>
                 )}
               </div>
 
               {/* Client-Side SHA-256 File Hashing */}
-              <div className="p-3.5 rounded-lg bg-[#0A192F] border border-[#233554] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-3.5 rounded-lg bg-[#03030A] border border-[#1A1A2E] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-0.5">
-                  <div className="text-xs font-semibold text-[#F8F9FA] flex items-center gap-1.5">
-                    <Lock className="w-3.5 h-3.5 text-[#00A896]" />
+                  <div className="text-xs font-semibold text-[#F5F5F5] flex items-center gap-1.5">
+                    <Lock className="w-3.5 h-3.5 text-[#00D4FF]" />
                     Attach Digital Evidence (Client-Side SHA-256 Digest)
                   </div>
-                  <div className="text-[11px] text-[#8D99AE] font-mono">
+                  <div className="text-[11px] text-[#888888] font-mono">
                     {attachedSha256
                       ? `${attachedFileName} · SHA-256: ${attachedSha256.slice(0, 24)}...`
                       : 'Select SMS screenshot, bank PDF, or PCAP — hashed locally in browser'}
                   </div>
                 </div>
-                <label className="px-3 py-2 rounded-lg bg-[#172A45] hover:bg-[#1E3554] border border-[#233554] text-xs font-semibold text-[#00A896] flex items-center gap-1.5 cursor-pointer shrink-0">
+                <label className="px-3 py-2 rounded-lg bg-[#0A0A12] hover:bg-[#121222] border border-[#1A1A2E] text-xs font-semibold text-[#00D4FF] flex items-center gap-1.5 cursor-pointer shrink-0">
                   <Upload className="w-3.5 h-3.5" />
                   Select File
                   <input type="file" onChange={handleFileAttach} className="hidden" />
@@ -671,10 +671,10 @@ export default function IncidentFirPage() {
 
               {/* Statutory Checkboxes */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="p-3 rounded-lg bg-[#0A192F] border border-[#233554] space-y-2">
+                <div className="p-3 rounded-lg bg-[#03030A] border border-[#1A1A2E] space-y-2">
                   <div className="text-[10px] font-mono uppercase text-[#FF9F1C] font-bold">IT Act 2000 Sections</div>
                   {IT_ACT_OPTIONS.map((opt) => (
-                    <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#F8F9FA] cursor-pointer">
+                    <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#F5F5F5] cursor-pointer">
                       <input
                         type="checkbox"
                         checked={watchItAct.includes(opt.code)}
@@ -686,30 +686,30 @@ export default function IncidentFirPage() {
                   ))}
                 </div>
 
-                <div className="p-3 rounded-lg bg-[#0A192F] border border-[#233554] space-y-2">
-                  <div className="text-[10px] font-mono uppercase text-[#00A896] font-bold">BNS 2023 Provisions</div>
+                <div className="p-3 rounded-lg bg-[#03030A] border border-[#1A1A2E] space-y-2">
+                  <div className="text-[10px] font-mono uppercase text-[#00D4FF] font-bold">BNS 2023 Provisions</div>
                   {BNS_OPTIONS.map((opt) => (
-                    <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#F8F9FA] cursor-pointer">
+                    <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#F5F5F5] cursor-pointer">
                       <input
                         type="checkbox"
                         checked={watchBns.includes(opt.code)}
                         onChange={() => toggleSection('bnsSections', opt.code, watchBns)}
-                        className="mt-0.5 accent-[#00A896]"
+                        className="mt-0.5 accent-[#00D4FF]"
                       />
                       <span>{opt.label}</span>
                     </label>
                   ))}
                 </div>
 
-                <div className="p-3 rounded-lg bg-[#0A192F] border border-[#233554] space-y-2">
-                  <div className="text-[10px] font-mono uppercase text-[#2E8B57] font-bold">BSA 2023 Admissibility</div>
+                <div className="p-3 rounded-lg bg-[#03030A] border border-[#1A1A2E] space-y-2">
+                  <div className="text-[10px] font-mono uppercase text-[#00FF9D] font-bold">BSA 2023 Admissibility</div>
                   {BSA_OPTIONS.map((opt) => (
-                    <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#F8F9FA] cursor-pointer">
+                    <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#F5F5F5] cursor-pointer">
                       <input
                         type="checkbox"
                         checked={watchBsa.includes(opt.code)}
                         onChange={() => toggleSection('bsaSections', opt.code, watchBsa)}
-                        className="mt-0.5 accent-[#2E8B57]"
+                        className="mt-0.5 accent-[#00FF9D]"
                       />
                       <span>{opt.label}</span>
                     </label>
@@ -720,7 +720,7 @@ export default function IncidentFirPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 px-5 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#0A192F] text-xs font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
+                className="w-full py-3 px-5 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#03030A] text-xs font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
               >
                 {submitting ? (
                   <>
@@ -745,17 +745,17 @@ export default function IncidentFirPage() {
           >
             {!firOutput ? (
               <div className="py-16 text-center space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-[#0A192F] border border-[#233554] mx-auto flex items-center justify-center text-[#00A896]">
+                <div className="w-12 h-12 rounded-xl bg-[#03030A] border border-[#1A1A2E] mx-auto flex items-center justify-center text-[#00D4FF]">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
-                <div className="text-sm font-semibold text-[#F8F9FA]">Statutory Dossier Preview</div>
-                <p className="text-xs text-[#8D99AE] max-w-sm mx-auto leading-relaxed">
-                  Complete the mandatory fields marked with <span className="text-[#D64045] font-bold">*</span> and submit to generate a BNSS 2023 / BNS 2023 / IT Act compliant FIR draft and BSA §63 certificate.
+                <div className="text-sm font-semibold text-[#F5F5F5]">Statutory Dossier Preview</div>
+                <p className="text-xs text-[#888888] max-w-sm mx-auto leading-relaxed">
+                  Complete the mandatory fields marked with <span className="text-[#FF1B1B] font-bold">*</span> and submit to generate a BNSS 2023 / BNS 2023 / IT Act compliant FIR draft and BSA §63 certificate.
                 </p>
               </div>
             ) : (
               <div className="space-y-4">
-                <pre className="p-4 rounded-lg bg-[#0A192F] border border-[#233554] text-[11px] font-mono text-[#F8F9FA] whitespace-pre-wrap max-h-[520px] overflow-y-auto leading-relaxed">
+                <pre className="p-4 rounded-lg bg-[#03030A] border border-[#1A1A2E] text-[11px] font-mono text-[#F5F5F5] whitespace-pre-wrap max-h-[520px] overflow-y-auto leading-relaxed">
                   {firOutput}
                 </pre>
 
@@ -763,7 +763,7 @@ export default function IncidentFirPage() {
                   <button
                     type="button"
                     onClick={handleDownloadFirPdf}
-                    className="px-4 py-2 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#0A192F] text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                    className="px-4 py-2 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#03030A] text-xs font-bold flex items-center gap-1.5 cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" /> Download FIR PDF
                   </button>
@@ -772,7 +772,7 @@ export default function IncidentFirPage() {
                     type="button"
                     onClick={handleExportBsa63Certificate}
                     disabled={issuingCert}
-                    className="px-3.5 py-2 rounded-lg bg-[#00A896] hover:bg-[#028a7b] text-[#0A192F] text-xs font-bold flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
+                    className="px-3.5 py-2 rounded-lg bg-[#00D4FF] hover:bg-[#00b8de] text-[#03030A] text-xs font-bold flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
                   >
                     <Lock className="w-3.5 h-3.5" />
                     {issuingCert ? 'Signing...' : 'Export BSA 2023 §63 Cert'}
@@ -785,20 +785,20 @@ export default function IncidentFirPage() {
                       setCopied(true)
                       setTimeout(() => setCopied(false), 2000)
                     }}
-                    className="px-3 py-2 rounded-lg bg-[#0A192F] border border-[#233554] text-[#F8F9FA] text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+                    className="px-3 py-2 rounded-lg bg-[#03030A] border border-[#1A1A2E] text-[#F5F5F5] text-xs font-medium flex items-center gap-1.5 cursor-pointer"
                   >
-                    {copied ? <Check className="w-3.5 h-3.5 text-[#00A896]" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? <Check className="w-3.5 h-3.5 text-[#00D4FF]" /> : <Copy className="w-3.5 h-3.5" />}
                     {copied ? 'Copied' : 'Copy'}
                   </button>
                 </div>
 
                 {certStatus && (
-                  <div className="p-2.5 rounded bg-[#00A896]/10 border border-[#00A896]/30 text-[11px] font-mono text-[#00A896]">
+                  <div className="p-2.5 rounded bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[11px] font-mono text-[#00D4FF]">
                     {certStatus}
                   </div>
                 )}
 
-                <div className="p-3 rounded-lg bg-[#0A192F] border border-[#FF9F1C]/30 flex items-start gap-2 text-[11px] text-[#8D99AE]">
+                <div className="p-3 rounded-lg bg-[#03030A] border border-[#FF9F1C]/30 flex items-start gap-2 text-[11px] text-[#888888]">
                   <AlertTriangle className="w-4 h-4 text-[#FF9F1C] shrink-0 mt-0.5" />
                   <span>
                     AI-assisted indication — verify all statutory sections, amounts, and transaction references manually before submission to Police or cybercrime.gov.in.

@@ -24,13 +24,13 @@ interface TopNavTab {
 }
 
 const TOP_NAV_TABS: TopNavTab[] = [
-  { id: 'overview', labelEn: 'National SOC', labelHi: 'राष्ट्रीय एसओसी', path: '/' },
+  { id: 'overview', labelEn: 'Command Center', labelHi: 'कमांड सेंटर', path: '/' },
+  { id: 'intel', labelEn: '3D Threat Radar', labelHi: '3D थ्रेट रडार', path: '/intel' },
   { id: 'nlp', labelEn: 'Phishing Inspector', labelHi: 'फ़िशिंग जांच', path: '/nlp' },
   { id: 'incident', labelEn: 'Incident & FIR', labelHi: 'घटना और एफआईआर', path: '/incident' },
   { id: 'mentor', labelEn: 'AI Copilot', labelHi: 'एआई सहपायलट', path: '/mentor' },
-  { id: 'deepfake-xai', labelEn: 'Deepfake Forensics', labelHi: 'डीपफेक फोरेंसिक', path: '/deepfake-xai' },
-  { id: 'devsec', labelEn: 'Code Auditor', labelHi: 'कोड ऑडिटर', path: '/devsec' },
-  { id: 'research', labelEn: 'Research', labelHi: 'अनुसंधान', path: '/research' },
+  { id: 'deepfake-xai', labelEn: 'Deepfake XAI', labelHi: 'डीपफेक XAI', path: '/deepfake-xai' },
+  { id: 'devsec', labelEn: 'DevSecOps', labelHi: 'देवसेकऑप्स', path: '/devsec' },
 ]
 
 export function TopBar() {
@@ -73,44 +73,45 @@ export function TopBar() {
   return (
     <>
       <header
-        className="sticky top-0 z-40 w-full select-none bg-[#0A192F]/95 backdrop-blur-md border-b border-[#233554]"
-        aria-label="Official Portal Top Navigation Bar"
+        className="sticky top-0 z-40 w-full select-none bg-[#0A0A12]/90 backdrop-blur-md border-b border-[#1A1A2E]"
+        aria-label="Cinematic Portal Top Navigation Bar"
       >
-        {/* Top Statutory Authority Sub-Bar */}
-        <div className="px-3 sm:px-6 py-1.5 border-b border-[#233554]/80 bg-[#071222] flex flex-wrap items-center justify-between gap-2 text-[11px]">
+        {/* Top Statutory & Telemetry Sub-Bar */}
+        <div className="px-3 sm:px-6 py-1.5 border-b border-[#1A1A2E] bg-[#03030A]/90 flex flex-wrap items-center justify-between gap-2 text-[11px]">
           <div className="flex items-center gap-2.5 min-w-0">
-            <Shield size={13} className="text-[#FF9F1C] shrink-0" />
-            <span className="font-legal font-bold text-[#F8F9FA] tracking-wide truncate">
+            <Shield size={13} className="text-[#FF1B1B] shrink-0" />
+            <span className="font-legal font-bold text-[#F5F5F5] tracking-wide truncate">
               {t(
-                'TRINETRA · National Cyber Defense Console',
-                'त्रिनेत्र · राष्ट्रीय साइबर रक्षा कंसोल'
+                'TRINETRA · Cyber Defense Console',
+                'त्रिनेत्र · साइबर डिफेंस कंसोल'
               )}
             </span>
-            <span className="hidden md:inline text-[#233554]">|</span>
-            <span className="hidden md:inline text-[#8D99AE] font-mono text-[10px]">
+            <span className="hidden md:inline text-[#1A1A2E]">|</span>
+            <span className="hidden md:inline text-[#888888] font-mono text-[10px]">
               IT Act §70A · BNS 2023 · BSA 2023 §63
             </span>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 font-mono shrink-0">
-            <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#172A45] border border-[#233554] text-[#FF9F1C] text-[10px] font-bold">
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#FF1B1B]/10 border border-[#FF1B1B]/40 text-[#FF1B1B] text-[10px] font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF1B1B] animate-pulse" />
               DEF CON: 3
             </span>
             {istTime && (
-              <span className="hidden lg:inline-flex items-center gap-1 text-[10px] text-[#8D99AE]">
-                <Clock size={11} className="text-[#00A896]" />
+              <span className="hidden lg:inline-flex items-center gap-1 text-[10px] text-[#00FF9D]">
+                <Clock size={11} className="text-[#00D4FF]" />
                 {istTime}
               </span>
             )}
             <button
               onClick={toggleLang}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#172A45] hover:bg-[#1E3554] border border-[#233554] text-[10px] font-bold text-[#F8F9FA] cursor-pointer transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#0A0A12] hover:bg-[#121222] border border-[#1A1A2E] hover:border-[#00D4FF]/50 text-[10px] font-bold text-[#F5F5F5] cursor-pointer transition-colors"
               title="Switch Language (English / Hindi)"
             >
               <Languages size={11} className="text-[#FF9F1C]" />
-              <span className={lang === 'en' ? 'text-[#FF9F1C]' : 'text-[#8D99AE]'}>EN</span>
-              <span className="text-[#8D99AE]">|</span>
-              <span className={lang === 'hi' ? 'text-[#FF9F1C]' : 'text-[#8D99AE]'}>हिं</span>
+              <span className={lang === 'en' ? 'text-[#00D4FF]' : 'text-[#888888]'}>EN</span>
+              <span className="text-[#666666]">|</span>
+              <span className={lang === 'hi' ? 'text-[#FF9F1C]' : 'text-[#888888]'}>हिं</span>
             </button>
           </div>
         </div>
@@ -130,8 +131,8 @@ export function TopBar() {
                   href={tab.path}
                   className={`relative h-full flex items-center px-2.5 sm:px-3.5 text-xs whitespace-nowrap transition-colors font-medium shrink-0 ${
                     isActive
-                      ? 'text-[#F8F9FA] font-semibold'
-                      : 'text-[#8D99AE] hover:text-[#F8F9FA]'
+                      ? 'text-[#00D4FF] font-semibold'
+                      : 'text-[#888888] hover:text-[#F5F5F5]'
                   }`}
                 >
                   <span className={lang === 'hi' ? 'font-hindi' : ''}>
@@ -139,7 +140,7 @@ export function TopBar() {
                   </span>
 
                   {isActive && (
-                    <span className="absolute bottom-0 left-2 right-2 h-[2.5px] bg-[#FF9F1C] rounded-t" />
+                    <span className="absolute bottom-0 left-2 right-2 h-[2.5px] bg-[#00D4FF] shadow-[0_0_10px_#00D4FF] rounded-t" />
                   )}
                 </Link>
               )
@@ -149,7 +150,7 @@ export function TopBar() {
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={() => setPaletteOpen(true)}
-              className="flex md:hidden items-center justify-center w-8 h-8 rounded-lg bg-[#172A45] hover:bg-[#1E3554] border border-[#233554] text-[#8D99AE] hover:text-white transition-colors cursor-pointer shrink-0"
+              className="flex md:hidden items-center justify-center w-8 h-8 rounded-lg bg-[#03030A] border border-[#1A1A2E] text-[#888888] hover:text-[#00D4FF] transition-colors cursor-pointer shrink-0"
               aria-label="Open Search"
             >
               <Search size={14} />
@@ -157,12 +158,12 @@ export function TopBar() {
 
             <button
               onClick={() => setPaletteOpen(true)}
-              className="hidden md:flex items-center gap-2 h-8 px-3 rounded-lg bg-[#172A45] hover:bg-[#1E3554] border border-[#233554] text-[#8D99AE] text-xs transition-colors w-40 lg:w-44 cursor-pointer text-left"
+              className="hidden md:flex items-center gap-2 h-8 px-3 rounded-lg bg-[#03030A] hover:border-[#00D4FF]/50 border border-[#1A1A2E] text-[#888888] text-xs transition-colors w-40 lg:w-44 cursor-pointer text-left"
               title="Search departments & IOCs (⌘K / Ctrl+K)"
             >
-              <Search size={13} className="shrink-0" />
+              <Search size={13} className="shrink-0 text-[#00D4FF]" />
               <span className="truncate text-[11px]">{t('Search modules...', 'मॉड्यूल खोजें...')}</span>
-              <span className="ml-auto text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#0A192F] border border-[#233554]">
+              <span className="ml-auto text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#0A0A12] border border-[#1A1A2E] text-[#00FF9D]">
                 ⌘K
               </span>
             </button>
@@ -173,7 +174,7 @@ export function TopBar() {
               href="https://cybercrime.gov.in"
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden xl:flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-mono font-semibold text-[#FF9F1C] bg-[#172A45] hover:bg-[#1E3554] border border-[#FF9F1C]/40 transition-colors shrink-0"
+              className="hidden xl:flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-mono font-semibold text-[#FF9F1C] bg-[#03030A] hover:border-[#FF9F1C]/60 border border-[#FF9F1C]/35 transition-colors shrink-0"
               title="National Cyber Crime Reporting Portal & 1930 Helpline"
             >
               <PhoneCall size={12} />
@@ -182,7 +183,7 @@ export function TopBar() {
 
             <button
               onClick={() => setShowHelp(true)}
-              className="flex items-center justify-center w-8 h-8 rounded-lg text-[#8D99AE] hover:text-white bg-[#172A45] hover:bg-[#1E3554] border border-[#233554] transition-colors cursor-pointer shrink-0"
+              className="flex items-center justify-center w-8 h-8 rounded-lg text-[#888888] hover:text-[#00D4FF] bg-[#03030A] border border-[#1A1A2E] hover:border-[#00D4FF]/50 transition-colors cursor-pointer shrink-0"
               aria-label="Platform Documentation"
             >
               <HelpCircle size={15} />
@@ -190,7 +191,7 @@ export function TopBar() {
 
             <Link
               href="/incident"
-              className="h-8 px-3 rounded-lg bg-[#FF9F1C] hover:bg-[#F08C00] text-[#0A192F] font-bold text-xs flex items-center gap-1 transition-colors shrink-0 cursor-pointer"
+              className="h-8 px-3 rounded-lg bg-[#FF1B1B] hover:bg-[#e01414] text-[#F5F5F5] font-bold text-xs flex items-center gap-1 transition-all shrink-0 cursor-pointer shadow-[0_0_16px_rgba(255,27,27,0.4)]"
               title="File Statutory BNS 2023 FIR"
             >
               <Plus size={14} strokeWidth={2.5} />
@@ -204,25 +205,25 @@ export function TopBar() {
 
       {showHelp && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           onClick={() => setShowHelp(false)}
         >
           <div
-            className="relative w-full max-w-2xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[88dvh] flex flex-col rounded-xl bg-[#172A45] border border-[#233554] shadow-2xl overflow-hidden text-[#F8F9FA]"
+            className="relative w-full max-w-2xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[88dvh] flex flex-col rounded-xl bg-[#0A0A12] border border-[#1A1A2E] shadow-[0_0_32px_rgba(0,212,255,0.2)] overflow-hidden text-[#F5F5F5]"
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[#233554] bg-[#0A192F] shrink-0">
+            <div className="flex items-center justify-between p-4 sm:p-5 border-b border-[#1A1A2E] bg-[#03030A] shrink-0">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-[#FF9F1C]/15 border border-[#FF9F1C]/40 flex items-center justify-center shrink-0">
-                  <Shield size={16} className="text-[#FF9F1C]" />
+                <div className="w-8 h-8 rounded-lg bg-[#FF1B1B]/15 border border-[#FF1B1B]/40 flex items-center justify-center shrink-0">
+                  <Shield size={16} className="text-[#FF1B1B]" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="font-legal text-sm font-bold text-[#F8F9FA] truncate">
-                    TRINETRA — Official Console Architecture
+                  <h3 className="font-legal text-sm font-bold text-[#F5F5F5] truncate">
+                    TRINETRA — Cinematic 3D Cyber Architecture
                   </h3>
-                  <p className="text-[11px] text-[#8D99AE] truncate">
+                  <p className="text-[11px] text-[#888888] truncate">
                     Aligned to IT Act 2000, BNS 2023, BSA 2023 §63 &amp; DPDP Act 2023
                   </p>
                 </div>
@@ -230,37 +231,18 @@ export function TopBar() {
               <button
                 onClick={() => setShowHelp(false)}
                 aria-label="Close guide"
-                className="text-[#8D99AE] hover:text-white p-1.5 rounded-lg hover:bg-[#1E3554] transition-colors cursor-pointer shrink-0"
+                className="text-[#888888] hover:text-white p-1.5 rounded-lg hover:bg-[#1A1A2E] transition-colors cursor-pointer shrink-0"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <div className="p-4 sm:p-6 space-y-4 text-[#F8F9FA]/90 flex-1 overflow-y-auto text-xs">
-              <div className="p-4 rounded-lg bg-[#0A192F] border border-[#233554]">
-                <p className="font-bold text-sm text-[#F8F9FA] mb-1">Statutory Mandate &amp; AI Harness</p>
-                <p className="text-[#8D99AE] leading-relaxed">
-                  TRINETRA integrates NCIIPC critical sector telemetry, BNS 2023 e-FIR synthesis, BSA 2023 §63 SHA-256 electronic evidence certification, and stateless BharatCode AI routing (<code className="text-[#00A896]">qwen-3.8-27b</code> + <code className="text-[#00A896]">deepseek-v4.1-flash</code>, <code className="text-[#FF9F1C]">store: false</code>).
+            <div className="p-4 sm:p-6 space-y-4 text-[#F5F5F5]/90 flex-1 overflow-y-auto text-xs">
+              <div className="p-4 rounded-lg bg-[#03030A] border border-[#1A1A2E]">
+                <p className="font-bold text-sm text-[#F5F5F5] mb-1">Statutory Core + WebGL Depth</p>
+                <p className="text-[#888888] leading-relaxed">
+                  Combines interactive React Three Fiber 3D threat telemetry, BNS 2023 e-FIR synthesis, BSA 2023 §63 SHA-256 certificates, and stateless BharatCode AI routing (<code className="text-[#00FF9D]">qwen-3.8-27b</code> + <code className="text-[#00D4FF]">deepseek-v4.1-flash</code>, <code className="text-[#FF9F1C]">store: false</code>).
                 </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-lg bg-[#0A192F] border border-[#233554]">
-                  <p className="text-[#FF9F1C] font-bold mb-1">00 // National SOC</p>
-                  <p className="text-[#8D99AE]">DEF CON posture, IT Act §70 sector table, and CERT-In advisories.</p>
-                </div>
-                <div className="p-3.5 rounded-lg bg-[#0A192F] border border-[#233554]">
-                  <p className="text-[#00A896] font-bold mb-1">08 // Phishing &amp; Link Inspector</p>
-                  <p className="text-[#8D99AE]">Live SMS/URL analysis, Levenshtein spoofing check, and BSA §63 PDF.</p>
-                </div>
-                <div className="p-3.5 rounded-lg bg-[#0A192F] border border-[#233554]">
-                  <p className="text-[#2E8B57] font-bold mb-1">04 // Incident Response &amp; FIR</p>
-                  <p className="text-[#8D99AE]">Bilingual cybercrime complaint drafting with 1930 helpline workflow.</p>
-                </div>
-                <div className="p-3.5 rounded-lg bg-[#0A192F] border border-[#233554]">
-                  <p className="text-[#F8F9FA] font-bold mb-1">11 // Deepfake Forensics</p>
-                  <p className="text-[#8D99AE]">Grad-CAM facial saliency and CGFD/FADI research benchmarks.</p>
-                </div>
               </div>
             </div>
           </div>
