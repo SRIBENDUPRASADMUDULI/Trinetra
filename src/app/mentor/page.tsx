@@ -66,6 +66,8 @@ export default function MentorPage() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorBanner, setErrorBanner] = useState<string | null>(null)
+  const [pinging, setPinging] = useState(false)
+  const [pingBadge, setPingBadge] = useState<string | null>(null)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -113,6 +115,23 @@ export default function MentorPage() {
     setMessages(INITIAL_CONVERSATION)
   }
 
+  async function handlePingBharatCode() {
+    setPinging(true)
+    try {
+      const res = await fetch('/api/ai/test', { method: 'POST' })
+      const data = await res.json()
+      if (data.success && data.ping) {
+        setPingBadge(`${data.ping.status} · ${data.ping.latencyMs}ms${data.ping.requestId ? ' · ' + data.ping.requestId : ''}`)
+      } else {
+        setPingBadge('PING_FAILED')
+      }
+    } catch {
+      setPingBadge('PING_ERROR')
+    } finally {
+      setPinging(false)
+    }
+  }
+
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden bg-[#0A0E17]">
       {/* Main Chat Column */}
@@ -133,10 +152,19 @@ export default function MentorPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <button
+              onClick={handlePingBharatCode}
+              disabled={pinging}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold text-indigo-300 hover:text-white rounded-full bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 transition-all cursor-pointer disabled:opacity-50"
+              title="Verify BharatCode Gateway Connectivity"
+            >
+              <Activity size={12} className={pinging ? 'animate-spin' : ''} />
+              <span>{pinging ? 'Pinging...' : pingBadge || 'Ping BharatCode'}</span>
+            </button>
             <button
               onClick={handleReset}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-400 hover:text-white rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-all cursor-pointer"
               title="Reset conversation"
             >
               <RotateCcw size={12} />

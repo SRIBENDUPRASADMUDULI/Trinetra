@@ -62,7 +62,7 @@ export function AIHarnessBar() {
   useEffect(() => {
     setMounted(true)
     fetchTelemetry()
-    const id = setInterval(fetchTelemetry, 15000)
+    const id = setInterval(fetchTelemetry, 8000)
     return () => clearInterval(id)
   }, [])
 
@@ -77,7 +77,7 @@ export function AIHarnessBar() {
 
   async function fetchTelemetry() {
     try {
-      const res = await fetch('/api/ai/telemetry')
+      const res = await fetch('/api/telemetry', { cache: 'no-store' })
       const data = await res.json()
       if (data.success && data.telemetry) {
         setTelemetry(data.telemetry)

@@ -1,52 +1,71 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 
-interface TelemetryState {
-  rx: string
-  tx: string
-  conn: number
-  loss: string
-}
-
-function rand(min: number, max: number, dec = 1) {
-  return parseFloat((Math.random() * (max - min) + min).toFixed(dec))
+interface LiveTelemetry {
+  model: string
+  latencyMs: number
+  calls: number
+  status: string
 }
 
 export function TelemetryTicker() {
-  const [t, setT] = useState<TelemetryState>({ rx: '4.2', tx: '1.1', conn: 847, loss: '0.00' })
+  const [t, setT] = useState<LiveTelemetry>({
+    model: 'qwen-3.8-27b',
+    latencyMs: 148,
+    calls: 0,
+    status: 'connected',
+  })
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setT({
-        rx: rand(2.1, 9.8).toFixed(1),
-        tx: rand(0.4, 3.2).toFixed(1),
-        conn: Math.floor(Math.random() * 400) + 600,
-        loss: rand(0, 0.14, 2).toFixed(2),
-      })
-    }, 3000)
-    return () => clearInterval(id)
+    let active = true
+    async function poll() {
+      try {
+        const res = await fetch('/api/telemetry', { cache: 'no-store' })
+        const data = await res.json()
+        if (active && data.success && data.telemetry) {
+          setT({
+            model: data.telemetry.activeModel,
+            latencyMs: data.telemetry.latencyMs,
+            calls: data.telemetry.totalCalls,
+            status: data.telemetry.status,
+          })
+        }
+      } catch {
+        // Keep last observed telemetry snapshot
+      }
+    }
+    poll()
+    const id = setInterval(poll, 8000)
+    return () => {
+      active = false
+      clearInterval(id)
+    }
   }, [])
 
   return (
     <div className="flex items-center gap-3 font-mono text-[11px] text-slate-400 select-none whitespace-nowrap">
       <div className="flex items-center gap-1.5">
-        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="text-slate-500">RX</span>
-        <span className="text-emerald-400 font-semibold">{t.rx} MB/s</span>
+        <span
+          className={`w-1.5 h-1.5 rounded-full animate-pulse ${
+            t.status === 'connected' ? 'bg-emerald-400' : t.status === 'fallback' ? 'bg-amber-400' : 'bg-rose-400'
+          }`}
+        />
+        <span className="text-slate-500">MODEL</span>
+        <span className="text-emerald-400 font-semibold">{t.model}</span>
       </div>
 
       <span className="text-white/[0.1]">•</span>
 
       <div className="flex items-center gap-1.5">
-        <span className="text-slate-500">TX</span>
-        <span className="text-emerald-400 font-semibold">{t.tx} MB/s</span>
+        <span className="text-slate-500">RTT</span>
+        <span className="text-emerald-400 font-semibold">{t.latencyMs}ms</span>
       </div>
 
       <span className="text-white/[0.1]">•</span>
 
       <div className="flex items-center gap-1.5">
-        <span className="text-slate-500">CONN</span>
-        <span className="text-cyan-400 font-semibold">{t.conn}</span>
+        <span className="text-slate-500">CALLS</span>
+        <span className="text-cyan-400 font-semibold">{t.calls}</span>
       </div>
     </div>
   )
