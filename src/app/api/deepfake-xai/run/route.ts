@@ -67,6 +67,41 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    // Optional Hugging Face Hosted Inference fallback when HF_TOKEN is configured
+    if (mode === 'analyze_image' && env.HF_TOKEN && typeof body.imageBase64 === 'string' && body.imageBase64.startsWith('data:image/')) {
+      const m = body.imageBase64.match(/^data:image\/(png|jpeg|jpg|webp);base64,(.+)$/i)
+      if (m) {
+        const imgBuf = Buffer.from(m[2], 'base64')
+        const hfRes = await fetch('https://router.huggingface.co/hf-inference/models/prithivMLmods/Deep-Fake-Detector-v2-Model', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${env.HF_TOKEN}`,
+            'Content-Type': m[1] === 'png' ? 'image/png' : 'image/jpeg',
+          },
+          body: imgBuf,
+        })
+        if (hfRes.ok) {
+          const preds = (await hfRes.json()) as Array<{ label: string; score: number }>
+          const fakeItem = preds.find((p) => p.label.toLowerCase().includes('fake'))
+          const realItem = preds.find((p) => p.label.toLowerCase().includes('real'))
+          const probFake = fakeItem ? fakeItem.score : realItem ? 1 - realItem.score : 0.5
+          return NextResponse.json({
+            success: true,
+            mode: 'analyze_image',
+            durationMs: Date.now() - start,
+            analysis: {
+              source_model: 'prithivMLmods/Deep-Fake-Detector-v2-Model (HF Router)',
+              backbone: 'ViT-Base-Patch16-224',
+              prediction: probFake >= 0.5 ? 'FAKE' : 'REAL',
+              prob_fake: Number(probFake.toFixed(4)),
+              prob_real: Number((1 - probFake).toFixed(4)),
+              confidence: Number(Math.max(probFake, 1 - probFake).toFixed(4)),
+            },
+          })
+        }
+      }
+    }
+
     const engineRoot = getEngineRoot()
 
     if (!fs.existsSync(engineRoot)) {

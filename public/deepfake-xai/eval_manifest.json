@@ -1,0 +1,146 @@
+[
+  {
+    "id": "StyleGAN2_real_0000",
+    "generator": "StyleGAN2",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/StyleGAN2_real_0000.png"
+  },
+  {
+    "id": "StyleGAN2_real_0001",
+    "generator": "StyleGAN2",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/StyleGAN2_real_0001.png"
+  },
+  {
+    "id": "StyleGAN2_real_0002",
+    "generator": "StyleGAN2",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/StyleGAN2_real_0002.png"
+  },
+  {
+    "id": "StyleGAN2_real_0003",
+    "generator": "StyleGAN2",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/StyleGAN2_real_0003.png"
+  },
+  {
+    "id": "StyleGAN2_fake_0000",
+    "generator": "StyleGAN2",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/StyleGAN2_fake_0000.png"
+  },
+  {
+    "id": "StyleGAN2_fake_0001",
+    "generator": "StyleGAN2",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/StyleGAN2_fake_0001.png"
+  },
+  {
+    "id": "StyleGAN2_fake_0002",
+    "generator": "StyleGAN2",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/StyleGAN2_fake_0002.png"
+  },
+  {
+    "id": "StyleGAN2_fake_0003",
+    "generator": "StyleGAN2",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/StyleGAN2_fake_0003.png"
+  },
+  {
+    "id": "FaceSwapAE_real_0000",
+    "generator": "FaceSwapAE",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/FaceSwapAE_real_0000.png"
+  },
+  {
+    "id": "FaceSwapAE_real_0001",
+    "generator": "FaceSwapAE",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/FaceSwapAE_real_0001.png"
+  },
+  {
+    "id": "FaceSwapAE_real_0002",
+    "generator": "FaceSwapAE",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/FaceSwapAE_real_0002.png"
+  },
+  {
+    "id": "FaceSwapAE_real_0003",
+    "generator": "FaceSwapAE",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/FaceSwapAE_real_0003.png"
+  },
+  {
+    "id": "FaceSwapAE_fake_0000",
+    "generator": "FaceSwapAE",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/FaceSwapAE_fake_0000.png"
+  },
+  {
+    "id": "FaceSwapAE_fake_0001",
+    "generator": "FaceSwapAE",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/FaceSwapAE_fake_0001.png"
+  },
+  {
+    "id": "FaceSwapAE_fake_0002",
+    "generator": "FaceSwapAE",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/FaceSwapAE_fake_0002.png"
+  },
+  {
+    "id": "FaceSwapAE_fake_0003",
+    "generator": "FaceSwapAE",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/FaceSwapAE_fake_0003.png"
+  },
+  {
+    "id": "StableDiffusion_real_0000",
+    "generator": "StableDiffusion",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/StableDiffusion_real_0000.png"
+  },
+  {
+    "id": "StableDiffusion_real_0001",
+    "generator": "StableDiffusion",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/StableDiffusion_real_0001.png"
+  },
+  {
+    "id": "StableDiffusion_real_0002",
+    "generator": "StableDiffusion",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/StableDiffusion_real_0002.png"
+  },
+  {
+    "id": "StableDiffusion_real_0003",
+    "generator": "StableDiffusion",
+    "label": "real",
+    "url": "/deepfake-xai/eval_samples/StableDiffusion_real_0003.png"
+  },
+  {
+    "id": "StableDiffusion_fake_0000",
+    "generator": "StableDiffusion",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/StableDiffusion_fake_0000.png"
+  },
+  {
+    "id": "StableDiffusion_fake_0001",
+    "generator": "StableDiffusion",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/StableDiffusion_fake_0001.png"
+  },
+  {
+    "id": "StableDiffusion_fake_0002",
+    "generator": "StableDiffusion",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/StableDiffusion_fake_0002.png"
+  },
+  {
+    "id": "StableDiffusion_fake_0003",
+    "generator": "StableDiffusion",
+    "label": "fake",
+    "url": "/deepfake-xai/eval_samples/StableDiffusion_fake_0003.png"
+  }
+]

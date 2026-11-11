@@ -6,6 +6,17 @@ import { StatusBadge } from '@/components/ui/status-badge'
 import { InfoExplain } from '@/components/ui/InfoExplain'
 import { InteractiveMatrixGrid } from '@/components/deepfake-xai/InteractiveMatrixGrid'
 import { FaithfulnessCurveChart } from '@/components/deepfake-xai/FaithfulnessCurveChart'
+import {
+  analyzeImageMultimodal,
+  analyzeVideoMultimodal,
+  createDemoDeepfakeVideoUrl,
+  runLiveAccuracyCheck,
+  HF_DEEPFAKE_ONNX_MODEL,
+  type AccuracyEvalSummary,
+  type ModalityBreakdown,
+  type VideoFrameAnalysis,
+  type FacialZoneScores,
+} from '@/lib/multimodal-deepfake'
 import type {
   PerGeneratorRow,
   PairwiseRow,
@@ -31,6 +42,9 @@ import {
   ShieldCheck,
   Terminal,
   Eye,
+  Video,
+  Award,
+  Download,
 } from 'lucide-react'
 
 interface ApiOverviewResponse {
@@ -55,6 +69,7 @@ interface ApiOverviewResponse {
 }
 
 interface SingleImageAnalysis {
+  mediaType?: 'image' | 'video'
   source_model: string
   backbone: string
   img_size: number
@@ -72,14 +87,20 @@ interface SingleImageAnalysis {
   input_image: string
   heatmap_image: string
   overlay_image: string
+  modalities?: ModalityBreakdown
+  facialZones?: FacialZoneScores
+  frames?: VideoFrameAnalysis[]
+  durationMs?: number
   cam_stats: {
-    mean_activation: number
-    peak_activation: number
-    high_saliency_ratio: number
+    mean?: number
+    peak?: number
+    mean_activation?: number
+    peak_activation?: number
+    high_saliency_ratio?: number
   }
 }
 
-type ActiveTab = 'overview' | 'inspector' | 'runner' | 'methodology'
+type ActiveTab = 'inspector' | 'accuracy' | 'overview' | 'runner' | 'methodology'
 
 const GENERATOR_PROFILES = [
   {
@@ -140,6 +161,15 @@ export default function DeepfakeXaiPage() {
   const [imageError, setImageError] = useState<string | null>(null)
   const [analysisDurationMs, setAnalysisDurationMs] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string | null>(null)
+  const [generatingDemo, setGeneratingDemo] = useState(false)
+  const [useHfModel, setUseHfModel] = useState(false)
+  const [hfStatusText, setHfStatusText] = useState<string | null>(null)
+  const [evalRunning, setEvalRunning] = useState(false)
+  const [evalProgress, setEvalProgress] = useState<{ done: number; total: number; id: string } | null>(null)
+  const [evalSummary, setEvalSummary] = useState<AccuracyEvalSummary | null>(null)
+  const [evalUseHf, setEvalUseHf] = useState(false)
+  const [certMsg, setCertMsg] = useState<string | null>(null)
 
   // BharatCode AI Forensic Brief state
   const [explaining, setExplaining] = useState(false)
@@ -182,14 +212,90 @@ export default function DeepfakeXaiPage() {
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    setImageError(null)
+    if (file.type.startsWith('video/') || /\.(mp4|webm|mov)$/i.test(file.name)) {
+      const url = URL.createObjectURL(file)
+      setUploadedVideoUrl(url)
+      setUploadedImageBase64(null)
+      setUploadedPreviewName(file.name)
+      return
+    }
     const reader = new FileReader()
     reader.onload = () => {
       if (typeof reader.result === 'string') {
+        setUploadedVideoUrl(null)
         setUploadedImageBase64(reader.result)
         setUploadedPreviewName(file.name)
       }
     }
     reader.readAsDataURL(file)
+  }
+
+  async function handleLoadDemoVideo() {
+    setGeneratingDemo(true)
+    setImageError(null)
+    try {
+      const demoUrl = await createDemoDeepfakeVideoUrl()
+      setUploadedVideoUrl(demoUrl)
+      setUploadedImageBase64(null)
+      setUploadedPreviewName('demo_deepfake_faceswap_2.4s.webm')
+    } catch (err: unknown) {
+      setImageError(err instanceof Error ? err.message : 'Unable to generate demo video')
+    } finally {
+      setGeneratingDemo(false)
+    }
+  }
+
+  async function handleRunAccuracyBenchmark() {
+    setEvalRunning(true)
+    setEvalProgress({ done: 0, total: 24, id: 'Initializing...' })
+    try {
+      const summary = await runLiveAccuracyCheck({
+        useHfModel: evalUseHf,
+        onProgress: (done, total, currentId) => setEvalProgress({ done, total, id: currentId }),
+      })
+      setEvalSummary(summary)
+    } catch (err: unknown) {
+      setLoadError(err instanceof Error ? err.message : 'Accuracy benchmark failed')
+    } finally {
+      setEvalRunning(false)
+      setEvalProgress(null)
+    }
+  }
+
+  async function handleExportDeepfakeCert() {
+    if (!imageAnalysis) return
+    try {
+      const res = await fetch('/api/certificate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourcePanel: 'Fake Photo & Deepfake Checker',
+          payload: `Media: ${uploadedPreviewName || inspectSampleName} | Type: ${imageAnalysis.mediaType || 'image'} | Artifact: ${imageAnalysis.modalities?.detectedArtifact || 'Spectral Check'}`,
+          verdict: imageAnalysis.prediction,
+          confidence: `${(imageAnalysis.confidence * 100).toFixed(1)}%`,
+          category: 'DEEPFAKE_FORENSICS',
+          flags: [
+            `Visual Score: ${((imageAnalysis.modalities?.visualScore ?? imageAnalysis.prob_fake) * 100).toFixed(1)}%`,
+            `Frequency Score: ${((imageAnalysis.modalities?.frequencyScore ?? 0) * 100).toFixed(1)}%`,
+            ...(imageAnalysis.modalities?.temporalScore !== null && imageAnalysis.modalities?.temporalScore !== undefined
+              ? [`Temporal Motion Score: ${(imageAnalysis.modalities.temporalScore * 100).toFixed(1)}%`]
+              : []),
+          ],
+          model: imageAnalysis.source_model,
+        }),
+      })
+      const json = await res.json()
+      if (json.success && json.certificate?.downloadUrl) {
+        const a = document.createElement('a')
+        a.href = json.certificate.downloadUrl
+        a.download = `TRINETRA_DEEPFAKE_BSA63_${json.certificate.certId}.pdf`
+        a.click()
+        setCertMsg(`Issued BSA 2023 §63 Report (${json.certificate.certId})`)
+      }
+    } catch {
+      // silent
+    }
   }
 
   async function handleRunLiveStudy() {
@@ -240,44 +346,59 @@ export default function DeepfakeXaiPage() {
     setAnalyzingImage(true)
     setImageError(null)
     setAnalysisDurationMs(null)
+    setHfStatusText(null)
+    setCertMsg(null)
 
     try {
-      const payload = uploadedImageBase64
-        ? {
-            mode: 'analyze_image',
-            imageBase64: uploadedImageBase64,
-            source: inspectSource,
-            backbone: inspectBackbone,
-            img_size: 64,
-            epochs: 4,
-            no_pretrained: true,
-          }
-        : {
-            mode: 'analyze_image',
-            sampleName: inspectSampleName,
-            source: inspectSource,
-            backbone: inspectBackbone,
-            img_size: 64,
-            epochs: 4,
-            no_pretrained: true,
-          }
-
-      const res = await fetch('/api/deepfake-xai/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-      const json = await res.json()
-      if (!json.success) {
-        throw new Error(json.error || 'Single image XAI inspection failed')
+      // 1. If a Video file or Demo Deepfake Video is loaded -> Run 6-Frame Multimodal Video Pipeline (M1..M8)
+      if (uploadedVideoUrl) {
+        const vidRes = await analyzeVideoMultimodal(uploadedVideoUrl, {
+          useHfModel,
+          onModelProgress: (pct, msg) => setHfStatusText(`${pct}% · ${msg}`),
+        })
+        setImageAnalysis({ ...vidRes, img_size: 224, pred_class: vidRes.prediction === 'FAKE' ? 1 : 0 })
+        setAnalysisDurationMs(vidRes.durationMs)
+        setAiBrief(null)
+        return
       }
-      setImageAnalysis(json.analysis)
-      setAnalysisDurationMs(json.durationMs ?? null)
+
+      // 2. If server has Python PyTorch or HF_TOKEN configured, try remote endpoint for custom images
+      if (data?.pythonAvailable && !useHfModel) {
+        try {
+          const payload = uploadedImageBase64
+            ? { mode: 'analyze_image', imageBase64: uploadedImageBase64, source: inspectSource, backbone: inspectBackbone, img_size: 64, epochs: 4, no_pretrained: true }
+            : { mode: 'analyze_image', sampleName: inspectSampleName, source: inspectSource, backbone: inspectBackbone, img_size: 64, epochs: 4, no_pretrained: true }
+          const res = await fetch('/api/deepfake-xai/run', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          })
+          const json = await res.json()
+          if (res.ok && json.success && json.analysis) {
+            setImageAnalysis(json.analysis)
+            setAnalysisDurationMs(json.durationMs ?? null)
+            setAiBrief(null)
+            return
+          }
+        } catch {
+          // fallback cleanly to browser multimodal engine below
+        }
+      }
+
+      // 3. Always-Active Browser Multimodal Deepfake Engine (Open-Source HF ViT ONNX + FFT + Spatial Seam)
+      const targetSrc = uploadedImageBase64 || `/deepfake-xai/test_samples/${encodeURIComponent(inspectSampleName)}`
+      const imgRes = await analyzeImageMultimodal(targetSrc, {
+        useHfModel,
+        onModelProgress: (pct, msg) => setHfStatusText(`${pct}% · ${msg}`),
+      })
+      setImageAnalysis({ ...imgRes, img_size: 224, pred_class: imgRes.prediction === 'FAKE' ? 1 : 0 })
+      setAnalysisDurationMs(imgRes.durationMs)
       setAiBrief(null)
     } catch (err: unknown) {
-      setImageError(err instanceof Error ? err.message : 'Failed to inspect image')
+      setImageError(err instanceof Error ? err.message : 'Failed to inspect media')
     } finally {
       setAnalyzingImage(false)
+      setHfStatusText(null)
     }
   }
 
@@ -377,7 +498,8 @@ export default function DeepfakeXaiPage() {
       <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-white border border-[#E0DDD5]">
         {[
           { id: 'overview', label: 'Benchmark Results (CGFD / FADI)', Icon: BarChart3 },
-          { id: 'inspector', label: 'Photo & Face Checker', Icon: Eye },
+          { id: 'inspector', label: 'Photo & Video Checker', Icon: Eye },
+          { id: 'accuracy', label: 'Live Accuracy Check (24 Samples)', Icon: Award },
           { id: 'runner', label: 'Compare Generators', Icon: Play },
           { id: 'methodology', label: 'How It Works', Icon: BookOpen },
         ].map(({ id, label, Icon }) => {
@@ -835,22 +957,59 @@ export default function DeepfakeXaiPage() {
                     <input
                       ref={fileInputRef}
                       type="file"
-                      accept="image/*"
+                      accept="image/*,video/mp4,video/webm,video/quicktime"
                       onChange={handleFileUpload}
                       className="hidden"
                     />
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="w-full py-3 px-4 rounded-xl border border-dashed border-[#A7F3D0] bg-[#ECFDF5] hover:bg-[#ECFDF5] text-[#065F46] text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer"
-                    >
-                      <Upload size={15} />
-                      <span>
-                        {uploadedPreviewName
-                          ? `Uploaded: ${uploadedPreviewName}`
-                          : 'Upload Custom Face Image (.png / .jpg)'}
-                      </span>
-                    </button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="py-2.5 px-3 rounded-xl border border-dashed border-[#A7F3D0] bg-[#ECFDF5] hover:bg-[#D1FAE5] text-[#065F46] text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer"
+                      >
+                        <Upload size={14} />
+                        <span className="truncate">
+                          {uploadedPreviewName
+                            ? uploadedPreviewName
+                            : 'Upload Photo / Video'}
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleLoadDemoVideo}
+                        disabled={generatingDemo}
+                        className="py-2.5 px-3 rounded-xl border border-[#FDE68A] bg-[#FEF3C7]/70 hover:bg-[#FEF3C7] text-[#92400E] text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                      >
+                        <Video size={14} />
+                        <span>{generatingDemo ? 'Synthesizing...' : 'Load Demo Deepfake Video (2.4s)'}</span>
+                      </button>
+                    </div>
+
+                    {uploadedVideoUrl && (
+                      <div className="p-2.5 rounded-xl bg-slate-50 border border-[#E0DDD5] space-y-2">
+                        <video
+                          src={uploadedVideoUrl}
+                          controls
+                          muted
+                          playsInline
+                          className="w-full max-h-44 rounded-lg bg-[#1A1A1A]"
+                        />
+                        <div className="flex items-center justify-between text-[11px] font-mono px-1 text-[#065F46]">
+                          <span>Video ready for 6-frame M3+M4+M5 scan</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setUploadedVideoUrl(null)
+                              setUploadedPreviewName(null)
+                            }}
+                            className="text-[#444B46] hover:text-[#1C201D] underline cursor-pointer"
+                          >
+                            Clear video
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
                     {uploadedImageBase64 && (
                       <div className="flex items-center justify-between text-[11px] font-mono px-3 py-1.5 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] text-emerald-700">
@@ -869,12 +1028,13 @@ export default function DeepfakeXaiPage() {
 
                     <div className="grid grid-cols-3 gap-2 pt-1">
                       {(data?.testSamples ?? []).map(sample => {
-                        const selected = !uploadedImageBase64 && inspectSampleName === sample.filename
+                        const selected = !uploadedImageBase64 && !uploadedVideoUrl && inspectSampleName === sample.filename
                         return (
                           <button
                             key={sample.filename}
                             type="button"
                             onClick={() => {
+                              setUploadedVideoUrl(null)
                               setUploadedImageBase64(null)
                               setUploadedPreviewName(null)
                               setInspectSampleName(sample.filename)
@@ -906,21 +1066,46 @@ export default function DeepfakeXaiPage() {
                     </div>
                   </div>
 
+                  {/* Open-Source HuggingFace ViT Model Toggle */}
+                  <div className="p-3 rounded-xl bg-slate-50 border border-[#E0DDD5] space-y-1.5">
+                    <label className="flex items-start gap-2.5 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={useHfModel}
+                        onChange={(e) => setUseHfModel(e.target.checked)}
+                        className="mt-0.5 rounded border-[#D1D5DB] text-[#059669] focus:ring-[#059669]"
+                      />
+                      <div className="space-y-0.5">
+                        <div className="text-xs font-semibold text-[#1C201D]">
+                          Enable Open-Source HuggingFace ViT (~54MB ONNX in browser)
+                        </div>
+                        <div className="text-[10px] font-mono text-[#5C645E]">
+                          {HF_DEEPFAKE_ONNX_MODEL} · runs locally via WebAssembly alongside FFT + Temporal fusion
+                        </div>
+                      </div>
+                    </label>
+                    {hfStatusText && (
+                      <div className="text-[10px] font-mono text-[#059669] bg-[#ECFDF5] border border-[#A7F3D0] rounded-lg px-2.5 py-1">
+                        {hfStatusText}
+                      </div>
+                    )}
+                  </div>
+
                   <button
                     type="button"
                     onClick={handleAnalyzeSingleImage}
                     disabled={analyzingImage}
-                    className="w-full py-3 px-4 rounded-xl bg-[#059669] hover:bg-slate-50 disabled:opacity-50 text-white text-xs font-bold tracking-wide flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
+                    className="w-full py-3 px-4 rounded-xl bg-[#059669] hover:bg-[#047857] disabled:opacity-50 text-white text-xs font-bold tracking-wide flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
                   >
                     {analyzingImage ? (
                       <>
                         <RefreshCw size={15} className="animate-spin" />
-                        <span>Running PyTorch + Grad-CAM + Deletion/Insertion...</span>
+                        <span>Running Multimodal Detection (Visual + Temporal + FFT)...</span>
                       </>
                     ) : (
                       <>
                         <Sparkles size={15} />
-                        <span>Run Live XAI Inspection</span>
+                        <span>Analyze Photo / Video Now</span>
                       </>
                     )}
                   </button>
@@ -985,7 +1170,7 @@ export default function DeepfakeXaiPage() {
                         <div className="text-lg font-extrabold font-mono text-[#047857]">
                           {imageAnalysis.composite_faithfulness.toFixed(4)}
                         </div>
-                        <div className="text-[10px] font-mono text-[#5C645E]">0.5·(1âˆ’Del)+0.5·Ins</div>
+                        <div className="text-[10px] font-mono text-[#5C645E]">0.5·(1−Del)+0.5·Ins</div>
                       </div>
                       <div className="p-3 rounded-xl bg-slate-50 border border-[#E0DDD5]">
                         <div className="text-[10px] font-mono text-[#5C645E]">DELETION AUC</div>
@@ -1002,6 +1187,71 @@ export default function DeepfakeXaiPage() {
                         <div className="text-[10px] font-mono text-[#5C645E]">Higher = sharper</div>
                       </div>
                     </div>
+
+                    {/* M3 Visual / M4 Temporal / M5 Frequency Modalities Breakdown */}
+                    {imageAnalysis.modalities && (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-[#F2F1EC] border border-[#E0DDD5]">
+                        <div>
+                          <div className="text-[10px] font-mono text-[#5C645E] uppercase">M3 Visual Detection</div>
+                          <div className="text-sm font-bold text-[#1C201D] mt-0.5">
+                            {(imageAnalysis.modalities.visualScore * 100).toFixed(1)}% Risk
+                          </div>
+                          <div className="text-[10px] text-[#5C645E]">
+                            {imageAnalysis.modalities.hfModelUsed ? 'HF ViT + Seam' : 'Spatial Seam'}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-mono text-[#5C645E] uppercase">M4 Temporal Motion</div>
+                          <div className="text-sm font-bold text-[#1C201D] mt-0.5">
+                            {imageAnalysis.modalities.temporalScore !== null
+                              ? `${(imageAnalysis.modalities.temporalScore * 100).toFixed(1)}% Flicker`
+                              : 'Single Image'}
+                          </div>
+                          <div className="text-[10px] text-[#5C645E]">
+                            {imageAnalysis.modalities.temporalScore !== null ? '6-Frame Delta' : 'Upload video for temporal'}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-[10px] font-mono text-[#5C645E] uppercase">M5 Frequency / FFT</div>
+                          <div className="text-sm font-bold text-[#1C201D] mt-0.5">
+                            {(imageAnalysis.modalities.frequencyScore * 100).toFixed(1)}% Anomaly
+                          </div>
+                          <div className="text-[10px] text-[#059669] font-medium truncate">
+                            {imageAnalysis.modalities.detectedArtifact}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Video Keyframe Timeline Strip (When Video Analyzed) */}
+                    {imageAnalysis.frames && imageAnalysis.frames.length > 0 && (
+                      <div className="p-4 rounded-xl bg-slate-50 border border-[#E0DDD5] space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-[#1C201D]">
+                            Video Frame-by-Frame Inspection ({imageAnalysis.frames.length} Sampled Frames)
+                          </span>
+                          <span className="text-[11px] font-medium text-[#DC2626]">
+                            {imageAnalysis.frames.filter(f => f.flagged).length} Flagged Frames
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                          {imageAnalysis.frames.map(fr => (
+                            <div
+                              key={fr.frameIndex}
+                              className={`p-1.5 rounded-lg border text-center space-y-1 ${
+                                fr.flagged ? 'bg-[#FEF2F2] border-[#FECACA]' : 'bg-white border-[#E0DDD5]'
+                              }`}
+                            >
+                              <img src={fr.overlayUrl} alt={`Frame ${fr.frameIndex}`} className="w-full h-16 object-cover rounded" />
+                              <div className="text-[10px] font-mono text-[#1C201D]">t={fr.timestampSec}s</div>
+                              <div className={`text-[10px] font-bold ${fr.flagged ? 'text-[#DC2626]' : 'text-[#15803D]'}`}>
+                                {(fr.fakeProb * 100).toFixed(0)}% {fr.flagged ? 'FAKE' : 'OK'}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* 3-Panel Visual Breakdown */}
                     <div className="grid grid-cols-3 gap-3">
@@ -1046,28 +1296,36 @@ export default function DeepfakeXaiPage() {
                         {[
                           {
                             zone: 'Periorbital / Eyes',
-                            share: Math.round(32 + imageAnalysis.composite_faithfulness * 8),
+                            share:
+                              imageAnalysis.facialZones?.eyes ??
+                              Math.round(32 + imageAnalysis.composite_faithfulness * 8),
                             artifact: 'Corneal reflection & blink coherence',
                           },
                           {
                             zone: 'Oral / Mouth',
-                            share: Math.round(28 + imageAnalysis.prob_fake * 10),
+                            share:
+                              imageAnalysis.facialZones?.mouth ??
+                              Math.round(28 + imageAnalysis.prob_fake * 10),
                             artifact: 'Lip-sync boundary & teeth texture',
                           },
                           {
                             zone: 'Mandibular Jawline',
-                            share: Math.round(22 + (1 - imageAnalysis.deletion_auc) * 8),
+                            share:
+                              imageAnalysis.facialZones?.jawline ??
+                              Math.round(22 + (1 - imageAnalysis.deletion_auc) * 8),
                             artifact: 'Face-swap blending seam halo',
                           },
                           {
                             zone: 'Hairline & Fringe',
-                            share: Math.max(
-                              8,
-                              100 -
-                                Math.round(32 + imageAnalysis.composite_faithfulness * 8) -
-                                Math.round(28 + imageAnalysis.prob_fake * 10) -
-                                Math.round(22 + (1 - imageAnalysis.deletion_auc) * 8)
-                            ),
+                            share:
+                              imageAnalysis.facialZones?.hairline ??
+                              Math.max(
+                                8,
+                                100 -
+                                  Math.round(32 + imageAnalysis.composite_faithfulness * 8) -
+                                  Math.round(28 + imageAnalysis.prob_fake * 10) -
+                                  Math.round(22 + (1 - imageAnalysis.deletion_auc) * 8)
+                              ),
                             artifact: 'Background strand alpha-matting',
                           },
                         ].map((item) => (
@@ -1078,7 +1336,7 @@ export default function DeepfakeXaiPage() {
                             </div>
                             <div className="w-full h-1.5 rounded-full bg-slate-50 overflow-hidden">
                               <div
-                                className="h-full bg-slate-50"
+                                className="h-full bg-[#059669]"
                                 style={{ width: `${Math.min(100, Math.max(5, item.share))}%` }}
                               />
                             </div>
@@ -1120,7 +1378,15 @@ export default function DeepfakeXaiPage() {
                           className="px-4 py-2 rounded-lg bg-[#059669] hover:bg-[#047857] text-xs font-bold text-white transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
                         >
                           <Sparkles size={13} className="text-[#059669] animate-pulse" />
-                          <span>{explaining ? 'Synthesizing with BharatCode AI...' : '[GENERATE BNS §319 & BSA §63 BRIEF]'}</span>
+                          <span>{explaining ? 'Synthesizing with BharatCode AI...' : 'Generate Legal Forensic Brief'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleExportDeepfakeCert}
+                          className="px-3.5 py-2 rounded-lg bg-[#1E2420] hover:bg-[#2A332D] text-xs font-semibold text-white flex items-center gap-1.5 cursor-pointer"
+                        >
+                          <Download size={13} />
+                          <span>Save BSA §63 PDF</span>
                         </button>
                       </div>
                       {aiBrief && (
@@ -1157,6 +1423,128 @@ export default function DeepfakeXaiPage() {
               </TerminalCard>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* LIVE ACCURACY CHECK TAB */}
+      {activeTab === 'accuracy' && (
+        <div className="space-y-6">
+          <TerminalCard
+            title="Live Detection Accuracy Benchmark (24 Labeled Samples)"
+            label={evalSummary ? `Accuracy: ${evalSummary.accuracy}%` : 'Ready to Test'}
+            labelColor={evalSummary && evalSummary.accuracy >= 80 ? 'green' : 'cyan'}
+          >
+            <div className="space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-[#F2F1EC] border border-[#E0DDD5]">
+                <div className="space-y-1">
+                  <div className="text-sm font-bold text-[#1C201D]">
+                    Measure Precision, Recall, F1 &amp; Confusion Matrix Live
+                  </div>
+                  <p className="text-xs text-[#5C645E]">
+                    Runs the active detector on 24 real &amp; synthetic samples (StyleGAN2, FaceSwapAE, StableDiffusion) in real time and compares predictions against ground-truth labels.
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-3 shrink-0">
+                  <label className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-[#E0DDD5] text-xs font-medium text-[#1C201D] cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={evalUseHf}
+                      onChange={(e) => setEvalUseHf(e.target.checked)}
+                      className="accent-[#059669]"
+                    />
+                    <span>Include Open-Source HF ViT</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleRunAccuracyBenchmark}
+                    disabled={evalRunning}
+                    className="px-4 py-2.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-bold flex items-center gap-2 cursor-pointer disabled:opacity-60"
+                  >
+                    <RefreshCw size={14} className={evalRunning ? 'animate-spin' : ''} />
+                    <span>{evalRunning ? 'Evaluating...' : 'Run Live Accuracy Check'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {evalProgress && (
+                <div className="p-3 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] text-xs font-mono text-[#047857]">
+                  Evaluating sample {evalProgress.done} / {evalProgress.total}: {evalProgress.id}
+                </div>
+              )}
+
+              {evalSummary && (
+                <div className="space-y-5">
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    <div className="p-3.5 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0]">
+                      <div className="text-[11px] text-[#047857] font-semibold">Overall Accuracy</div>
+                      <div className="text-2xl font-bold text-[#065F46] mt-1">{evalSummary.accuracy}%</div>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-white border border-[#E0DDD5]">
+                      <div className="text-[11px] text-[#5C645E]">Precision</div>
+                      <div className="text-xl font-bold text-[#1C201D] mt-1">{evalSummary.precision}%</div>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-white border border-[#E0DDD5]">
+                      <div className="text-[11px] text-[#5C645E]">Recall</div>
+                      <div className="text-xl font-bold text-[#1C201D] mt-1">{evalSummary.recall}%</div>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-white border border-[#E0DDD5]">
+                      <div className="text-[11px] text-[#5C645E]">F1 Score</div>
+                      <div className="text-xl font-bold text-[#1C201D] mt-1">{evalSummary.f1}%</div>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-white border border-[#E0DDD5]">
+                      <div className="text-[11px] text-[#5C645E]">Avg Latency</div>
+                      <div className="text-xl font-bold text-[#059669] mt-1">{evalSummary.avgLatencyMs}ms</div>
+                    </div>
+                  </div>
+
+                  {/* Confusion Matrix + Per-Generator Breakdown */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-xl bg-[#F2F1EC] border border-[#E0DDD5] space-y-2">
+                      <div className="text-xs font-bold text-[#1C201D]">Confusion Matrix (n={evalSummary.total})</div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="p-3 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0]">
+                          <div className="text-[11px] text-[#047857]">True Positive (Fake→Fake)</div>
+                          <div className="text-lg font-bold text-[#065F46]">{evalSummary.tp}</div>
+                        </div>
+                        <div className="p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA]">
+                          <div className="text-[11px] text-[#B91C1C]">False Positive (Real→Fake)</div>
+                          <div className="text-lg font-bold text-[#991B1B]">{evalSummary.fp}</div>
+                        </div>
+                        <div className="p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA]">
+                          <div className="text-[11px] text-[#B91C1C]">False Negative (Fake→Real)</div>
+                          <div className="text-lg font-bold text-[#991B1B]">{evalSummary.fn}</div>
+                        </div>
+                        <div className="p-3 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0]">
+                          <div className="text-[11px] text-[#047857]">True Negative (Real→Real)</div>
+                          <div className="text-lg font-bold text-[#065F46]">{evalSummary.tn}</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-[#F2F1EC] border border-[#E0DDD5] space-y-3">
+                      <div className="text-xs font-bold text-[#1C201D]">Accuracy by Generator</div>
+                      {Object.entries(evalSummary.perGenerator).map(([gen, stat]) => (
+                        <div key={gen} className="space-y-1 text-xs">
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-[#1C201D]">{gen}</span>
+                            <span className="font-mono font-bold text-[#059669]">
+                              {stat.accuracy}% ({stat.correct}/{stat.total})
+                            </span>
+                          </div>
+                          <div className="w-full h-2 rounded-full bg-white overflow-hidden border border-[#E0DDD5]">
+                            <div className="h-full bg-[#059669]" style={{ width: `${stat.accuracy}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                      <div className="text-[11px] text-[#5C645E] pt-1">
+                        Model evaluated: <strong>{evalSummary.modelUsed}</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </TerminalCard>
         </div>
       )}
 
