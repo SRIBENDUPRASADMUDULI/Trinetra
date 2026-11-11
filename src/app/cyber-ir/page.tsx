@@ -197,27 +197,27 @@ export default function CyberIRPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-6">
       {/* Header Banner */}
-      <div className="p-6 rounded-2xl glass-card relative overflow-hidden">
+      <div className="p-6 rounded-xl bg-white border border-[#E0DDD5] shadow-xs relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none" />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
           <div className="space-y-2 max-w-3xl">
             <div className="flex items-center gap-2.5">
-              <span className="px-2.5 py-1 rounded-full bg-[#ECFDF5]0/10 border border-indigo-500/25 text-[#047857] font-mono text-[11px] font-bold flex items-center gap-1.5">
+              <span className="px-2.5 py-1 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#047857] text-xs font-semibold flex items-center gap-1.5">
                 <Cpu size={13} />
-                CYBER-IR ENGINE
+                Emergency Response Guide
               </span>
-              <span className="text-slate-600 text-xs">•</span>
-              <span className="text-[11px] font-mono text-slate-700 px-2.5 py-0.5 rounded-full bg-slate-50 border border-slate-200">
-                SANS PICERL & STATUTORY BNS ENGINE
+              <span className="text-[#5C645E] text-xs">•</span>
+              <span className="text-[11px] font-mono text-[#444B46] px-2.5 py-0.5 rounded-full bg-slate-50 border border-[#E0DDD5]">
+                Step-by-step response checklists & legal drafting
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              09 // Autonomous Incident Response & Cyber FIR Engine
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C201D] tracking-tight">
+              Emergency Response & Police Complaint
             </h1>
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm text-[#444B46] leading-relaxed font-normal">
               Automated incident triage and statutory First Information Report engine. Generates official Cybercrime FIR dossiers mapped to <strong>Bharatiya Nyaya Sanhita (BNS 2023)</strong> & <strong>IT Act 2000</strong>, alongside full <strong>SANS PICERL</strong> emergency incident playbooks.
             </p>
           </div>
@@ -225,12 +225,12 @@ export default function CyberIRPage() {
           <div className="flex items-center gap-3 flex-shrink-0">
             <button
               onClick={() => setActiveTab('playbook')}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all hover:text-slate-900 cursor-pointer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#444B46] bg-slate-50 hover:bg-slate-100 border border-[#E0DDD5] transition-all hover:text-[#1C201D] cursor-pointer"
             >
               <BookOpen size={13} />
               <span>SANS PICERL Spec</span>
             </button>
-            <span className="text-[11px] font-mono font-bold px-3 py-1.5 rounded-full bg-emerald-500/15 text-[#15803D] border border-emerald-500/30 flex items-center gap-1.5">
+            <span className="text-[11px] font-mono font-bold px-3 py-1.5 rounded-full bg-[#ECFDF5] text-[#15803D] border border-[#A7F3D0] flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               API ONLINE
             </span>
@@ -239,13 +239,13 @@ export default function CyberIRPage() {
       </div>
 
       {/* Navigation Tabs (Modern Pill Switcher) */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-slate-50 border border-slate-200 rounded-2xl w-fit">
+      <div className="flex flex-wrap gap-2 p-1.5 bg-slate-50 border border-[#E0DDD5] rounded-2xl w-fit">
         <button
           onClick={() => setActiveTab('fir')}
           className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
             activeTab === 'fir'
-              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-slate-900 shadow-lg shadow-indigo-950/40 border border-indigo-400/30'
-              : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-[#1C201D] shadow-lg shadow-indigo-950/40 border border-[#A7F3D0]'
+              : 'text-[#5C645E] hover:text-[#1C201D] hover:bg-slate-50'
           }`}
         >
           <FileText size={15} />
@@ -256,8 +256,8 @@ export default function CyberIRPage() {
           onClick={() => setActiveTab('playbook')}
           className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
             activeTab === 'playbook'
-              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-slate-900 shadow-lg shadow-indigo-950/40 border border-indigo-400/30'
-              : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-[#1C201D] shadow-lg shadow-indigo-950/40 border border-[#A7F3D0]'
+              : 'text-[#5C645E] hover:text-[#1C201D] hover:bg-slate-50'
           }`}
         >
           <BookOpen size={15} />
@@ -268,8 +268,8 @@ export default function CyberIRPage() {
           onClick={() => setActiveTab('api_docs')}
           className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
             activeTab === 'api_docs'
-              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-slate-900 shadow-lg shadow-indigo-950/40 border border-indigo-400/30'
-              : 'text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-[#1C201D] shadow-lg shadow-indigo-950/40 border border-[#A7F3D0]'
+              : 'text-[#5C645E] hover:text-[#1C201D] hover:bg-slate-50'
           }`}
         >
           <Code size={15} />
@@ -281,8 +281,8 @@ export default function CyberIRPage() {
       {activeTab === 'fir' && (
         <div className="space-y-5">
           {/* Preset Selectors */}
-          <div className="p-3.5 bg-slate-100 border border-slate-200 rounded-sm space-y-2">
-            <span className="text-xs font-mono font-bold text-slate-700 flex items-center gap-1.5">
+          <div className="p-3.5 bg-slate-100 border border-[#E0DDD5] rounded-sm space-y-2">
+            <span className="text-xs font-mono font-bold text-[#444B46] flex items-center gap-1.5">
               <Sparkles size={14} className="text-[#059669]" />
               LOAD PRESET CYBER INCIDENT SCENARIOS (1-CLICK TEST):
             </span>
@@ -291,9 +291,9 @@ export default function CyberIRPage() {
                 <button
                   key={idx}
                   onClick={() => { setFirForm(p.data); setFirResult(null) }}
-                  className="text-left p-3.5 rounded-xl bg-slate-50 hover:bg-slate-50 border border-slate-200 hover:border-indigo-500/40 transition-all text-xs group"
+                  className="text-left p-3.5 rounded-xl bg-slate-50 hover:bg-slate-50 border border-[#E0DDD5] hover:border-[#A7F3D0] transition-all text-xs group"
                 >
-                  <p className="font-bold text-slate-800 group-hover:text-[#047857] transition-colors mb-1">{p.title}</p>
+                  <p className="font-bold text-[#1C201D] group-hover:text-[#047857] transition-colors mb-1">{p.title}</p>
                   <p className="text-[11px] text-slate-500 font-mono line-clamp-1">{p.data.incident_type}</p>
                 </button>
               ))}
@@ -306,49 +306,49 @@ export default function CyberIRPage() {
               <TerminalCard title="FIR Incident Parameters" label="POST /api/fir/generate" labelColor="red">
                 <div className="space-y-4 text-xs">
                   {/* Complainant Details */}
-                  <div className="space-y-2.5 pb-4 border-b border-slate-200">
+                  <div className="space-y-2.5 pb-4 border-b border-[#E0DDD5]">
                     <span className="text-xs font-bold text-[#059669] block tracking-wider uppercase">I. Complainant Particulars</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-slate-600 block mb-1 font-medium">Victim Name *</label>
+                        <label className="text-[#5C645E] block mb-1 font-medium">Victim Name *</label>
                         <input
                           type="text"
                           value={firForm.victim_name}
                           onChange={e => setFirForm({ ...firForm, victim_name: e.target.value })}
-                          className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:border-indigo-500 outline-none transition-colors"
+                          className="w-full p-2.5 bg-slate-50 border border-[#E0DDD5] rounded-xl text-[#1C201D] text-xs focus:border-indigo-500 outline-none transition-colors"
                         />
                       </div>
                       <div>
-                        <label className="text-slate-600 block mb-1 font-medium">Date of Birth</label>
+                        <label className="text-[#5C645E] block mb-1 font-medium">Date of Birth</label>
                         <input
                           type="text"
                           value={firForm.victim_dob}
                           onChange={e => setFirForm({ ...firForm, victim_dob: e.target.value })}
-                          className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:border-indigo-500 outline-none transition-colors"
+                          className="w-full p-2.5 bg-slate-50 border border-[#E0DDD5] rounded-xl text-[#1C201D] text-xs focus:border-indigo-500 outline-none transition-colors"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-slate-600 block mb-1 font-medium">Complete Address with PIN</label>
+                      <label className="text-[#5C645E] block mb-1 font-medium">Complete Address with PIN</label>
                       <input
                         type="text"
                         value={firForm.victim_address}
                         onChange={e => setFirForm({ ...firForm, victim_address: e.target.value })}
-                        className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:border-indigo-500 outline-none transition-colors"
+                        className="w-full p-2.5 bg-slate-50 border border-[#E0DDD5] rounded-xl text-[#1C201D] text-xs focus:border-indigo-500 outline-none transition-colors"
                       />
                     </div>
                   </div>
 
                   {/* Incident Specs */}
-                  <div className="space-y-2.5 pb-4 border-b border-slate-200">
+                  <div className="space-y-2.5 pb-4 border-b border-[#E0DDD5]">
                     <span className="text-xs font-bold text-[#059669] block tracking-wider uppercase">II. Incident Details</span>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
-                        <label className="text-slate-600 block mb-1 font-medium">Type *</label>
+                        <label className="text-[#5C645E] block mb-1 font-medium">Type *</label>
                         <select
                           value={firForm.incident_type}
                           onChange={e => setFirForm({ ...firForm, incident_type: e.target.value })}
-                          className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:border-indigo-500 outline-none transition-colors"
+                          className="w-full p-2.5 bg-slate-50 border border-[#E0DDD5] rounded-xl text-[#1C201D] text-xs focus:border-indigo-500 outline-none transition-colors"
                         >
                           <option value="online_financial_fraud">Online Financial Fraud</option>
                           <option value="ransomware">Ransomware Extortion</option>
@@ -359,32 +359,32 @@ export default function CyberIRPage() {
                         </select>
                       </div>
                       <div>
-                        <label className="text-slate-600 block mb-1 font-medium">Date *</label>
+                        <label className="text-[#5C645E] block mb-1 font-medium">Date *</label>
                         <input
                           type="date"
                           value={firForm.incident_date}
                           onChange={e => setFirForm({ ...firForm, incident_date: e.target.value })}
-                          className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:border-indigo-500 outline-none transition-colors"
+                          className="w-full p-2.5 bg-slate-50 border border-[#E0DDD5] rounded-xl text-[#1C201D] text-xs focus:border-indigo-500 outline-none transition-colors"
                         />
                       </div>
                       <div>
-                        <label className="text-slate-600 block mb-1 font-medium">Time *</label>
+                        <label className="text-[#5C645E] block mb-1 font-medium">Time *</label>
                         <input
                           type="text"
                           value={firForm.incident_time}
                           onChange={e => setFirForm({ ...firForm, incident_time: e.target.value })}
-                          className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:border-indigo-500 outline-none transition-colors"
+                          className="w-full p-2.5 bg-slate-50 border border-[#E0DDD5] rounded-xl text-[#1C201D] text-xs focus:border-indigo-500 outline-none transition-colors"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="text-slate-600 block mb-1 font-medium">Incident Narrative *</label>
+                      <label className="text-[#5C645E] block mb-1 font-medium">Incident Narrative *</label>
                       <textarea
                         rows={4}
                         value={firForm.incident_description}
                         onChange={e => setFirForm({ ...firForm, incident_description: e.target.value })}
-                        className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:border-indigo-500 outline-none transition-colors"
+                        className="w-full p-3 bg-slate-50 border border-[#E0DDD5] rounded-xl text-[#1C201D] text-xs focus:border-indigo-500 outline-none transition-colors"
                       />
                     </div>
                   </div>
@@ -394,7 +394,7 @@ export default function CyberIRPage() {
                     <span className="text-xs font-bold text-[#059669] block tracking-wider uppercase">III. Financial Loss Details</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-slate-600 block mb-1 font-medium">Amount Lost (INR ₹)</label>
+                        <label className="text-[#5C645E] block mb-1 font-medium">Amount Lost (INR ₹)</label>
                         <input
                           type="text"
                           value={firForm.financial_details?.amount || ''}
@@ -402,11 +402,11 @@ export default function CyberIRPage() {
                             ...firForm,
                             financial_details: { ...firForm.financial_details, amount: e.target.value }
                           })}
-                          className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:border-indigo-500 outline-none transition-colors"
+                          className="w-full p-2.5 bg-slate-50 border border-[#E0DDD5] rounded-xl text-[#1C201D] text-xs focus:border-indigo-500 outline-none transition-colors"
                         />
                       </div>
                       <div>
-                        <label className="text-slate-600 block mb-1 font-medium">Transaction UTR / ID</label>
+                        <label className="text-[#5C645E] block mb-1 font-medium">Transaction UTR / ID</label>
                         <input
                           type="text"
                           value={firForm.financial_details?.transaction_id || ''}
@@ -414,14 +414,14 @@ export default function CyberIRPage() {
                             ...firForm,
                             financial_details: { ...firForm.financial_details, transaction_id: e.target.value }
                           })}
-                          className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-xs focus:border-indigo-500 outline-none transition-colors"
+                          className="w-full p-2.5 bg-slate-50 border border-[#E0DDD5] rounded-xl text-[#1C201D] text-xs focus:border-indigo-500 outline-none transition-colors"
                         />
                       </div>
                     </div>
                   </div>
 
                   {firError && (
-                    <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-xs">
+                    <div className="p-3 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-rose-700 text-xs">
                       {firError}
                     </div>
                   )}
@@ -429,7 +429,7 @@ export default function CyberIRPage() {
                   <button
                     onClick={generateFIR}
                     disabled={firLoading}
-                    className="w-full py-3.5 px-6 bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-40 text-slate-900 font-semibold text-xs rounded-full shadow-lg shadow-indigo-950/40 border border-indigo-400/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full py-3.5 px-6 bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-40 text-[#1C201D] font-semibold text-xs rounded-full shadow-lg shadow-indigo-950/40 border border-[#A7F3D0] transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <FileText size={16} />
                     <span>{firLoading ? 'Synthesizing BNS 2023 + IT Act FIR...' : 'Generate Legal Cyber FIR & Court PDF'}</span>
@@ -451,12 +451,12 @@ export default function CyberIRPage() {
               ) : !firResult ? (
                 <TerminalCard title="Generated FIR Dossier" label="AWAITING GENERATION" labelColor="white">
                   <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-3">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-500 mb-2">
+                    <div className="w-16 h-16 rounded-2xl bg-slate-50 border border-[#E0DDD5] flex items-center justify-center text-slate-500 mb-2">
                       <FileText size={32} />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm font-bold text-slate-800">Ready to Generate Cyber FIR</p>
-                      <p className="text-xs text-slate-600 max-w-sm">
+                      <p className="text-sm font-bold text-[#1C201D]">Ready to Generate Cyber FIR</p>
+                      <p className="text-xs text-[#5C645E] max-w-sm">
                         Click "Generate Legal Cyber FIR" to auto-map BNS 2023 & IT Act provisions, extract technical indicators, and prepare a court-ready PDF.
                       </p>
                     </div>
@@ -473,7 +473,7 @@ export default function CyberIRPage() {
                       <a
                         href={firResult.downloadUrl}
                         download={`${firResult.firNumber}.pdf`}
-                        className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-slate-900 font-semibold text-xs rounded-full shadow-sm transition-all"
+                        className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-[#1C201D] font-semibold text-xs rounded-full shadow-sm transition-all"
                       >
                         <Download size={13} />
                         <span>Download PDF</span>
@@ -482,34 +482,34 @@ export default function CyberIRPage() {
                   }
                 >
                   <div className="p-4 bg-slate-50 space-y-4 max-h-[600px] overflow-y-auto font-mono text-xs">
-                    <div className="p-3 bg-[#F2F1EC] border border-slate-200 rounded-sm flex items-center justify-between">
+                    <div className="p-3 bg-[#F2F1EC] border border-[#E0DDD5] rounded-sm flex items-center justify-between">
                       <span className="text-[#047857] font-bold">FIR Reference: {firResult.firNumber}</span>
-                      <span className="text-slate-600">CERT-In Ref: {firResult.certInRef}</span>
+                      <span className="text-[#5C645E]">CERT-In Ref: {firResult.certInRef}</span>
                     </div>
 
                     {/* Legal Sections Stamped */}
-                    <div className="p-3 bg-slate-100 border border-slate-200 rounded-sm space-y-2">
+                    <div className="p-3 bg-slate-100 border border-[#E0DDD5] rounded-sm space-y-2">
                       <span className="font-bold text-[#15803D] block text-[11px]">
                         STATUTORY PROVISIONS AUTO-MAPPED (BNS 2023 + IT ACT 2000):
                       </span>
-                      <div className="space-y-1 text-slate-700 text-[11px]">
+                      <div className="space-y-1 text-[#444B46] text-[11px]">
                         {firResult.fir_data?.legal_provisions?.bns_sections?.map((s: any, i: number) => (
                           <div key={i} className="flex gap-2">
                             <span className="text-[#D97706] font-semibold">{s.section}:</span>
-                            <span className="text-slate-600">{s.offence}</span>
+                            <span className="text-[#5C645E]">{s.offence}</span>
                           </div>
                         ))}
                         {firResult.fir_data?.legal_provisions?.it_act_sections?.map((s: any, i: number) => (
                           <div key={i} className="flex gap-2">
                             <span className="text-[#059669] font-semibold">{s.section}:</span>
-                            <span className="text-slate-600">{s.offence}</span>
+                            <span className="text-[#5C645E]">{s.offence}</span>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     {/* Full Preview */}
-                    <pre className="p-3 bg-black border border-slate-200 rounded-sm text-slate-700 whitespace-pre-wrap leading-relaxed text-[11px]">
+                    <pre className="p-3 bg-black border border-[#E0DDD5] rounded-sm text-[#444B46] whitespace-pre-wrap leading-relaxed text-[11px]">
                       {firResult.markdown}
                     </pre>
                   </div>
@@ -524,8 +524,8 @@ export default function CyberIRPage() {
       {activeTab === 'playbook' && (
         <div className="space-y-5">
           {/* Preset Selectors */}
-          <div className="p-3.5 bg-slate-100 border border-slate-200 rounded-sm space-y-2">
-            <span className="text-xs font-mono font-bold text-slate-700 flex items-center gap-1.5">
+          <div className="p-3.5 bg-slate-100 border border-[#E0DDD5] rounded-sm space-y-2">
+            <span className="text-xs font-mono font-bold text-[#444B46] flex items-center gap-1.5">
               <Sparkles size={14} className="text-[#15803D]" />
               LOAD SANS PICERL INCIDENT SCENARIOS (1-CLICK TEST):
             </span>
@@ -540,7 +540,7 @@ export default function CyberIRPage() {
                     setPbFramework(p.framework)
                     setPbResult(null)
                   }}
-                  className="text-left p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 hover:border-emerald-500/60 rounded-sm transition-all text-xs font-sans"
+                  className="text-left p-2.5 bg-slate-50 hover:bg-slate-100 border border-[#E0DDD5] hover:border-[#A7F3D0] rounded-sm transition-all text-xs font-sans"
                 >
                   <p className="font-semibold text-emerald-700 mb-0.5">{p.title}</p>
                   <p className="text-[11px] text-slate-500 font-mono">Org: {p.organization_type} · {p.urgency.toUpperCase()}</p>
@@ -555,23 +555,23 @@ export default function CyberIRPage() {
               <TerminalCard title="Incident Situation & Context" label="[POST /api/playbook/generate]" labelColor="green">
                 <div className="space-y-4 font-sans text-xs">
                   <div>
-                    <label className="text-slate-700 font-medium block mb-1">Incident Situation Description *</label>
+                    <label className="text-[#444B46] font-medium block mb-1">Incident Situation Description *</label>
                     <textarea
                       rows={5}
                       value={pbSituation}
                       onChange={e => setPbSituation(e.target.value)}
                       placeholder="Describe the unfolding cyber emergency in detail..."
-                      className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-sm text-slate-800 font-mono text-xs"
+                      className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-sm text-[#1C201D] font-mono text-xs"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="text-slate-700 font-medium block mb-1">Organization Type</label>
+                      <label className="text-[#444B46] font-medium block mb-1">Organization Type</label>
                       <select
                         value={pbOrg}
                         onChange={e => setPbOrg(e.target.value)}
-                        className="w-full p-2 bg-slate-50 border border-slate-300 rounded-sm text-slate-800 font-mono text-xs"
+                        className="w-full p-2 bg-slate-50 border border-slate-300 rounded-sm text-[#1C201D] font-mono text-xs"
                       >
                         <option value="enterprise">Enterprise / Tech</option>
                         <option value="healthcare">Healthcare / Hospital</option>
@@ -583,11 +583,11 @@ export default function CyberIRPage() {
                     </div>
 
                     <div>
-                      <label className="text-slate-700 font-medium block mb-1">Urgency Level</label>
+                      <label className="text-[#444B46] font-medium block mb-1">Urgency Level</label>
                       <select
                         value={pbUrgency}
                         onChange={e => setPbUrgency(e.target.value)}
-                        className="w-full p-2 bg-slate-50 border border-slate-300 rounded-sm text-slate-800 font-mono text-xs"
+                        className="w-full p-2 bg-slate-50 border border-slate-300 rounded-sm text-[#1C201D] font-mono text-xs"
                       >
                         <option value="critical">P1 — Critical (Immediate)</option>
                         <option value="high">P2 — High Urgency</option>
@@ -597,11 +597,11 @@ export default function CyberIRPage() {
                     </div>
 
                     <div>
-                      <label className="text-slate-700 font-medium block mb-1">Framework</label>
+                      <label className="text-[#444B46] font-medium block mb-1">Framework</label>
                       <select
                         value={pbFramework}
                         onChange={e => setPbFramework(e.target.value)}
-                        className="w-full p-2 bg-slate-50 border border-slate-300 rounded-sm text-slate-800 font-mono text-xs"
+                        className="w-full p-2 bg-slate-50 border border-slate-300 rounded-sm text-[#1C201D] font-mono text-xs"
                       >
                         <option value="sans_picerl">SANS PICERL (6 Phases)</option>
                         <option value="nist_800_61">NIST SP 800-61 Rev.2</option>
@@ -611,7 +611,7 @@ export default function CyberIRPage() {
                   </div>
 
                   {pbError && (
-                    <div className="p-2.5 rounded-sm bg-rose-500/10 border border-rose-500/30 text-rose-700 font-mono text-xs">
+                    <div className="p-2.5 rounded-sm bg-[#FEF2F2] border border-[#FECACA] text-rose-700 font-mono text-xs">
                       {pbError}
                     </div>
                   )}
@@ -641,9 +641,9 @@ export default function CyberIRPage() {
               ) : !pbResult ? (
                 <TerminalCard title="Generated SANS PICERL Playbook" label="[AWAITING SITUATION]" labelColor="white">
                   <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-3">
-                    <BookOpen size={40} className="text-slate-600" />
+                    <BookOpen size={40} className="text-[#5C645E]" />
                     <div className="space-y-1">
-                      <p className="font-mono text-sm font-bold text-slate-700">Awaiting Playbook Generation</p>
+                      <p className="font-mono text-sm font-bold text-[#444B46]">Awaiting Playbook Generation</p>
                       <p className="text-xs text-slate-500 font-sans max-w-sm">
                         Specify an incident scenario on the left or select a pre-configured crisis to generate complete 6-phase response guidance.
                       </p>
@@ -664,7 +664,7 @@ export default function CyberIRPage() {
                           setCopiedPb(true)
                           setTimeout(() => setCopiedPb(false), 2000)
                         }}
-                        className="flex items-center gap-1 px-2.5 py-1 bg-slate-100 border border-slate-300 text-slate-700 hover:text-slate-900 rounded-sm text-[11px] font-mono"
+                        className="flex items-center gap-1 px-2.5 py-1 bg-slate-100 border border-slate-300 text-[#444B46] hover:text-[#1C201D] rounded-sm text-[11px] font-mono"
                       >
                         {copiedPb ? <Check size={11} className="text-[#15803D]" /> : <Copy size={11} />}
                         <span>{copiedPb ? 'COPIED' : 'COPY'}</span>
@@ -680,7 +680,7 @@ export default function CyberIRPage() {
                   }
                 >
                   <div className="p-4 bg-slate-50 max-h-[600px] overflow-y-auto font-mono text-xs">
-                    <pre className="text-slate-700 whitespace-pre-wrap leading-relaxed select-text text-[11px]">
+                    <pre className="text-[#444B46] whitespace-pre-wrap leading-relaxed select-text text-[11px]">
                       {pbResult.playbook}
                     </pre>
                   </div>
@@ -695,14 +695,14 @@ export default function CyberIRPage() {
       {activeTab === 'api_docs' && (
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           <TerminalCard title="POST /api/fir/generate" label="[CYBER-IR ENDPOINT 1]" labelColor="cyan">
-            <div className="space-y-3 font-mono text-xs text-slate-700">
-              <p className="font-sans text-slate-600">
+            <div className="space-y-3 font-mono text-xs text-[#444B46]">
+              <p className="font-sans text-[#5C645E]">
                 Generate a formal First Information Report (FIR) as PDF. Auto-maps Bharatiya Nyaya Sanhita (BNS) 2023 and Information Technology Act 2000 provisions.
               </p>
 
-              <div className="p-3 bg-black rounded-sm border border-slate-200 space-y-1">
+              <div className="p-3 bg-black rounded-sm border border-[#E0DDD5] space-y-1">
                 <span className="text-[#059669] font-bold block">// cURL Request</span>
-                <pre className="text-slate-600 overflow-x-auto text-[11px] leading-relaxed">
+                <pre className="text-[#5C645E] overflow-x-auto text-[11px] leading-relaxed">
 {`curl -X POST http://localhost:3000/api/fir/generate \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -724,14 +724,14 @@ export default function CyberIRPage() {
           </TerminalCard>
 
           <TerminalCard title="POST /api/playbook/generate" label="[CYBER-IR ENDPOINT 2]" labelColor="green">
-            <div className="space-y-3 font-mono text-xs text-slate-700">
-              <p className="font-sans text-slate-600">
+            <div className="space-y-3 font-mono text-xs text-[#444B46]">
+              <p className="font-sans text-[#5C645E]">
                 Generate a comprehensive SANS PICERL emergency response playbook with volatile evidence preservation checklists and statutory notification templates.
               </p>
 
-              <div className="p-3 bg-black rounded-sm border border-slate-200 space-y-1">
+              <div className="p-3 bg-black rounded-sm border border-[#E0DDD5] space-y-1">
                 <span className="text-[#15803D] font-bold block">// cURL Request</span>
-                <pre className="text-slate-600 overflow-x-auto text-[11px] leading-relaxed">
+                <pre className="text-[#5C645E] overflow-x-auto text-[11px] leading-relaxed">
 {`curl -X POST http://localhost:3000/api/playbook/generate \\
   -H "Content-Type: application/json" \\
   -d '{

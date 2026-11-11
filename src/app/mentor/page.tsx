@@ -154,7 +154,7 @@ export default function MentorPage() {
   return (
     <div className="flex h-[calc(100vh-140px)] min-h-[600px] overflow-hidden bg-[#FFFFFF] rounded-xl border border-[#E0DDD5] shadow-xs">
       {/* Main Chat Column */}
-      <div className="flex-1 flex flex-col min-w-0 border-r border-slate-200">
+      <div className="flex-1 flex flex-col min-w-0 border-r border-[#E0DDD5]">
         {/* Terminal Header */}
         <div className="px-6 py-4 flex items-center justify-between flex-shrink-0 bg-[#1E2420] border-b border-[#323D36] text-white">
           <div className="flex items-center gap-3">
@@ -214,8 +214,8 @@ export default function MentorPage() {
             >
               <div className={`w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center text-xs font-bold ${
                 msg.role === 'agent'
-                  ? 'bg-[#ECFDF5]0/20 text-[#047857] border border-indigo-500/30'
-                  : 'bg-slate-50 text-slate-900 border border-slate-200'
+                  ? 'bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0]'
+                  : 'bg-slate-50 text-[#1C201D] border border-[#E0DDD5]'
               }`}>
                 {msg.role === 'agent' ? <Eye size={16} /> : 'OP'}
               </div>
@@ -228,7 +228,7 @@ export default function MentorPage() {
                   {msg.role === 'agent' && (
                     <button
                       onClick={() => handleCopy(msg.id, msg.content)}
-                      className="text-slate-600 hover:text-slate-900 ml-1.5"
+                      className="text-[#5C645E] hover:text-[#1C201D] ml-1.5"
                     >
                       {copiedId === msg.id ? <Check size={12} className="text-[#15803D]" /> : <Copy size={12} />}
                     </button>
@@ -237,7 +237,7 @@ export default function MentorPage() {
 
                 <div className={`p-4 rounded-2xl text-xs leading-relaxed ${
                   msg.role === 'agent'
-                    ? 'glass-card text-slate-800 border-slate-200 whitespace-pre-wrap'
+                    ? 'glass-card text-[#1C201D] border-[#E0DDD5] whitespace-pre-wrap'
                     : 'bg-[#1E2420] text-white font-medium shadow-xs ml-auto'
                 }`}>
                   {msg.content}
@@ -247,7 +247,7 @@ export default function MentorPage() {
           ))}
 
           {errorBanner && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 text-xs flex items-center justify-between gap-2">
+            <div className="p-3 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-rose-700 text-xs flex items-center justify-between gap-2">
               <span>{errorBanner}</span>
               <button onClick={() => setErrorBanner(null)} className="text-[10px] underline cursor-pointer">Dismiss</button>
             </div>
@@ -255,10 +255,10 @@ export default function MentorPage() {
 
           {loading && (
             <div className="flex gap-4 max-w-xl">
-              <div className="w-8 h-8 rounded-xl bg-[#ECFDF5]0/20 text-[#047857] border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] flex items-center justify-center flex-shrink-0">
                 <Eye size={16} />
               </div>
-              <div className="p-4 rounded-2xl glass-card text-xs text-slate-600 space-y-2 flex-1 animate-pulse">
+              <div className="p-4 rounded-2xl glass-card text-xs text-[#5C645E] space-y-2 flex-1 animate-pulse">
                 <div className="flex items-center gap-2">
                   <span>Synthesizing tactical defense response</span>
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
@@ -271,7 +271,7 @@ export default function MentorPage() {
         </div>
 
         {/* Quick Inquiries (Pills) */}
-        <div className="p-4 bg-white border-t border-slate-200 space-y-2 flex-shrink-0">
+        <div className="p-4 bg-white border-t border-[#E0DDD5] space-y-2 flex-shrink-0">
           <span className="text-[10px] uppercase font-mono tracking-wider text-slate-500 font-bold block">
             Suggested Quick Inquiries:
           </span>
@@ -280,7 +280,7 @@ export default function MentorPage() {
               <button
                 key={i}
                 onClick={() => { setInput(item.query); inputRef.current?.focus() }}
-                className="text-xs px-3.5 py-1.5 rounded-full bg-slate-50 hover:bg-slate-50 text-slate-700 hover:text-slate-900 border border-slate-200 hover:border-rose-500/30 transition-all"
+                className="text-xs px-3.5 py-1.5 rounded-full bg-slate-50 hover:bg-slate-50 text-[#444B46] hover:text-[#1C201D] border border-[#E0DDD5] hover:border-[#FECACA] transition-all"
               >
                 {item.label}
               </button>
@@ -289,18 +289,18 @@ export default function MentorPage() {
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 bg-white border-t border-slate-200 flex-shrink-0">
+        <div className="p-4 bg-white border-t border-[#E0DDD5] flex-shrink-0">
           <p className="text-[10px] text-slate-500 mb-2 px-1">
             AI-assisted indication — verify legal citations and remediation commands manually before action.
           </p>
-          <div className="flex items-center gap-3 bg-slate-50 border border-slate-200 focus-within:border-rose-500/60 rounded-full px-4 py-2 transition-colors">
+          <div className="flex items-center gap-3 bg-slate-50 border border-[#E0DDD5] focus-within:border-[#FECACA] rounded-full px-4 py-2 transition-colors">
             <input
               ref={inputRef}
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter' && !loading) sendMessage(input) }}
               placeholder="Ask about active attacks, BNS 2023 legal sections, ransomware containment..."
-              className="flex-1 text-xs bg-transparent outline-none text-slate-800 placeholder:text-slate-500"
+              className="flex-1 text-xs bg-transparent outline-none text-[#1C201D] placeholder:text-slate-500"
               disabled={loading}
             />
             <button

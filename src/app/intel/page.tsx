@@ -92,29 +92,29 @@ export default function IntelPage() {
   return (
     <div className="space-y-6">
       {/* Symmetrical Behance-style Header Banner */}
-      <div className="p-6 rounded-2xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="p-6 rounded-xl bg-white border border-[#E0DDD5] shadow-xs relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-[#DC2626] font-mono text-[11px] font-bold flex items-center gap-1.5">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#F2F1EC] border border-[#E0DDD5] text-[#1E2420] text-xs font-semibold flex items-center gap-1.5">
               <Radar size={12} style={{ animation: 'spin 3s linear infinite' }} />
-              07 // THREAT INTEL RADAR
+              Latest Threat Alerts
             </span>
-            <span className="text-slate-600 text-xs">•</span>
-            <span className="text-[11px] font-mono text-slate-700">ATT&amp;CK · SECTOR DEFENSE · IOC MATRIX</span>
+            <span className="text-[#5C645E] text-xs">•</span>
+            <span className="text-[11px] font-mono text-[#444B46]">Live Indian cyber alerts & sector watch</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C201D] tracking-tight">
             Threat Intelligence Radar &amp; Latest Indian Scam Alerts
           </h1>
-          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm text-[#444B46] leading-relaxed font-normal">
             Real-time attack telemetry across Indian sovereign sectors, declassified APT intrusion archives with full kill-chain reconstruction, and endpoint hygiene matrix.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-shrink-0">
-          <div className="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[#15803D] text-xs font-semibold flex items-center gap-2">
+          <div className="px-4 py-2 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#15803D] text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>RADAR ACTIVE</span>
+            <span>Feed Active</span>
           </div>
-          <div className="px-4 py-2 rounded-full bg-rose-500/10 border border-rose-500/30 text-[#DC2626] text-xs font-semibold flex items-center gap-2">
+          <div className="px-4 py-2 rounded-full bg-[#F2F1EC] border border-[#E0DDD5] text-[#1E2420] text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-rose-500" />
             <span>Alert Status: Elevated</span>
           </div>
@@ -136,22 +136,22 @@ export default function IntelPage() {
         </div>
         <div className="xl:col-span-7">
       <TerminalCard title="Live Sector Attack Telemetry Feed"
-        label="[LIVE_FEED]" labelColor="red" noPadding
+        label="Live Feed" labelColor="red" noPadding
         headerRight={
           <div className="flex items-center gap-2.5">
-            <span className="font-mono text-xs text-slate-600">
-              BUFFER: <strong className="text-slate-900">{THREAT_FEED.length}</strong> EVENTS
+            <span className="font-mono text-xs text-[#5C645E]">
+              BUFFER: <strong className="text-[#1C201D]">{THREAT_FEED.length}</strong> EVENTS
             </span>
             <button
               onClick={() => setPaused(p => !p)}
-              className="flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-100 text-slate-700 transition-colors"
+              className="flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-100 text-[#444B46] transition-colors"
             >
               {paused ? <><Play size={11} className="text-[#15803D] mr-1" /> RESUME</> : <><Pause size={11} className="text-[#D97706] mr-1" /> PAUSE</>}
             </button>
           </div>
         }>
         {/* Filter bar */}
-        <div className="flex gap-2 flex-wrap px-4 py-2.5 bg-slate-50 border-b border-slate-200">
+        <div className="flex gap-2 flex-wrap px-4 py-2.5 bg-slate-50 border-b border-[#E0DDD5]">
           {(['ALL', 'CRITICAL', 'FINANCE', 'POWER', 'TELECOM', 'GOVT', 'HEALTHCARE'] as SectorFilter[]).map(f => (
             <button
               key={f}
@@ -171,13 +171,13 @@ export default function IntelPage() {
         <div className="divide-y divide-slate-800/40" style={{ maxHeight: '280px', overflowY: 'auto' }}>
           {filteredFeed.map((evt, i) => (
             <div key={`${evt.id}-${i}`} className="flex flex-wrap items-center gap-3 px-4 py-2.5 hover:bg-slate-100 transition-colors text-xs font-mono">
-              <span className="text-slate-600 w-20 flex-shrink-0">{evt.timestamp.slice(11, 19)}Z</span>
+              <span className="text-[#5C645E] w-20 flex-shrink-0">{evt.timestamp.slice(11, 19)}Z</span>
               <span className="font-bold flex-shrink-0" style={{ color: sevColor(evt.severity) }}>[{evt.severity.slice(0, 4)}]</span>
               <span className="flex-shrink-0 px-2 py-0.5 rounded text-[11px] font-semibold"
                 style={{ color: '#34D399', border: '1px solid rgba(56,189,248,0.3)', backgroundColor: 'rgba(56,189,248,0.08)' }}>
                 {evt.sector}
               </span>
-              <span className="text-slate-800 flex-1 truncate font-sans text-xs">{evt.attackType}</span>
+              <span className="text-[#1C201D] flex-1 truncate font-sans text-xs">{evt.attackType}</span>
               <StatusBadge label={evt.status} variant={evt.status === 'ACTIVE' ? 'critical' : evt.status === 'INVESTIGATING' ? 'warning' : 'ok'} />
             </div>
           ))}
@@ -188,7 +188,7 @@ export default function IntelPage() {
       </div>
 
       {/* Case Studies */}
-      <TerminalCard title="Declassified Intrusion Case Archives (MITRE ATT&CK Mapped)" label="[DECLASS_ARCHIVE]" labelColor="amber" noPadding>
+      <TerminalCard title="Declassified Intrusion Case Archives (MITRE ATT&CK Mapped)" label="Case History" labelColor="amber" noPadding>
         <div className="divide-y divide-slate-800/60">
           {CASE_STUDIES.map(cs => {
             const isExpanded = expandedCase === cs.id
@@ -199,50 +199,50 @@ export default function IntelPage() {
                   onClick={() => setExpandedCase(isExpanded ? null : cs.id)}
                 >
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span className="font-mono text-xs text-slate-600">{cs.id}</span>
-                    <span className="font-mono text-xs font-bold text-[#D97706] bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                    <span className="font-mono text-xs text-[#5C645E]">{cs.id}</span>
+                    <span className="font-mono text-xs font-bold text-[#D97706] bg-[#FFFBEB] px-2 py-0.5 rounded border border-[#FDE68A]">
                       {cs.codename}
                     </span>
-                    <span className="text-xs text-slate-600">{cs.year} · <strong className="text-slate-900">{cs.entity}</strong></span>
+                    <span className="text-xs text-[#5C645E]">{cs.year} · <strong className="text-[#1C201D]">{cs.entity}</strong></span>
                   </div>
                   <div className="flex items-center gap-2">
                     {cs.ttps.slice(0, 2).map(t => (
-                      <span key={t} className="font-mono text-xs px-2 py-0.5 rounded text-[#059669] border border-cyan-500/30 bg-[#F2F1EC] hidden sm:inline">{t}</span>
+                      <span key={t} className="font-mono text-xs px-2 py-0.5 rounded text-[#059669] border border-[#A7F3D0] bg-[#F2F1EC] hidden sm:inline">{t}</span>
                     ))}
-                    <div className="p-1 rounded bg-slate-100 text-slate-600">
+                    <div className="p-1 rounded bg-slate-100 text-[#5C645E]">
                       {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     </div>
                   </div>
                 </div>
 
                 {isExpanded && (
-                  <div className="px-5 py-4 space-y-4 bg-slate-50 border-t border-slate-200">
+                  <div className="px-5 py-4 space-y-4 bg-slate-50 border-t border-[#E0DDD5]">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">
-                        <span className="text-slate-600 font-mono block text-[11px] mb-1">INFECTION VECTOR:</span>
-                        <span className="text-slate-800 font-medium">{cs.vector}</span>
+                      <div className="p-3 rounded-xl bg-slate-100 border border-[#E0DDD5]">
+                        <span className="text-[#5C645E] font-mono block text-[11px] mb-1">INFECTION VECTOR:</span>
+                        <span className="text-[#1C201D] font-medium">{cs.vector}</span>
                       </div>
-                      <div className="p-3 rounded-xl bg-slate-100 border border-slate-200">
-                        <span className="text-slate-600 font-mono block text-[11px] mb-1">ATTRIBUTION:</span>
+                      <div className="p-3 rounded-xl bg-slate-100 border border-[#E0DDD5]">
+                        <span className="text-[#5C645E] font-mono block text-[11px] mb-1">ATTRIBUTION:</span>
                         <span className="text-amber-700 font-bold">{cs.attribution}</span>
                       </div>
-                      <div className="col-span-1 md:col-span-2 p-3 rounded-xl bg-rose-50 border border-slate-200">
+                      <div className="col-span-1 md:col-span-2 p-3 rounded-xl bg-rose-50 border border-[#E0DDD5]">
                         <span className="text-[#DC2626] font-mono block text-[11px] mb-1">DAMAGE &amp; IMPACT:</span>
                         <span className="text-[#991B1B] font-medium">{cs.damage}</span>
                       </div>
                     </div>
                     <div>
-                      <p className="font-mono text-xs text-slate-600 mb-2.5 font-bold flex items-center gap-1.5">
+                      <p className="font-mono text-xs text-[#5C645E] mb-2.5 font-bold flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
                         RECONSTRUCTED KILL CHAIN:
                       </p>
                       <div className="flex flex-wrap gap-2 items-center">
                         {cs.killChain.map((step, idx) => (
                           <React.Fragment key={idx}>
-                            <span className="font-mono text-xs px-3 py-1.5 rounded-lg text-emerald-700 border border-emerald-500/30 bg-emerald-50 shadow-sm">
+                            <span className="font-mono text-xs px-3 py-1.5 rounded-lg text-emerald-700 border border-[#A7F3D0] bg-emerald-50 shadow-sm">
                               {idx + 1}. {step}
                             </span>
-                            {idx < cs.killChain.length - 1 && <span className="text-slate-600 font-mono text-xs">→</span>}
+                            {idx < cs.killChain.length - 1 && <span className="text-[#5C645E] font-mono text-xs">→</span>}
                           </React.Fragment>
                         ))}
                       </div>
@@ -258,14 +258,14 @@ export default function IntelPage() {
       {/* Family Endpoint Guard Matrix */}
       <TerminalCard
         title="Family & Enterprise Endpoint Guard Matrix"
-        label="[POSTURE_SCAN]"
+        label="Device Health"
         labelColor="cyan"
         noPadding
         headerRight={
           <button
             onClick={scanAll}
             disabled={scanningAll}
-            className="flex items-center gap-1.5 font-mono text-xs px-3 py-1 rounded-lg border border-cyan-500/40 bg-[#F2F1EC] text-[#047857] hover:bg-[#F2F1EC] transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 font-mono text-xs px-3 py-1 rounded-lg border border-[#A7F3D0] bg-[#F2F1EC] text-[#047857] hover:bg-[#F2F1EC] transition-colors disabled:opacity-40"
           >
             <RefreshCw size={11} className={scanningAll ? 'animate-spin' : ''} />
             <span>{scanningAll ? `AUDITING ${scanProgress}%` : 'AUDIT ALL ENDPOINTS'}</span>
@@ -280,17 +280,17 @@ export default function IntelPage() {
         <div className="overflow-x-auto">
           <table className="w-full font-mono text-xs">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50">
+              <tr className="border-b border-[#E0DDD5] bg-slate-50">
                 {['DEVICE IDENTIFIER', 'OPERATING SYSTEM', 'PATCH STATUS', '2FA', 'ANTIVIRUS', 'RISK INDEX', 'POSTURE'].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-slate-600 tracking-wider text-[11px] font-semibold">{h}</th>
+                  <th key={h} className="text-left px-4 py-3 text-[#5C645E] tracking-wider text-[11px] font-semibold">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/40">
               {FAMILY_ENDPOINTS.map(ep => (
                 <tr key={ep.id} className="hover:bg-slate-100 transition-colors">
-                  <td className="px-4 py-3 text-slate-900 font-semibold">{ep.name}</td>
-                  <td className="px-4 py-3 text-slate-700 font-sans text-xs">{ep.os} {ep.osVersion}</td>
+                  <td className="px-4 py-3 text-[#1C201D] font-semibold">{ep.name}</td>
+                  <td className="px-4 py-3 text-[#444B46] font-sans text-xs">{ep.os} {ep.osVersion}</td>
                   <td className="px-4 py-3">
                     <span className="font-bold text-xs px-2 py-0.5 rounded" style={{ color: patchColor(ep.patchStatus) }}>
                       [{ep.patchStatus.replace('_', ' ')}]

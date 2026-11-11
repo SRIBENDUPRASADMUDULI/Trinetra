@@ -133,36 +133,36 @@ const OPEN_SOURCE_STACK = [
 
 export default function ResearchPage() {
   return (
-    <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 max-w-7xl mx-auto">
-      <div className="p-4 sm:p-6 rounded-2xl glass-card flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-6">
+      <div className="p-4 sm:p-6 rounded-xl bg-white border border-[#E0DDD5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1.5 max-w-3xl">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#ECFDF5]0/15 border border-indigo-500/30 text-[#047857] font-mono text-[11px] font-bold">
-              RESEARCH &amp; OPEN-SOURCE ARCHITECTURE
+            <span className="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#047857] text-xs font-semibold">
+              Research & Sources
             </span>
-            <span className="text-[11px] font-mono text-slate-600">10 PEER-REVIEWED SOURCES · 6 OSS INTEGRATIONS</span>
+            <span className="text-[11px] font-mono text-[#5C645E]">10 Academic Citations · Open Standards</span>
           </div>
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#1C201D] tracking-tight flex items-center gap-2.5">
             <BookOpen className="text-[#059669] shrink-0" size={26} />
             <span>Academic Grounding &amp; Open-Source Stack</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
+          <p className="text-xs sm:text-sm text-[#444B46] leading-relaxed">
             Peer-reviewed cybersecurity literature, statutory Indian legal references (BNS 2023, BSA 2023, DPDP Act 2023), and open-source models integrated across TRINETRA.
           </p>
         </div>
       </div>
 
-      <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-800 text-xs flex items-start sm:items-center gap-2.5">
+      <div className="p-3.5 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-amber-800 text-xs flex items-start sm:items-center gap-2.5">
         <AlertTriangle size={15} className="text-[#D97706] shrink-0 mt-0.5 sm:mt-0" />
         <span>
           <strong>Honest Scope &amp; Limitations:</strong> Pure cryptographic operations (SHA-256, k-anonymity, Shannon entropy) are deterministic. AI phishing and deepfake classification outputs are probabilistic indications — verify manually before legal or enforcement action.
         </span>
       </div>
 
-      <TerminalCard title="Peer-Reviewed Literature & Legal References" label="CITATIONS [1–10]" labelColor="cyan" noPadding>
+      <TerminalCard title="Peer-Reviewed Literature & Legal References" label="10 Citations" labelColor="cyan" noPadding>
         <div className="overflow-x-auto text-xs">
           <table className="w-full">
-            <thead className="bg-slate-100 text-slate-600 font-mono border-b border-slate-200">
+            <thead className="bg-slate-100 text-[#5C645E] font-mono border-b border-[#E0DDD5]">
               <tr>
                 <th className="text-left p-3.5">REF</th>
                 <th className="text-left p-3.5">DOMAIN</th>
@@ -170,12 +170,12 @@ export default function ResearchPage() {
                 <th className="text-left p-3.5">TRINETRA INTEGRATION</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.06]">
+            <tbody className="divide-y divide-[#E0DDD5]">
               {ACADEMIC_PAPERS.map(paper => (
                 <tr key={paper.id} className="hover:bg-slate-50">
                   <td className="p-3.5 font-mono font-bold text-[#047857] align-top">{paper.id}</td>
-                  <td className="p-3.5 font-semibold text-slate-900 whitespace-nowrap align-top">{paper.domain}</td>
-                  <td className="p-3.5 text-slate-700 leading-relaxed align-top max-w-md">
+                  <td className="p-3.5 font-semibold text-[#1C201D] whitespace-nowrap align-top">{paper.domain}</td>
+                  <td className="p-3.5 text-[#444B46] leading-relaxed align-top max-w-md">
                     <p>{paper.citation}</p>
                     <a
                       href={paper.url}
@@ -187,7 +187,7 @@ export default function ResearchPage() {
                       <ExternalLink size={11} />
                     </a>
                   </td>
-                  <td className="p-3.5 text-slate-600 align-top max-w-sm">{paper.application}</td>
+                  <td className="p-3.5 text-[#5C645E] align-top max-w-sm">{paper.application}</td>
                 </tr>
               ))}
             </tbody>
@@ -203,16 +203,16 @@ export default function ResearchPage() {
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-4 rounded-xl bg-slate-50 hover:bg-slate-50 border border-slate-200 hover:border-indigo-500/40 transition-all space-y-2 block group"
+              className="p-4 rounded-xl bg-slate-50 hover:bg-slate-50 border border-[#E0DDD5] hover:border-[#A7F3D0] transition-all space-y-2 block group"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#ECFDF5]0/15 text-[#047857] border border-indigo-500/30">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0]">
                   {item.category}
                 </span>
-                <ExternalLink size={13} className="text-slate-500 group-hover:text-slate-900 shrink-0" />
+                <ExternalLink size={13} className="text-slate-500 group-hover:text-[#1C201D] shrink-0" />
               </div>
-              <p className="font-mono font-bold text-slate-900 break-words">{item.name}</p>
-              <p className="text-slate-600 leading-relaxed">{item.role}</p>
+              <p className="font-mono font-bold text-[#1C201D] break-words">{item.name}</p>
+              <p className="text-[#5C645E] leading-relaxed">{item.role}</p>
               <div className="text-[10px] font-mono text-[#15803D] flex items-center gap-1 pt-1">
                 <ShieldCheck size={12} />
                 <span>{item.license}</span>
@@ -222,7 +222,7 @@ export default function ResearchPage() {
         </div>
       </TerminalCard>
 
-      <div className="p-4 rounded-2xl glass-card flex flex-wrap items-center justify-between gap-3 text-xs text-slate-700">
+      <div className="p-4 rounded-2xl glass-card flex flex-wrap items-center justify-between gap-3 text-xs text-[#444B46]">
         <div className="flex items-center gap-2">
           <Layers size={15} className="text-[#059669]" />
           <span>Full technical architecture &amp; security guardrails documented in <code>DOCS.md</code> and <code>README.md</code>.</span>

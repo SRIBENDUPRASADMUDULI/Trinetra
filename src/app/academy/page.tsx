@@ -216,32 +216,32 @@ export default function AcademyPage() {
   const card = FLASHCARDS[cardIdx]
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 space-y-6 max-w-7xl mx-auto select-none">
+    <div className="space-y-6 select-none">
       {/* Symmetrical High-Craft Header Banner */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5 shadow-xl">
+      <div className="p-6 rounded-xl bg-white border border-[#E0DDD5] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#ECFDF5]0/10 border border-indigo-500/25 text-[#047857] font-mono text-[11px] font-bold">
-              01 // CYBER RANGE & ACADEMY
+            <span className="px-2.5 py-0.5 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#047857] text-xs font-semibold">
+              Learn & Practice
             </span>
-            <span className="text-slate-600 text-xs">•</span>
-            <span className="text-[11px] font-mono text-slate-600">TACTICAL WORKBENCH · CTF SHELL · WIRE FORENSICS</span>
+            <span className="text-[#5C645E] text-xs">•</span>
+            <span className="text-[11px] font-mono text-[#5C645E]">Interactive lessons, challenges & email practice</span>
           </div>
-          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-[#1C201D] tracking-tight">
             Cyber Range & Intelligence Academy
           </h1>
-          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm text-[#444B46] leading-relaxed font-normal">
             Immersive tactical training simulators: split-pane briefing terminal with live packet hex dump stream, phishing email sandbox with header forensics, CTF shell, and MITRE ATT&amp;CK flashcards.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-shrink-0 font-mono text-xs">
-          <div className="px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[#15803D] font-semibold flex items-center gap-2">
+          <div className="px-3 py-1.5 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#15803D] font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>RANGE ONLINE</span>
+            <span>Exercises Ready</span>
           </div>
-          <div className="px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-700 font-semibold flex items-center gap-2">
+          <div className="px-3 py-1.5 rounded-full bg-[#FFFBEB] border border-[#FDE68A] text-amber-700 font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-amber-400" />
-            <span>TRAINING MODE</span>
+            <span>Safe Practice</span>
           </div>
         </div>
       </div>
@@ -278,12 +278,12 @@ export default function AcademyPage() {
           labelColor="cyan"
           noPadding
           headerRight={
-            <span className="text-[11px] font-mono text-slate-600">
+            <span className="text-[11px] font-mono text-[#5C645E]">
               Target: Supply Chain Intrusion (SolarWinds &amp; XZ Utils)
             </span>
           }
         >
-          <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-white/[0.08]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-[#E0DDD5]">
             {/* Left Pane (Audio Briefing & Telemetry Controls) - 6 Cols */}
             <div className="lg:col-span-6 p-5 sm:p-6 space-y-5 bg-slate-50">
               <div className="flex items-center justify-between">
@@ -294,18 +294,18 @@ export default function AcademyPage() {
               </div>
 
               <div>
-                <h3 className="font-mono text-base font-bold text-slate-900 flex items-center gap-2">
+                <h3 className="font-mono text-base font-bold text-[#1C201D] flex items-center gap-2">
                   <span className="text-[#15803D]">MODULE_07:</span>
                   <span>Advanced Persistent Threat — Supply Chain Intrusion</span>
                 </h3>
-                <p className="text-xs text-slate-600 font-sans mt-1">
+                <p className="text-xs text-[#5C645E] font-sans mt-1">
                   Adversaries weaponize upstream dependencies and build systems to bypass zero-trust perimeter verification.
                 </p>
               </div>
 
               {/* Dynamic Waveform Visualizer */}
-              <div className="p-4 rounded-xl bg-white border border-slate-200 space-y-3">
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-600">
+              <div className="p-4 rounded-xl bg-white border border-[#E0DDD5] space-y-3">
+                <div className="flex items-center justify-between text-[11px] font-mono text-[#5C645E]">
                   <span className="flex items-center gap-1.5">
                     <Radio size={12} className={isPlayingBriefing ? 'text-[#15803D] animate-pulse' : 'text-slate-500'} />
                     {isPlayingBriefing ? 'AUDIO STREAM TRANSMITTING' : 'STREAM STANDBY'}
@@ -334,7 +334,7 @@ export default function AcademyPage() {
                 </div>
 
                 {/* Playback Controls */}
-                <div className="flex items-center justify-between pt-2 border-t border-slate-200">
+                <div className="flex items-center justify-between pt-2 border-t border-[#E0DDD5]">
                   <button
                     onClick={toggleBriefingAudio}
                     className="font-mono text-xs font-bold px-4 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer shadow-md"
@@ -358,7 +358,7 @@ export default function AcademyPage() {
 
                   <Link
                     href="/video-gen"
-                    className="font-mono text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#ECFDF5]0/15 hover:bg-[#ECFDF5]0/25 text-[#047857] border border-indigo-500/30 flex items-center gap-1.5 transition-all"
+                    className="font-mono text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#ECFDF5] hover:bg-[#ECFDF5] text-[#047857] border border-[#A7F3D0] flex items-center gap-1.5 transition-all"
                   >
                     <span>LAUNCH VIDEO STUDIO</span>
                     <ArrowRight size={12} />
@@ -382,12 +382,12 @@ export default function AcademyPage() {
                       onClick={() => handleSelectChapter(c.ch)}
                       className={`p-2.5 rounded-lg border transition-all cursor-pointer flex items-center justify-between ${
                         activeChapter === c.ch
-                          ? 'bg-[#ECFDF5] border-indigo-500/40 text-[#065F46]'
-                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50'
+                          ? 'bg-[#ECFDF5] border-[#A7F3D0] text-[#065F46]'
+                          : 'bg-slate-50 border-[#E0DDD5] text-[#5C645E] hover:text-[#1C201D] hover:bg-slate-50'
                       }`}
                     >
                       <span className="flex items-center gap-2">
-                        <span className={activeChapter === c.ch ? 'text-[#059669]' : 'text-slate-600'}>
+                        <span className={activeChapter === c.ch ? 'text-[#059669]' : 'text-[#5C645E]'}>
                           ▶
                         </span>
                         <span>{c.title}</span>
@@ -404,13 +404,13 @@ export default function AcademyPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <StatusBadge label="PCAP_DISSECTION" variant="info" />
-                  <span className="font-mono text-xs text-slate-900 font-semibold">
+                  <span className="font-mono text-xs text-[#1C201D] font-semibold">
                     wire_packet_04.hex
                   </span>
                 </div>
                 <button
                   onClick={copyHexDump}
-                  className="px-2.5 py-1 rounded bg-slate-50 hover:bg-slate-50 text-[11px] font-mono text-slate-700 border border-slate-200 flex items-center gap-1 transition-all cursor-pointer"
+                  className="px-2.5 py-1 rounded bg-slate-50 hover:bg-slate-50 text-[11px] font-mono text-[#444B46] border border-[#E0DDD5] flex items-center gap-1 transition-all cursor-pointer"
                 >
                   {copiedHex ? <Check size={11} className="text-[#15803D]" /> : <Copy size={11} />}
                   <span>{copiedHex ? 'Copied' : 'Copy Hex'}</span>
@@ -419,19 +419,19 @@ export default function AcademyPage() {
 
               {/* Protocol Breakdown Tags */}
               <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
-                <div className="p-2 rounded bg-slate-50 border border-slate-200">
+                <div className="p-2 rounded bg-slate-50 border border-[#E0DDD5]">
                   <span className="text-slate-500 block">L2/L3 HEADER</span>
                   <span className="text-[#047857]">IPv4 · 192.168.1.105:8080</span>
                 </div>
-                <div className="p-2 rounded bg-slate-50 border border-slate-200">
+                <div className="p-2 rounded bg-slate-50 border border-[#E0DDD5]">
                   <span className="text-slate-500 block">VULNERABILITY</span>
                   <span className="text-rose-700">CVE-2023-44487 (Rapid Reset)</span>
                 </div>
               </div>
 
               {/* Synchronized Hex Dump Terminal Box */}
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 font-mono text-[11px] space-y-1 overflow-x-auto max-h-[300px]">
-                <div className="text-slate-500 pb-1 border-b border-slate-200 text-[10px] flex justify-between">
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-[#E0DDD5] font-mono text-[11px] space-y-1 overflow-x-auto max-h-[300px]">
+                <div className="text-slate-500 pb-1 border-b border-[#E0DDD5] text-[10px] flex justify-between">
                   <span>OFFSET    HEXADECIMAL DATA</span>
                   <span>ASCII DECODE</span>
                 </div>
@@ -449,25 +449,25 @@ export default function AcademyPage() {
               </div>
 
               {/* Extracted IOC Hashes & Quick Sandbox Triggers */}
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2 font-mono text-[11px]">
-                <div className="text-slate-600 flex items-center justify-between">
+              <div className="p-3 rounded-xl bg-slate-50 border border-[#E0DDD5] space-y-2 font-mono text-[11px]">
+                <div className="text-[#5C645E] flex items-center justify-between">
                   <span>FORENSIC SIGNATURE:</span>
                   <span className="text-[#15803D]">SHA-256 MATCH VERIFIED</span>
                 </div>
-                <div className="p-2 rounded bg-slate-100 text-[10px] text-slate-700 break-all select-all border border-slate-200">
+                <div className="p-2 rounded bg-slate-100 text-[10px] text-[#444B46] break-all select-all border border-[#E0DDD5]">
                   7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 pt-1">
                   <button
                     onClick={() => setActivePanel('ctf')}
-                    className="p-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 text-center font-bold text-xs transition-all cursor-pointer"
+                    className="p-2 rounded-lg bg-[#ECFDF5] hover:bg-emerald-500/20 text-emerald-700 border border-[#A7F3D0] text-center font-bold text-xs transition-all cursor-pointer"
                   >
                     [LOAD IN CTF SHELL]
                   </button>
                   <button
                     onClick={() => setActivePanel('phishing')}
-                    className="p-2 rounded-lg bg-[#F2F1EC]0/10 hover:bg-[#F2F1EC]0/20 text-[#047857] border border-sky-500/30 text-center font-bold text-xs transition-all cursor-pointer"
+                    className="p-2 rounded-lg bg-[#F2F1EC] hover:bg-[#F2F1EC] text-[#047857] border border-[#E0DDD5] text-center font-bold text-xs transition-all cursor-pointer"
                   >
                     [SANDBOX ANALYSIS]
                   </button>
@@ -524,13 +524,13 @@ export default function AcademyPage() {
             <div className="p-4 space-y-3 font-mono text-xs">
               <div className="space-y-1" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '12px' }}>
                 <p><span className="text-slate-500">FROM:</span> <span style={{ color: '#ef4444' }}>alerts@sbi-kyc-helpdesk.in</span> <StatusBadge label="SPF_FAIL" variant="critical" /></p>
-                <p><span className="text-slate-500">TO:</span> <span className="text-slate-700">customer@domain.com</span></p>
+                <p><span className="text-slate-500">TO:</span> <span className="text-[#444B46]">customer@domain.com</span></p>
                 <p><span className="text-slate-500">SUBJECT:</span> <span style={{ color: '#f59e0b' }}>⚠ URGENT: Your SBI account will be BLOCKED in 24 hours</span></p>
-                <p><span className="text-slate-500">DATE:</span> <span className="text-slate-600">Mon, 18 Nov 2024 02:14:33 +0530</span></p>
+                <p><span className="text-slate-500">DATE:</span> <span className="text-[#5C645E]">Mon, 18 Nov 2024 02:14:33 +0530</span></p>
               </div>
               <div className="space-y-2 leading-relaxed font-sans">
-                <p className="text-slate-700">Dear Valued Customer,</p>
-                <p className="text-slate-700">We have detected <span className="px-1" style={{ backgroundColor: 'rgba(239,68,68,0.2)', color: '#ef4444' }}>SUSPICIOUS ACTIVITY</span> on your account. Your account will be <span style={{ color: '#ef4444' }}>PERMANENTLY BLOCKED</span> within <span className="font-bold" style={{ color: '#f59e0b' }}>24 HOURS</span> if you do not verify your KYC.</p>
+                <p className="text-[#444B46]">Dear Valued Customer,</p>
+                <p className="text-[#444B46]">We have detected <span className="px-1" style={{ backgroundColor: 'rgba(239,68,68,0.2)', color: '#ef4444' }}>SUSPICIOUS ACTIVITY</span> on your account. Your account will be <span style={{ color: '#ef4444' }}>PERMANENTLY BLOCKED</span> within <span className="font-bold" style={{ color: '#f59e0b' }}>24 HOURS</span> if you do not verify your KYC.</p>
                 <p><span className="text-slate-500 font-mono">Click here:</span> <a className="underline font-mono" style={{ color: '#ef4444' }}>http://sbi-kyc-update-portal.xyz/verify?ref=3847291</a></p>
                 <div className="flex gap-2 mt-3 font-mono">
                   <StatusBadge label="PUNYCODE_DOMAIN" variant="critical" />
@@ -548,7 +548,7 @@ export default function AcademyPage() {
                 <p>X-Mailer: PHPMailer 6.1.4 (detected mass-mailer)</p>
               </div>
               <p className="text-slate-500 mt-2">HEX DUMP (first 64 bytes of body):</p>
-              <pre className="text-slate-600 leading-relaxed text-xs">
+              <pre className="text-[#5C645E] leading-relaxed text-xs">
 {`00000000  44 65 61 72 20 56 61 6c  75 65 64 20 43 75 73 74  |Dear Valued Cust|
 00000010  6f 6d 65 72 2c 20 57 65  20 68 61 76 65 20 64 65  |omer, We have de|
 00000020  74 65 63 74 65 64 20 53  55 53 50 49 43 49 4f 55  |tected SUSPICIOU|
@@ -574,7 +574,7 @@ export default function AcademyPage() {
               </div>
 
               {/* Card */}
-              <div className="p-5 cursor-pointer rounded-xl border border-slate-200 bg-slate-50" onClick={() => setFlipped(f => !f)}
+              <div className="p-5 cursor-pointer rounded-xl border border-[#E0DDD5] bg-slate-50" onClick={() => setFlipped(f => !f)}
                 style={{ minHeight: '200px' }}>
                 <div className="flex justify-between items-start mb-4">
                   <span className="font-mono text-xs font-bold" style={{ color: '#f59e0b' }}>[{card.classification}]</span>
@@ -584,12 +584,12 @@ export default function AcademyPage() {
                   <div className="space-y-3 font-mono">
                     <p className="text-xs text-slate-500 tracking-widest">THREAT VECTOR</p>
                     <p className="text-lg font-bold" style={{ color: '#ef4444' }}>{card.threat}</p>
-                    <p className="text-sm text-slate-700 font-sans">{card.front}</p>
+                    <p className="text-sm text-[#444B46] font-sans">{card.front}</p>
                     <p className="text-xs text-slate-500 mt-4">[CLICK TO REVEAL ANSWER]</p>
                   </div>
                 ) : (
                   <div className="space-y-3 font-mono">
-                    <p className="text-xs text-slate-700 leading-relaxed font-sans">{card.description}</p>
+                    <p className="text-xs text-[#444B46] leading-relaxed font-sans">{card.description}</p>
                     <div>
                       <p className="text-xs text-slate-500 mb-1">IOC INDICATORS:</p>
                       {card.indicators.map((ind, i) => <p key={i} className="text-xs" style={{ color: '#f59e0b' }}>• {ind}</p>)}
@@ -607,7 +607,7 @@ export default function AcademyPage() {
                 <button
                   onClick={() => { setCardIdx(i => Math.max(0, i - 1)); setFlipped(false) }}
                   disabled={cardIdx === 0}
-                  className="px-3.5 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 disabled:opacity-30 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-lg border border-[#E0DDD5] text-[#5C645E] hover:text-[#1C201D] disabled:opacity-30 cursor-pointer"
                 >
                   ← PREV
                 </button>

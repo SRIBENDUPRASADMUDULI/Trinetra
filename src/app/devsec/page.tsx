@@ -111,37 +111,37 @@ export default function DevSecPage() {
   }
 
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="space-y-6">
       {/* Symmetrical Behance-style Header Banner */}
-      <div className="p-6 rounded-2xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="p-6 rounded-xl bg-white border border-[#E0DDD5] shadow-xs relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-[#DC2626] font-mono text-[11px] font-bold">
-              03 // DEVSEC AUDITOR
+            <span className="px-2.5 py-0.5 rounded-full bg-[#F2F1EC] border border-[#E0DDD5] text-[#1E2420] text-xs font-semibold">
+              Code Security Scanner
             </span>
-            <span className="text-slate-600 text-xs">•</span>
-            <span className="text-[11px] font-mono text-slate-700">OWASP TOP 10 · DPDP ACT 2023 · BNS 2023</span>
+            <span className="text-[#5C645E] text-xs">•</span>
+            <span className="text-[11px] font-mono text-[#444B46]">App security audit & privacy policy check</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C201D] tracking-tight">
             DevSec Auditor & Privacy Enforcement
           </h1>
-          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm text-[#444B46] leading-relaxed font-normal">
             Static code security analysis (SAST) with real vulnerable/patched code pairs, plus an automated scanner that audits Terms & Conditions for illegal data harvesting under Indian privacy law (DPDP Act 2023, IT Act 2000).
           </p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-shrink-0">
-          <div className="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[#15803D] text-xs font-semibold flex items-center gap-2">
+          <div className="px-4 py-2 rounded-full bg-[#ECFDF5] border border-[#A7F3D0] text-[#15803D] text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>SAST ENGINE LIVE</span>
+            <span>Scanner Ready</span>
           </div>
-          <div className="px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-[#D97706] text-xs font-semibold flex items-center gap-2">
+          <div className="px-4 py-2 rounded-full bg-[#FFFBEB] border border-[#FDE68A] text-[#D97706] text-xs font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-amber-400" />
-            <span>8 VULN PAIRS</span>
+            <span>8 Code Examples</span>
           </div>
         </div>
       </div>
 
-      <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-800 text-xs flex items-center gap-2">
+      <div className="p-3 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-amber-800 text-xs flex items-center gap-2">
         <AlertTriangle size={14} className="text-[#D97706] shrink-0" />
         <span><strong>AI-Assisted Indication:</strong> SAST &amp; DPDP Act audit results require manual engineering and legal review before production deployment.</span>
       </div>
@@ -176,7 +176,7 @@ export default function DevSecPage() {
         <div className="space-y-5">
           {/* Vulnerability Selection Chips */}
           <div className="space-y-2">
-            <span className="font-mono text-xs font-bold text-slate-600 block">
+            <span className="font-mono text-xs font-bold text-[#5C645E] block">
               SELECT COMMON SECURITY FLAW TO AUDIT:
             </span>
             <div className="flex flex-wrap gap-2">
@@ -199,23 +199,23 @@ export default function DevSecPage() {
           </div>
 
           {/* Diagnostic Info Bar */}
-          <div className="p-3 bg-slate-100 border border-slate-200 rounded-sm flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
+          <div className="p-3 bg-slate-100 border border-[#E0DDD5] rounded-sm flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
             <div className="flex flex-wrap items-center gap-3">
               <span><span className="text-slate-500">VULN:</span> <strong className="text-red-400">[{selectedPair.cweId}] {selectedPair.cweName}</strong></span>
               <span><span className="text-slate-500">SEVERITY CVSS:</span> <strong className="text-[#D97706]">{selectedPair.cvssScore}</strong></span>
               <span><span className="text-slate-500">LANGUAGE:</span> <strong className="text-[#059669]">{selectedPair.language.toUpperCase()}</strong></span>
-              <span><span className="text-slate-500">CATEGORY:</span> <span className="text-slate-700">{selectedPair.owaspCategory}</span></span>
+              <span><span className="text-slate-500">CATEGORY:</span> <span className="text-[#444B46]">{selectedPair.owaspCategory}</span></span>
             </div>
             <StatusBadge label="VERIFIED PATCH AVAILABLE" variant="ok" />
           </div>
 
           {/* Educational Threat Explanation */}
-          <div className="p-4 bg-slate-100 border border-slate-200 rounded-sm font-sans text-xs space-y-1.5">
-            <div className="flex items-center gap-2 font-mono font-bold text-slate-800">
+          <div className="p-4 bg-slate-100 border border-[#E0DDD5] rounded-sm font-sans text-xs space-y-1.5">
+            <div className="flex items-center gap-2 font-mono font-bold text-[#1C201D]">
               <AlertTriangle size={15} className="text-[#D97706]" />
               <span>WHAT IS THIS SECURITY RISK & HOW ATTACKERS EXPLOIT IT:</span>
             </div>
-            <p className="text-slate-700 leading-relaxed">
+            <p className="text-[#444B46] leading-relaxed">
               {selectedPair.description}
             </p>
           </div>
@@ -229,7 +229,7 @@ export default function DevSecPage() {
               labelColor="red"
               noPadding
             >
-              <div className="p-3 bg-red-50 border-b border-slate-200 text-xs font-mono text-red-300 flex items-center gap-2">
+              <div className="p-3 bg-red-50 border-b border-[#E0DDD5] text-xs font-mono text-red-300 flex items-center gap-2">
                 <ShieldAlert size={14} className="text-red-400 flex-shrink-0" />
                 <span>Flaw: Unsanitized execution vector detected</span>
               </div>
@@ -249,14 +249,14 @@ export default function DevSecPage() {
               headerRight={
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1 px-2 py-1 font-mono text-[11px] bg-emerald-50 border border-slate-200 text-emerald-700 hover:bg-emerald-50 rounded-sm transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 font-mono text-[11px] bg-emerald-50 border border-[#E0DDD5] text-emerald-700 hover:bg-emerald-50 rounded-sm transition-colors"
                 >
                   {copied ? <Check size={12} className="text-[#15803D]" /> : <Copy size={12} />}
                   <span>{copied ? 'COPIED!' : 'COPY FIX'}</span>
                 </button>
               }
             >
-              <div className="p-3 bg-emerald-50 border-b border-slate-200 text-xs font-mono text-emerald-700 flex items-center gap-2">
+              <div className="p-3 bg-emerald-50 border-b border-[#E0DDD5] text-xs font-mono text-emerald-700 flex items-center gap-2">
                 <ShieldCheck size={14} className="text-[#15803D] flex-shrink-0" />
                 <span>Remediated: Safe execution with input boundary enforcement</span>
               </div>
@@ -276,10 +276,10 @@ export default function DevSecPage() {
                 onChange={e => setCustomCode(e.target.value)}
                 rows={4}
                 placeholder="Paste any Python, JS/TS, PHP, or SQL snippet to check for CWE vulnerabilities and receive patched code..."
-                className="w-full p-3 bg-slate-50 border border-slate-300 rounded-sm font-mono text-xs text-slate-800 placeholder:text-slate-600 outline-none focus:border-indigo-500"
+                className="w-full p-3 bg-slate-50 border border-slate-300 rounded-sm font-mono text-xs text-[#1C201D] placeholder:text-[#5C645E] outline-none focus:border-indigo-500"
               />
               {sastError && (
-                <div className="p-2.5 rounded-sm bg-rose-500/10 border border-rose-500/30 text-rose-700">{sastError}</div>
+                <div className="p-2.5 rounded-sm bg-[#FEF2F2] border border-[#FECACA] text-rose-700">{sastError}</div>
               )}
               <div className="flex justify-end">
                 <button
@@ -291,14 +291,14 @@ export default function DevSecPage() {
                 </button>
               </div>
               {sastLoading && (
-                <div className="space-y-2 animate-pulse p-3 bg-slate-50 rounded-sm border border-slate-200">
+                <div className="space-y-2 animate-pulse p-3 bg-slate-50 rounded-sm border border-[#E0DDD5]">
                   <div className="h-3 bg-slate-100 rounded w-1/2" />
                   <div className="h-3 bg-slate-100 rounded w-5/6" />
                   <div className="h-3 bg-slate-100 rounded w-2/3" />
                 </div>
               )}
               {sastReport && !sastLoading && (
-                <pre className="p-4 bg-slate-50 border border-slate-200 rounded-sm font-mono text-xs text-slate-800 whitespace-pre-wrap max-h-80 overflow-y-auto">
+                <pre className="p-4 bg-slate-50 border border-[#E0DDD5] rounded-sm font-mono text-xs text-[#1C201D] whitespace-pre-wrap max-h-80 overflow-y-auto">
                   {sastReport}
                 </pre>
               )}
@@ -332,7 +332,7 @@ export default function DevSecPage() {
             <div className="space-y-4">
               {/* Sample Buttons */}
               <div>
-                <label className="text-xs text-slate-600 font-sans block mb-1.5 font-medium">
+                <label className="text-xs text-[#5C645E] font-sans block mb-1.5 font-medium">
                   Test with real predatory Indian app terms (1-click demo):
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -340,7 +340,7 @@ export default function DevSecPage() {
                     <button
                       key={idx}
                       onClick={() => { setPrivacyText(p.text); setPrivacyResults(PRIVACY_MOCK) }}
-                      className="text-left p-2.5 bg-slate-100 hover:bg-slate-100 border border-slate-200 rounded-sm text-xs font-sans text-slate-700 transition-colors"
+                      className="text-left p-2.5 bg-slate-100 hover:bg-slate-100 border border-[#E0DDD5] rounded-sm text-xs font-sans text-[#444B46] transition-colors"
                     >
                       <span className="font-semibold text-amber-700 block mb-0.5">{p.title}</span>
                       <span className="text-[11px] text-slate-500 line-clamp-1">{p.text}</span>
@@ -350,7 +350,7 @@ export default function DevSecPage() {
               </div>
 
               <div>
-                <label className="font-mono text-xs text-slate-600 block mb-1 font-semibold">
+                <label className="font-mono text-xs text-[#5C645E] block mb-1 font-semibold">
                   OR PASTE PRIVACY POLICY / TERMS TEXT TO SCAN:
                 </label>
                 <textarea
@@ -358,12 +358,12 @@ export default function DevSecPage() {
                   onChange={e => setPrivacyText(e.target.value)}
                   placeholder="Paste Terms of Service or Privacy Policy text here to detect violations of Digital Personal Data Protection (DPDP) Act 2023, Aadhaar Act, and illegal surveillance clauses..."
                   rows={6}
-                  className="w-full p-3 bg-slate-50 border border-slate-300 rounded-sm font-mono text-xs text-slate-800 placeholder:text-slate-600 outline-none focus:border-amber-500"
+                  className="w-full p-3 bg-slate-50 border border-slate-300 rounded-sm font-mono text-xs text-[#1C201D] placeholder:text-[#5C645E] outline-none focus:border-amber-500"
                 />
               </div>
 
               {privacyError && (
-                <div className="p-3 rounded-sm bg-rose-500/10 border border-rose-500/30 text-rose-700 font-mono text-xs">
+                <div className="p-3 rounded-sm bg-[#FEF2F2] border border-[#FECACA] text-rose-700 font-mono text-xs">
                   {privacyError}
                 </div>
               )}
@@ -397,7 +397,7 @@ export default function DevSecPage() {
             ) : (
             <div className="overflow-x-auto font-mono text-xs">
               <table className="w-full">
-                <thead className="bg-slate-100 text-slate-600 border-b border-slate-200">
+                <thead className="bg-slate-100 text-[#5C645E] border-b border-[#E0DDD5]">
                   <tr>
                     <th className="text-left p-3">VIOLATION CATEGORY</th>
                     <th className="text-left p-3">FINDING & EVIDENCE</th>
@@ -408,8 +408,8 @@ export default function DevSecPage() {
                 <tbody className="divide-y divide-slate-800">
                   {privacyResults.map((r, i) => (
                     <tr key={i} className="hover:bg-slate-100">
-                      <td className="p-3 text-slate-800 font-semibold whitespace-nowrap">{r.category}</td>
-                      <td className="p-3 text-slate-700 font-sans max-w-sm">
+                      <td className="p-3 text-[#1C201D] font-semibold whitespace-nowrap">{r.category}</td>
+                      <td className="p-3 text-[#444B46] font-sans max-w-sm">
                         <p>{r.finding}</p>
                         <p className="text-[11px] text-slate-500 font-mono mt-0.5">Evidence: {r.evidence}</p>
                       </td>
