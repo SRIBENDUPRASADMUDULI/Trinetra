@@ -1,12 +1,18 @@
 'use client'
+
 import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { jsPDF } from 'jspdf'
+import {
+  FileText, PhoneCall, Clock, ShieldCheck, AlertTriangle, Download,
+  Upload, Lock, CheckCircle2, UserCheck, EyeOff, RefreshCw, Copy, Check
+} from 'lucide-react'
 import { TerminalCard } from '@/components/ui/terminal-card'
-import { StatusBadge } from '@/components/ui/status-badge'
-import { sha256 } from '@/lib/crypto-utils'
-import { FileText, Download, AlertCircle, Clock, Shield, Sparkles, CheckCircle2, PhoneCall, HelpCircle, ChevronRight, Check, FileCheck2 } from 'lucide-react'
+import { useLang } from '@/lib/i18n-context'
 
 interface FIRFormData {
+  stateUt: string
+  districtStation: string
   complainantName: string
   complainantPhone: string
   complainantEmail: string
@@ -23,841 +29,786 @@ interface FIRFormData {
   itActSections: string[]
   bnsSections: string[]
   bsaSections: string[]
-  ipcSections?: string[]
 }
 
-const BNS_SECTIONS = [
-  { id: '318_4', label: 'BNS 318(4) — Cheating & Dishonestly Inducing Delivery of Property (Formerly IPC 420)' },
-  { id: '319_2', label: 'BNS 319(2) — Cheating by Personation & Identity Impersonation (Formerly IPC 419)' },
-  { id: '308_2', label: 'BNS 308(2) — Extortion via Ransomware & Threats of Injury / Data Leak (Formerly IPC 384)' },
-  { id: '303_2', label: 'BNS 303(2) — Theft of Digital Assets, Funds & Intellectual Property (Formerly IPC 379)' },
-  { id: '336_3', label: 'BNS 336(3) — Forgery for Purpose of Cheating & Fake KYC Portals (Formerly IPC 468)' },
-  { id: '340_2', label: 'BNS 340(2) — Using Forged Electronic Records & Spoofed Documents as Genuine (Formerly IPC 471)' },
-  { id: '61_2', label: 'BNS 61(2) — Criminal Conspiracy in Organized Cybercrime Syndicates (Formerly IPC 120B)' },
-  { id: '351_2', label: 'BNS 351(2) — Criminal Intimidation via Digital Messaging & Sextortion (Formerly IPC 506)' },
+const INDIAN_STATES_UTS = [
+  'Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar',
+  'Chandigarh', 'Chhattisgarh', 'Dadra and Nagar Haveli and Daman and Diu', 'Delhi (NCT)',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir', 'Jharkhand',
+  'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh', 'Maharashtra',
+  'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Puducherry', 'Punjab',
+  'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh',
+  'Uttarakhand', 'West Bengal',
 ]
 
-const IT_ACT_SECTIONS = [
-  { id: '43', label: 'Section 43 — Unauthorized Access & Data Damage (Civil Penalty up to ₹1 Cr)' },
-  { id: '43A', label: 'Section 43A — Failure to Protect Sensitive Personal Data (Corporate Liability)' },
-  { id: '66', label: 'Section 66 — Computer-Related Fraudulent Offences & Hacking' },
-  { id: '66B', label: 'Section 66B — Receiving Stolen Computer Resource / Device / Data' },
-  { id: '66C', label: 'Section 66C — Punishment for Identity Theft & Digital Impersonation' },
-  { id: '66D', label: 'Section 66D — Cheating by Personation using Computer (Phishing / UPI Scam)' },
-  { id: '66E', label: 'Section 66E — Violation of Bodily Privacy & Unlawful Transmission' },
-  { id: '66F', label: 'Section 66F — Cyber Terrorism (Attacks on Critical Infrastructure / Sovereign Security)' },
-  { id: '70', label: 'Section 70 — Unauthorized Access to Protected Systems (Up to 10 Yrs Imprisonment)' },
-  { id: '72', label: 'Section 72 — Breach of Confidentiality & Electronic Records Privacy' },
+const IT_ACT_OPTIONS = [
+  { code: '§43', label: '§43 Unauthorized Access / Data Damage' },
+  { code: '§66', label: '§66 Computer-Related Offences' },
+  { code: '§66C', label: '§66C Identity Theft / Credential Misuse' },
+  { code: '§66D', label: '§66D Cheating by Personation (Phishing/UPI)' },
+  { code: '§70B(6)', label: '§70B(6) Mandatory 6-Hr CERT-In Reporting' },
 ]
 
-const BSA_SECTIONS = [
-  { id: '63_4', label: 'BSA Section 63(4) — Mandatory Certificate of Admissibility for Electronic Evidence (Replaces Sec 65B IEA)' },
+const BNS_OPTIONS = [
+  { code: '§318(4)', label: 'BNS §318(4) Cheating & Dishonest Delivery (Fraud)' },
+  { code: '§319(2)', label: 'BNS §319(2) Cheating by Personation' },
+  { code: '§336(3)', label: 'BNS §336(3) Electronic Record Forgery' },
+  { code: '§351', label: 'BNS §351 Criminal Intimidation / Sextortion' },
 ]
 
-const RUNBOOKS = [
-  {
-    id: 'RB-001', label: 'Unauthorized UPI / Net Banking Fraud', severity: 'CRITICAL',
-    eta: '15 min window',
-    actionItem: 'Immediate financial freeze window',
-    steps: [
-      'IMMEDIATELY dial 1930 (National Cybercrime Reporting Helpline). Mention your Bank, Account, and UPI UTR ID.',
-      'Call your Bank’s 24x7 Fraud Desk to block NetBanking, ATM card, and freeze beneficiary transfer account.',
-      'Take clear screenshots of the SMS debit notification, transaction history, and fraudulent WhatsApp/call record.',
-      'File an official complaint at cybercrime.gov.in within 24 to 72 hours for high recovery probability.',
-      'Download the auto-generated FIR from this portal and submit a physical signed copy to your nearest Cyber Cell.',
-    ],
-  },
-  {
-    id: 'RB-002', label: 'Ransomware Outbreak & Data Lock', severity: 'CRITICAL',
-    eta: '5 min immediate',
-    actionItem: 'Prevent lateral spread',
-    steps: [
-      'IMMEDIATELY unplug the physical Ethernet cable from all infected machines (do NOT merely turn off Wi-Fi).',
-      'Do NOT restart or power down the machine completely (volatile RAM holds decryption keys and process forensics).',
-      'Photograph the ransom note and encrypted file extensions on your mobile camera for evidentiary records.',
-      'Never pay the ransom — contact CERT-In (incident@cert-in.org.in | 1800-11-4949) immediately.',
-      'Check nomoreransom.org for public decryption keys released by international cyber police task forces.',
-    ],
-  },
-  {
-    id: 'RB-003', label: 'Social Media / Email Account Hacked', severity: 'HIGH',
-    eta: '10 min',
-    actionItem: 'Session termination',
-    steps: [
-      'From a separate clean device, go to Account Security and select "Log out of all active sessions / devices".',
-      'Immediately change the account password and check for unauthorized recovery email or phone number additions.',
-      'Enable Multi-Factor Authentication (2FA) using an Authenticator app instead of SMS OTP.',
-      'Alert close contacts on other channels that your profile was compromised and to ignore any money requests.',
-    ],
-  },
+const BSA_OPTIONS = [
+  { code: '§63(1)', label: 'BSA §63(1) Admissibility of Electronic Records' },
+  { code: '§63(4)', label: 'BSA §63(4) Mandatory SHA-256 Hash Certificate' },
 ]
 
-function generateFIR(data: FIRFormData): string {
-  const firNo = `CYB/FIR/${new Date().getFullYear()}/${Math.floor(Math.random() * 9000) + 1000}`
-  const certRef = `CERTIN-INC-${Date.now().toString().slice(-8)}`
-  
-  const itList = (data.itActSections || []).map(s => {
-    const item = IT_ACT_SECTIONS.find(x => x.id === s)
-    return item ? item.label.split(' — ')[0] + ' IT Act 2000' : `Section ${s} IT Act`
-  })
-  const bnsList = (data.bnsSections || []).map(s => {
-    const item = BNS_SECTIONS.find(x => x.id === s)
-    return item ? item.label.split(' — ')[0] : `Section ${s} BNS 2023`
-  })
-  const bsaList = (data.bsaSections || []).map(s => {
-    const item = BSA_SECTIONS.find(x => x.id === s)
-    return item ? item.label.split(' — ')[0] : `Section ${s} BSA 2023`
-  })
-  
-  const allSections = [...itList, ...bnsList, ...bsaList].join(', ')
+function buildDeterministicFIR(
+  data: FIRFormData,
+  mode: 'track' | 'anonymous',
+  attachedSha256: string | null,
+  attachedFileName: string | null
+): string {
+  const istNow = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+  const docketId = `NCRP-TRN-${Math.floor(100000 + Math.random() * 900000)}`
+  const complainantLine =
+    mode === 'anonymous'
+      ? 'Complainant Identity  : ANONYMOUS CITIZEN REPORT (Cybercrime.gov.in Protected Track)'
+      : `Complainant Name      : ${data.complainantName || 'Not Provided'}\nMobile / Email        : ${data.complainantPhone || 'N/A'} | ${data.complainantEmail || 'N/A'}\nGovt ID Ref (Masked)  : XXXX-XXXX-${data.aadhaarLast4 || '0000'}`
 
-  return `NATIONAL CYBER CRIME REPORTING PORTAL — INDIA
-Government of India | Ministry of Home Affairs
-National Crime Records Bureau (NCRB)
-FIR Reference: ${firNo}
-CERT-In Incident Dispatch: ${certRef}
-Classification: TLP:AMBER // FORMAL CYBERCRIME COMPLAINT
+  return `================================================================================
+FIRST INFORMATION / STATUTORY CYBER INCIDENT DOSSIER (DRAFT)
+Aligned with Bharatiya Nagarik Suraksha Sanhita (BNSS) 2023 & Cybercrime.gov.in
+================================================================================
+Reference Draft ID    : ${docketId}
+Generated Timestamp   : ${istNow} IST
+Reporting Mode        : ${mode === 'anonymous' ? 'ANONYMOUS TIP / REPORT' : 'REPORT & TRACK (OTP VERIFIED)'}
+Jurisdiction          : ${data.stateUt} — ${data.districtStation || 'Cyber Crime Police Station'}
+Helpline Escalation   : 1930 (Financial Freeze Desk) / CERT-In Incident Desk
 
-════════════════════════════════════════════════════════════════════════════
-FIRST INFORMATION REPORT (Section 154 CrPC / BNSS 2023)
-════════════════════════════════════════════════════════════════════════════
+1. COMPLAINANT DETAILS
+--------------------------------------------------------------------------------
+${complainantLine}
 
-To,
-The Station House Officer (SHO),
-Cyber Crime Police Station, [Jurisdiction District], India.
+2. INCIDENT & FINANCIAL LOSS PARTICULARS
+--------------------------------------------------------------------------------
+Offence Category      : ${data.attackType}
+Date & Time (IST)     : ${data.incidentDate || 'Not specified'} ${data.incidentTime || ''}
+Bank / Wallet Entity  : ${data.victimBank || 'Not applicable'}
+Masked Account / UPI  : ${data.accountNumber || 'Not applicable'}
+Financial Loss (INR)  : Rs. ${data.lossAmount || '0'}
+Transaction / UTR ID  : ${data.transactionId || 'N/A'}
+Suspect IOC / URL/IP  : ${data.attackerIp || 'Pending ISP / NPCI trace'}
 
-Subject: Formal complaint regarding cybercrime offence under Information Technology Act 2000 and Bharatiya Nyaya Sanhita (BNS 2023).
+3. INVOKED STATUTORY PROVISIONS
+--------------------------------------------------------------------------------
+IT Act 2000           : ${(data.itActSections || []).join(', ') || '§43, §66, §66D'}
+BNS 2023              : ${(data.bnsSections || []).join(', ') || '§318(4), §319(2)'}
+BSA 2023 Evidence     : ${(data.bsaSections || []).join(', ') || '§63(1), §63(4)'}
 
-════════════════════════════════════════════════════════════════════════════
-1. COMPLAINANT PARTICULARS
-════════════════════════════════════════════════════════════════════════════
-Full Name:           ${data.complainantName}
-Contact Phone:       ${data.complainantPhone}
-Email Address:       ${data.complainantEmail}
-Aadhaar (Last 4):    XXXX-XXXX-${data.aadhaarLast4 || 'XXXX'}
-Filing Date & Time:  ${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })} at ${new Date().toLocaleTimeString('en-IN')} IST
-
-════════════════════════════════════════════════════════════════════════════
-2. PARTICULARS OF INCIDENT & FINANCIAL LOSS
-════════════════════════════════════════════════════════════════════════════
-Date of Incident:    ${data.incidentDate}
-Time of Incident:    ${data.incidentTime} IST
-Offence Category:    ${data.attackType}
-Total Loss Incurred: INR ${data.lossAmount ? Number(data.lossAmount).toLocaleString('en-IN') : 'Under assessment'}
-Victim Bank:         ${data.victimBank || 'N/A'}
-Affected Account:    XXXX-XXXX-${data.accountNumber?.slice(-4) || 'XXXX'}
-Transaction UTR/ID:  ${data.transactionId || 'Pending Bank Statement'}
-
-════════════════════════════════════════════════════════════════════════════
-3. NARRATIVE & CHRONOLOGY OF FACTS
-════════════════════════════════════════════════════════════════════════════
+4. INCIDENT NARRATIVE
+--------------------------------------------------------------------------------
 ${data.evidenceDescription}
 
-Alleged Attacker Coordinate: ${data.attackerIp || 'Under electronic trace'}
+5. ELECTRONIC EVIDENCE PRESERVATION (BSA 2023 §63)
+--------------------------------------------------------------------------------
+Attached Artifact     : ${attachedFileName || 'Textual & Transaction Log Submission'}
+SHA-256 Digest        : ${attachedSha256 || 'Computed upon final certificate issuance'}
+CERT-In Mandate       : Must be logged within 6 hours under IT Act §70B(6) directions.
 
-════════════════════════════════════════════════════════════════════════════
-4. STATUTORY PROVISIONS & APPLICABLE LAWS
-════════════════════════════════════════════════════════════════════════════
-The above acts constitute cognizable offences under:
-${allSections || 'Section 66, 66D IT Act 2000 read with Section 318(4), 319(2) BNS 2023 and Section 63 BSA 2023'}
-
-════════════════════════════════════════════════════════════════════════════
-5. PRAYER & INVESTIGATIVE RELIEF SOUGHT
-════════════════════════════════════════════════════════════════════════════
-1. Immediate registration of FIR under Section 173 BNSS 2023 (Section 154 CrPC).
-2. Issuance of Notice under Section 94 BNSS 2023 (Section 91 CrPC) to beneficiary banks/payment gateways for immediate freeze of fraudulent accounts.
-3. Order under Section 67C IT Act to intermediaries for preservation of IPDR/CDR logs.
-4. Admissibility Certificate generated under Section 63(4) Bharatiya Sakshya Adhiniyam (BSA 2023).
-
-Verification & Declaration:
-I, ${data.complainantName}, hereby verify that the facts stated above are true and accurate to the best of my personal knowledge.
-
-Complainant Signature: _______________________
-Date: ${new Date().toLocaleDateString('en-IN')}
-
-Official Reference: ${firNo} | Portal: cybercrime.gov.in | Helpline: 1930`
+NOTE: AI/template assisted statutory draft — verify manually with Investigating Officer
+before formal registration under BNSS 2023.
+================================================================================`
 }
 
-export default function IncidentPage() {
-  const [tab, setTab] = useState<'runbooks' | 'fir'>('fir')
-  const [firText, setFirText] = useState<string | null>(null)
-  const [certReceipt, setCertReceipt] = useState<{ certId: string; sha256Hash: string; timestampIso: string } | null>(null)
-  const [exportingCert, setExportingCert] = useState(false)
-  const [attachedEvidence, setAttachedEvidence] = useState<{ name: string; sizeKb: number; sha256: string } | null>(null)
-  const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<FIRFormData>({
+export default function IncidentFirPage() {
+  const { t } = useLang()
+  const [reportMode, setReportMode] = useState<'track' | 'anonymous'>('track')
+  const [submitting, setSubmitting] = useState(false)
+  const [firOutput, setFirOutput] = useState<string | null>(null)
+  const [firMeta, setFirMeta] = useState<{
+    usedAI: boolean
+    provider: string
+    model: string
+    requestId: string | null
+  } | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  // Evidence SHA-256 attachment state
+  const [attachedFileName, setAttachedFileName] = useState<string | null>(null)
+  const [attachedSha256, setAttachedSha256] = useState<string | null>(null)
+  const [certStatus, setCertStatus] = useState<string | null>(null)
+  const [issuingCert, setIssuingCert] = useState(false)
+
+  // Mobile OTP workflow state (30-min validity notice)
+  const [generatedOtp, setGeneratedOtp] = useState<string | null>(null)
+  const [otpInput, setOtpInput] = useState('')
+  const [otpVerified, setOtpVerified] = useState(false)
+  const [otpSecondsLeft, setOtpSecondsLeft] = useState(0)
+
+  // Live 6-Hour CERT-In Statutory Countdown (21,600 seconds)
+  const [certInSeconds, setCertInSeconds] = useState(6 * 3600)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCertInSeconds((prev) => (prev > 0 ? prev - 1 : 0))
+      setOtpSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0))
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const formatDuration = (secs: number) => {
+    const h = Math.floor(secs / 3600)
+    const m = Math.floor((secs % 3600) / 60)
+    const s = secs % 60
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+  }
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<FIRFormData>({
     defaultValues: {
-      itActSections: ['43', '66', '66D'],
-      bnsSections: ['318_4', '319_2'],
-      bsaSections: ['63_4'],
+      stateUt: 'Delhi (NCT)',
+      districtStation: 'Cyber Crime Cell — IFSO Special Cell',
+      complainantName: '',
+      complainantPhone: '',
+      complainantEmail: '',
+      aadhaarLast4: '',
+      victimBank: 'State Bank of India (SBI)',
+      lossAmount: '',
+      accountNumber: '',
+      incidentDate: new Date().toISOString().slice(0, 10),
+      incidentTime: '14:30',
+      transactionId: '',
+      attackType: 'UPI / Banking KYC Phishing Scam',
+      attackerIp: '',
+      evidenceDescription: '',
+      itActSections: ['§66C', '§66D', '§70B(6)'],
+      bnsSections: ['§318(4)', '§319(2)'],
+      bsaSections: ['§63(1)', '§63(4)'],
     },
   })
 
-  const selectedBns = watch('bnsSections') || []
-  const selectedIt = watch('itActSections') || []
-  const selectedBsa = watch('bsaSections') || []
+  const watchPhone = watch('complainantPhone')
+  const watchItAct = watch('itActSections')
+  const watchBns = watch('bnsSections')
+  const watchBsa = watch('bsaSections')
 
-  useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem('trinetra_fir_prefill')
-      if (raw) {
-        const parsed = JSON.parse(raw)
-        if (parsed.incident_description) {
-          setValue('evidenceDescription', parsed.incident_description)
-          setValue('attackType', 'Financial Fraud / Phishing Scam')
-        }
-        sessionStorage.removeItem('trinetra_fir_prefill')
-      }
-    } catch {}
-  }, [setValue])
-
-  function fillDemo() {
-    setValue('complainantName', 'Ramesh Kumar Sharma')
-    setValue('complainantPhone', '+91-9876543210')
-    setValue('complainantEmail', 'ramesh.sharma@example.com')
-    setValue('aadhaarLast4', '8492')
-    setValue('victimBank', 'State Bank of India')
-    setValue('lossAmount', '48500')
-    setValue('accountNumber', '38491029482')
-    setValue('incidentDate', '2026-09-17')
-    setValue('incidentTime', '18:45')
-    setValue('transactionId', 'UPI/384729184719/SBIN')
-    setValue('attackType', 'Financial Fraud / UPI Fraud')
-    setValue('attackerIp', '45.33.32.156 / Unofficial SMS handle')
-    setValue('evidenceDescription', 'Received an urgent SMS claiming my SBI account would be permanently blocked if KYC was not updated within 24 hours. The SMS contained link http://sbi-kyc-update-portal.xyz. After entering details, two unauthorized debit transactions of Rs 25,000 and Rs 23,500 occurred via UPI to beneficiary handle fastpay@icici.')
-    setValue('itActSections', ['43', '66', '66D'])
-    setValue('bnsSections', ['318_4', '319_2', '336_3'])
-    setValue('bsaSections', ['63_4'])
+  const toggleSection = (field: 'itActSections' | 'bnsSections' | 'bsaSections', code: string, current: string[]) => {
+    const next = current.includes(code) ? current.filter((c) => c !== code) : [...current, code]
+    setValue(field, next)
   }
 
-  async function handleEvidenceFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const buf = await file.arrayBuffer()
-    const hashBuf = await crypto.subtle.digest('SHA-256', buf)
-    const hex = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('')
-    setAttachedEvidence({ name: file.name, sizeKb: Math.max(1, Math.round(file.size / 1024)), sha256: hex })
+  const handleSendOtp = () => {
+    if (!watchPhone || watchPhone.replace(/\D/g, '').length < 10) return
+    const code = String(Math.floor(100000 + Math.random() * 900000))
+    setGeneratedOtp(code)
+    setOtpVerified(false)
+    setOtpInput('')
+    setOtpSecondsLeft(30 * 60) // 30-min validity
   }
 
-  async function onSubmit(data: FIRFormData) {
-    setCertReceipt(null)
-    try {
-      const enriched = {
-        ...data,
-        evidenceDescription: attachedEvidence
-          ? `${data.evidenceDescription}\n\n[Attached Evidence File: ${attachedEvidence.name} (${attachedEvidence.sizeKb} KB) | SHA-256: ${attachedEvidence.sha256}]`
-          : data.evidenceDescription,
-      }
-      const res = await fetch('/api/incident', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(enriched),
-      })
-      const json = await res.json()
-      if (res.ok && json.success && json.usedAI && json.firDraft) {
-        setFirText(json.firDraft)
-        return
-      }
-    } catch {}
-    const enrichedData = attachedEvidence
-      ? {
-          ...data,
-          evidenceDescription: `${data.evidenceDescription}\n\n[Attached Evidence File: ${attachedEvidence.name} (${attachedEvidence.sizeKb} KB) | SHA-256: ${attachedEvidence.sha256}]`,
-        }
-      : data
-    setFirText(generateFIR(enrichedData))
-  }
-
-  async function exportBsa63Certificate() {
-    if (!firText) return
-    setExportingCert(true)
-    try {
-      try {
-        const res = await fetch('/api/certificate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sourcePanel: '04 // Incident Crisis & FIR',
-            payload: firText,
-            verdict: 'STATUTORY_FIR_DOSSIER',
-            category: 'BNS_2023_IT_ACT_2000',
-          }),
-        })
-        const data = await res.json()
-        if (res.ok && data.success && data.certificate) {
-          const a = document.createElement('a')
-          a.href = data.certificate.downloadUrl
-          a.download = `TRINETRA_${data.certificate.certId}.pdf`
-          a.click()
-          setCertReceipt({
-            certId: data.certificate.certId,
-            sha256Hash: data.certificate.sha256Hash,
-            timestampIso: data.certificate.timestampIso,
-          })
-          return
-        }
-      } catch {}
-      const timestampIso = new Date().toISOString()
-      const sha256Hash = await sha256(`${timestampIso}\n${firText}`)
-      const certId = `BSA63-FIR-${sha256Hash.slice(0, 10).toUpperCase()}`
-      const { jsPDF } = await import('jspdf')
-      const doc = new jsPDF({ unit: 'pt', format: 'a4' })
-      doc.setFont('Courier', 'bold')
-      doc.setFontSize(12)
-      doc.text('CERTIFICATE UNDER SECTION 63(4) OF BHARATIYA SAKSHYA ADHINIYAM (BSA), 2023', 40, 48)
-      doc.setFont('Courier', 'normal')
-      doc.setFontSize(9)
-      const bodyLines = [
-        `Certificate ID  : ${certId}`,
-        `Timestamp (UTC) : ${timestampIso}`,
-        `Timestamp (IST) : ${new Date(timestampIso).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`,
-        `SHA-256 Digest  : ${sha256Hash}`,
-        '',
-        '--------------------------------------------------------------------------------',
-        'ATTESTATION OF ELECTRONIC RECORD INTEGRITY',
-        '--------------------------------------------------------------------------------',
-        ...doc.splitTextToSize(
-          'This electronic FIR complaint dossier and associated incident narrative were hashed locally in-browser using Web Crypto SHA-256 without external alteration. The SHA-256 digest above uniquely identifies the attached complaint record for statutory preservation under BSA 2023 Section 63.',
-          515
-        ),
-        '',
-        '--------------------------------------------------------------------------------',
-        'HASHED FIR RECORD PREVIEW',
-        '--------------------------------------------------------------------------------',
-        ...doc.splitTextToSize(firText, 515),
-      ]
-      let y = 74
-      for (const line of bodyLines) {
-        if (y > 795) { doc.addPage(); y = 45 }
-        doc.text(line, 40, y)
-        y += 13
-      }
-      doc.save(`TRINETRA_${certId}.pdf`)
-      setCertReceipt({ certId, sha256Hash, timestampIso })
-    } finally {
-      setExportingCert(false)
+  const handleVerifyOtp = () => {
+    if (generatedOtp && otpInput.trim() === generatedOtp && otpSecondsLeft > 0) {
+      setOtpVerified(true)
     }
   }
 
-  async function downloadPDF() {
-    if (!firText) return
-    const { jsPDF } = await import('jspdf')
+  const handleFileAttach = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const buf = await file.arrayBuffer()
+    const digest = await crypto.subtle.digest('SHA-256', buf)
+    const hex = Array.from(new Uint8Array(digest))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+    setAttachedFileName(file.name)
+    setAttachedSha256(hex)
+  }
+
+  const onSubmit = async (data: FIRFormData) => {
+    setSubmitting(true)
+    setCertStatus(null)
+    const enrichedNarrative = attachedSha256
+      ? `${data.evidenceDescription}\n\n[Attached Evidence File: ${attachedFileName} | Client SHA-256: ${attachedSha256}]`
+      : data.evidenceDescription
+
+    const payload = {
+      ...data,
+      complainantName: reportMode === 'anonymous' ? 'Anonymous Reporter' : data.complainantName,
+      complainantPhone: reportMode === 'anonymous' ? 'WITHHELD' : data.complainantPhone,
+      complainantEmail: reportMode === 'anonymous' ? 'WITHHELD' : data.complainantEmail,
+      evidenceDescription: enrichedNarrative,
+    }
+
+    try {
+      const res = await fetch('/api/incident', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const json = await res.json()
+      if (res.ok && json.success && json.firDraft) {
+        setFirOutput(json.firDraft)
+        setFirMeta({
+          usedAI: !!json.usedAI,
+          provider: json.provider || 'bharatcode',
+          model: json.model || 'qwen-3.8-27b',
+          requestId: json.requestId || null,
+        })
+      } else {
+        setFirOutput(buildDeterministicFIR(data, reportMode, attachedSha256, attachedFileName))
+        setFirMeta({
+          usedAI: false,
+          provider: json.provider || 'deterministic-kernel',
+          model: json.model || 'bnss-2023-template-v2',
+          requestId: json.requestId || null,
+        })
+      }
+    } catch {
+      setFirOutput(buildDeterministicFIR(data, reportMode, attachedSha256, attachedFileName))
+      setFirMeta({
+        usedAI: false,
+        provider: 'deterministic-kernel',
+        model: 'bnss-2023-template-v2',
+        requestId: null,
+      })
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleDownloadFirPdf = () => {
+    if (!firOutput) return
     const doc = new jsPDF({ unit: 'pt', format: 'a4' })
+    doc.setFont('Courier', 'bold')
+    doc.setFontSize(11)
+    doc.text('TRINETRA // STATUTORY CYBER INCIDENT FIR DRAFT', 40, 44)
     doc.setFont('Courier', 'normal')
-    doc.setFontSize(8)
-    const lines = doc.splitTextToSize(firText, 520)
-    let y = 40
-    lines.forEach((line: string) => {
-      if (y > 800) { doc.addPage(); y = 40 }
+    doc.setFontSize(8.5)
+    const wrapped = doc.splitTextToSize(firOutput, 515)
+    let y = 66
+    for (const line of wrapped) {
+      if (y > 790) {
+        doc.addPage()
+        y = 44
+      }
       doc.text(line, 40, y)
-      y += 11
-    })
-    doc.save(`TRINETRA_Cyber_FIR_${Date.now()}.pdf`)
+      y += 12
+    }
+    doc.save(`TRINETRA_FIR_DRAFT_${Date.now()}.pdf`)
+  }
+
+  const handleExportBsa63Certificate = async () => {
+    if (!firOutput) return
+    setIssuingCert(true)
+    setCertStatus(null)
+    try {
+      const res = await fetch('/api/certificate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourcePanel: '04 // Incident Response & FIR',
+          payload: firOutput,
+          verdict: 'STATUTORY FIR & EVIDENCE PRESERVATION',
+          confidence: 'DETERMINISTIC SHA-256',
+          category: watch('attackType'),
+          flags: [...(watchItAct || []), ...(watchBns || []), ...(watchBsa || [])],
+          requestId: firMeta?.requestId || undefined,
+          model: firMeta?.model || 'bnss-2023-kernel',
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.success || !data.certificate?.downloadUrl) {
+        throw new Error(data.error || 'Certificate error')
+      }
+      const link = document.createElement('a')
+      link.href = data.certificate.downloadUrl
+      link.download = `TRINETRA_BSA63_${data.certificate.certId}.pdf`
+      link.click()
+      setCertStatus(`Issued ${data.certificate.certId} · SHA-256: ${data.certificate.sha256Hash.slice(0, 16)}...`)
+    } catch (err: unknown) {
+      setCertStatus(err instanceof Error ? err.message : 'Failed to issue certificate')
+    } finally {
+      setIssuingCert(false)
+    }
   }
 
   return (
-    <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
-      {/* Header Banner */}
-      <div className="p-6 rounded-2xl glass-card relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
-          <div className="space-y-2 max-w-2xl">
-            <div className="flex items-center gap-2.5">
-              <span className="px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 font-mono text-[11px] font-semibold">
-                LEGAL EV-04 // INCIDENT COMMAND
+    <div className="space-y-6">
+      {/* Top 1930 Helpline + CERT-In 6-Hour Countdown Banner */}
+      <section className="rounded-xl bg-[#172A45] border border-[#233554] p-6">
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-5">
+          <div className="space-y-1.5 max-w-3xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2.5 py-1 rounded bg-[#0A192F] border border-[#233554] text-[10px] font-mono font-bold text-[#FF9F1C]">
+                04 // INCIDENT RESPONSE &amp; STATUTORY FIR
               </span>
-              <span className="text-slate-600 text-xs">•</span>
-              <span className="text-[11px] font-mono text-slate-300 px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/[0.08]">
-                SEC. 154 CrPC & BNS 2023
+              <span className="px-2.5 py-1 rounded bg-[#00A896]/15 border border-[#00A896]/35 text-[10px] font-mono text-[#00A896]">
+                BNS 2023 · IT Act 2000 · BSA 2023 §63 · cybercrime.gov.in Compatible
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              04 // Incident Command & Cyber FIR Generator
+            <h1 className="text-2xl font-bold text-[#F8F9FA] font-serif">
+              {t('National Cyber Incident Filing & Statutory FIR Desk', 'राष्ट्रीय साइबर घटना एवं वैधानिक एफआईआर डेस्क')}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
-              Step-by-step crisis runbooks for active cyber attacks and automated drafting of court-admissible First Information Reports (FIR) for immediate police, bank, and cyber cell filing.
+            <p className="text-xs text-[#8D99AE] leading-relaxed">
+              {t(
+                'Generate structured FIR complaints mapped to Bharatiya Nyaya Sanhita (BNS 2023) & IT Act sections, compute client-side SHA-256 hashes, and export BSA 2023 §63 certificates.',
+                'भारतीय न्याय संहिता (बीएनएस 2023) और आईटी एक्ट धाराओं के अनुरूप एफआईआर ड्राफ्ट तथा बीएसए §63 प्रमाणपत्र तैयार करें।'
+              )}
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 flex-shrink-0">
-            <a
-              href="tel:1930"
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-amber-300 bg-amber-500/10 border border-amber-500/30 hover:bg-amber-500/20 transition-all"
-            >
-              <PhoneCall size={14} className="text-amber-400" />
-              <span>Helpline 1930</span>
-            </a>
+          {/* 1930 Emergency Callout & 6-Hour CERT-In SLA Countdown */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 shrink-0">
+            <div className="px-4 py-3 rounded-lg bg-[#0A192F] border border-[#D64045]/45 flex items-center gap-3">
+              <PhoneCall className="w-5 h-5 text-[#D64045] shrink-0" />
+              <div>
+                <div className="text-[10px] font-mono uppercase text-[#D64045] font-bold">
+                  Golden Hour Financial Freeze
+                </div>
+                <div className="text-base font-mono font-bold text-[#F8F9FA]">Call 1930 Now</div>
+                <div className="text-[10px] text-[#8D99AE]">cybercrime.gov.in</div>
+              </div>
+            </div>
+
+            <div className="px-4 py-3 rounded-lg bg-[#0A192F] border border-[#FF9F1C]/45 flex items-center gap-3">
+              <Clock className="w-5 h-5 text-[#FF9F1C] shrink-0" />
+              <div>
+                <div className="text-[10px] font-mono uppercase text-[#FF9F1C] font-bold">
+                  CERT-In §70B(6) SLA
+                </div>
+                <div className="text-base font-mono font-bold text-[#F8F9FA] tabular-nums">
+                  {formatDuration(certInSeconds)}
+                </div>
+                <div className="text-[10px] text-[#8D99AE]">6-Hour Mandatory Window</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2 p-1.5 bg-white/[0.03] border border-white/[0.08] rounded-2xl w-fit">
-        <button
-          onClick={() => setTab('fir')}
-          className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-            tab === 'fir'
-              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-950/40 border border-indigo-400/30'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
-          }`}
-        >
-          <FileText size={15} />
-          <span>Indian Cybercrime FIR Generator (PDF)</span>
-        </button>
-        <button
-          onClick={() => setTab('runbooks')}
-          className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
-            tab === 'runbooks'
-              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-950/40 border border-indigo-400/30'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
-          }`}
-        >
-          <Clock size={15} />
-          <span>Crisis Response Playbooks</span>
-        </button>
-      </div>
-
-      {tab === 'fir' && (
-        <div className="space-y-6">
-          {!firText ? (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {/* Demo Helper Banner */}
-              <div className="p-4 rounded-2xl glass-card flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5 text-xs text-slate-300">
-                  <Sparkles size={16} className="text-indigo-400 flex-shrink-0" />
-                  <span>Don't want to type manually? Click to pre-fill with a realistic Indian banking fraud scenario.</span>
-                </div>
+      {/* Main Form & FIR Output Split */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        <div className="xl:col-span-7">
+          <TerminalCard
+            title={t('Complaint & Incident Registration Form', 'शिकायत एवं घटना पंजीकरण फॉर्म')}
+            label={reportMode === 'track' ? 'REPORT & TRACK' : 'ANONYMOUS REPORT'}
+            labelColor={reportMode === 'track' ? 'amber' : 'cyan'}
+            headerRight={
+              <div className="flex items-center gap-1 bg-[#0A192F] p-0.5 rounded-lg border border-[#233554]">
                 <button
                   type="button"
-                  onClick={fillDemo}
-                  className="px-4 py-2 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-xs font-semibold text-indigo-300 hover:text-white transition-all whitespace-nowrap self-start sm:self-auto flex items-center gap-1.5"
+                  onClick={() => setReportMode('track')}
+                  className={`px-2.5 py-1 rounded text-[10px] font-mono font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
+                    reportMode === 'track' ? 'bg-[#FF9F1C] text-[#0A192F]' : 'text-[#8D99AE] hover:text-[#F8F9FA]'
+                  }`}
                 >
-                  <Sparkles size={13} className="text-rose-400" />
-                  <span>1-Click Pre-fill Incident</span>
+                  <UserCheck className="w-3 h-3" /> Track
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setReportMode('anonymous')}
+                  className={`px-2.5 py-1 rounded text-[10px] font-mono font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
+                    reportMode === 'anonymous' ? 'bg-[#00A896] text-[#0A192F]' : 'text-[#8D99AE] hover:text-[#F8F9FA]'
+                  }`}
+                >
+                  <EyeOff className="w-3 h-3" /> Anonymous
                 </button>
               </div>
-
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-                {/* Complainant Details */}
-                <TerminalCard title="Step 1: Complainant Information" labelColor="cyan">
-                  <div className="space-y-3 font-sans text-xs">
-                    <div>
-                      <label className="text-slate-300 font-medium block mb-1">Full Legal Name *</label>
-                      <input
-                        {...register('complainantName', { required: true })}
-                        placeholder="e.g. Ramesh Kumar Sharma"
-                        className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-cyan-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-slate-300 font-medium block mb-1">Phone Number *</label>
-                        <input
-                          {...register('complainantPhone', { required: true })}
-                          placeholder="+91-XXXXXXXXXX"
-                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-cyan-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-slate-300 font-medium block mb-1">Email Address *</label>
-                        <input
-                          {...register('complainantEmail', { required: true })}
-                          placeholder="victim@email.com"
-                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-cyan-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="text-slate-300 font-medium block mb-1">Aadhaar (Last 4 Digits)</label>
-                      <input
-                        {...register('aadhaarLast4')}
-                        placeholder="e.g. 8492 (Optional for identity verification)"
-                        maxLength={4}
-                        className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-cyan-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
-                      />
-                    </div>
-                  </div>
-                </TerminalCard>
-
-                {/* Financial & Occurrence */}
-                <TerminalCard title="Step 2: Incident & Financial Loss" labelColor="red">
-                  <div className="space-y-3 font-sans text-xs">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-slate-300 font-medium block mb-1">Victim Bank / Service *</label>
-                        <input
-                          {...register('victimBank', { required: true })}
-                          placeholder="e.g. State Bank of India / Paytm"
-                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-slate-300 font-medium block mb-1">Total Loss (INR ₹) *</label>
-                        <input
-                          {...register('lossAmount', { required: true })}
-                          placeholder="e.g. 48500"
-                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-slate-300 font-medium block mb-1">Account Number (Optional)</label>
-                        <input
-                          {...register('accountNumber')}
-                          placeholder="XXXX-XXXX-XXXX"
-                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-slate-300 font-medium block mb-1">UPI Ref / UTR / Txn ID</label>
-                        <input
-                          {...register('transactionId')}
-                          placeholder="e.g. UPI/1234567890/..."
-                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 placeholder:text-slate-600 outline-none font-mono text-xs transition-colors"
-                        />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-slate-300 font-medium block mb-1">Date of Incident *</label>
-                        <input
-                          {...register('incidentDate', { required: true })}
-                          type="date"
-                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 outline-none font-mono text-xs color-scheme-dark transition-colors"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-slate-300 font-medium block mb-1">Time of Incident *</label>
-                        <input
-                          {...register('incidentTime', { required: true })}
-                          type="time"
-                          className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] focus:border-rose-500 rounded-xl text-slate-100 outline-none font-mono text-xs color-scheme-dark transition-colors"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </TerminalCard>
+            }
+          >
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Jurisdiction */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                    {t('State / Union Territory', 'राज्य / केंद्र शासित प्रदेश')} <span className="text-[#D64045]">*</span>
+                  </label>
+                  <select
+                    {...register('stateUt', { required: true })}
+                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                  >
+                    {INDIAN_STATES_UTS.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                    {t('District / Cyber Police Station', 'जिला / साइबर थाना')} <span className="text-[#D64045]">*</span>
+                  </label>
+                  <input
+                    {...register('districtStation', { required: true })}
+                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                  />
+                </div>
               </div>
 
-              {/* Legal Sections & Narrative */}
-              <TerminalCard title="Step 3: Incident Narrative & Statutory Classification" labelColor="red">
-                <div className="space-y-4 text-xs">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Citizen Track Fields + Mobile OTP Verification */}
+              {reportMode === 'track' && (
+                <div className="p-4 rounded-lg bg-[#0A192F]/70 border border-[#233554] space-y-4">
+                  <div className="text-[11px] font-mono uppercase text-[#00A896] font-semibold">
+                    {t('Complainant Verification (cybercrime.gov.in Citizen Flow)', 'शिकायतकर्ता सत्यापन')}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-slate-300 font-medium block mb-1">Cybercrime Category *</label>
-                      <select
-                        {...register('attackType', { required: true })}
-                        className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] rounded-xl text-slate-200 outline-none text-xs focus:border-indigo-500 transition-colors font-mono"
+                      <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                        {t('Full Name', 'पूरा नाम')} <span className="text-[#D64045]">*</span>
+                      </label>
+                      <input
+                        {...register('complainantName', { required: reportMode === 'track' })}
+                        placeholder="e.g. Rajesh Kumar Sharma"
+                        className="w-full rounded-lg bg-[#172A45] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                        {t('Email ID', 'ईमेल आईडी')}
+                      </label>
+                      <input
+                        type="email"
+                        {...register('complainantEmail')}
+                        placeholder="citizen@example.in"
+                        className="w-full rounded-lg bg-[#172A45] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Mobile + OTP Row */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                    <div className="sm:col-span-5">
+                      <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                        {t('Mobile Number (+91)', 'मोबाइल नंबर')} <span className="text-[#D64045]">*</span>
+                      </label>
+                      <input
+                        {...register('complainantPhone', { required: reportMode === 'track' })}
+                        placeholder="9876543210"
+                        className="w-full rounded-lg bg-[#172A45] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                      />
+                    </div>
+                    <div className="sm:col-span-3">
+                      <button
+                        type="button"
+                        onClick={handleSendOtp}
+                        className="w-full py-2 px-3 rounded-lg bg-[#172A45] hover:bg-[#1E3554] border border-[#FF9F1C]/50 text-[#FF9F1C] text-xs font-semibold transition-colors cursor-pointer"
                       >
-                        <option value="">Select crime type...</option>
-                        <option value="Financial Fraud / UPI Fraud">Financial Fraud / UPI Fraud</option>
-                        <option value="Phishing / Fake KYC Link">Phishing / Fake KYC Link</option>
-                        <option value="Identity Theft / Impersonation">Identity Theft / Impersonation</option>
-                        <option value="Ransomware & System Extortion">Ransomware & System Extortion</option>
-                        <option value="Unauthorized Access & Data Leak">Unauthorized Access & Data Leak</option>
-                        <option value="Social Media Account Hijack">Social Media Account Hijack</option>
-                        <option value="SIM Swap & OTP Bypass">SIM Swap & OTP Bypass</option>
-                      </select>
+                        Send OTP
+                      </button>
                     </div>
-
-                    <div>
-                      <label className="text-slate-300 font-medium block mb-1">Attacker Contact / Website</label>
+                    <div className="sm:col-span-4">
+                      <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                        {t('Aadhaar Last 4 Digits', 'आधार के अंतिम 4 अंक')}
+                      </label>
                       <input
-                        {...register('attackerIp')}
-                        placeholder="e.g. +91-9876543210 or fake URL"
-                        className="w-full p-2.5 bg-[#090D16] border border-white/[0.08] rounded-xl text-slate-200 placeholder:text-slate-500 outline-none text-xs focus:border-indigo-500 transition-colors font-mono"
+                        maxLength={4}
+                        {...register('aadhaarLast4')}
+                        placeholder="4321"
+                        className="w-full rounded-lg bg-[#172A45] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
                       />
                     </div>
                   </div>
 
-                  {/* Statutory Classification Frameworks with Tactical Chips */}
-                  <div className="space-y-4 pt-1">
-                    {/* BNS 2023 Section */}
-                    <div className="p-4 rounded-xl bg-indigo-950/20 border border-indigo-500/20 space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <label className="text-indigo-300 font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5 font-mono">
-                          <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                          Bharatiya Nyaya Sanhita (BNS 2023 — Substantive Criminal Code)
-                        </label>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-200 border border-indigo-500/30">
-                          Replaced IPC (1860)
+                  {generatedOtp && (
+                    <div className="p-3 rounded-lg bg-[#172A45] border border-[#00A896]/35 flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <div className="font-mono text-[#00A896]">
+                        Session Demo OTP: <strong className="text-[#FF9F1C]">{generatedOtp}</strong>{' '}
+                        <span className="text-[10px] text-[#8D99AE]">
+                          (Valid for {formatDuration(otpSecondsLeft)} / 30m limit)
                         </span>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                        {BNS_SECTIONS.map(s => {
-                          const isChecked = selectedBns.includes(s.id)
-                          const parts = s.label.split(' — ')
-                          return (
-                            <label
-                              key={s.id}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border transition-all cursor-pointer select-none ${
-                                isChecked
-                                  ? 'bg-indigo-950/40 border-indigo-500/60 shadow-[0_0_12px_rgba(99,102,241,0.2)] text-white'
-                                  : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04] text-slate-300'
-                              }`}
-                            >
-                              <div className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center border transition-all flex-shrink-0 ${
-                                isChecked ? 'bg-indigo-500 border-indigo-400 text-white' : 'border-white/[0.2] bg-white/[0.04]'
-                              }`}>
-                                {isChecked && <Check size={11} strokeWidth={3} />}
-                              </div>
-                              <input type="checkbox" value={s.id} {...register('bnsSections')} className="sr-only" />
-                              <div className="space-y-0.5">
-                                <span className="font-mono text-[11px] font-bold text-indigo-300 block">
-                                  {parts[0]}
-                                </span>
-                                <span className="text-[11px] text-slate-300 leading-snug block font-sans">
-                                  {parts[1] || s.label}
-                                </span>
-                              </div>
-                            </label>
-                          )
-                        })}
-                      </div>
-                    </div>
-
-                    {/* IT Act 2000 Section */}
-                    <div className="p-4 rounded-xl bg-cyan-950/15 border border-cyan-500/20 space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <label className="text-cyan-300 font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5 font-mono">
-                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                          Information Technology Act, 2000 (Amended 2008 — Cyber Law)
-                        </label>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-200 border border-cyan-500/30">
-                          Primary Cyber Statute
+                      {otpVerified ? (
+                        <span className="inline-flex items-center gap-1 text-[#00A896] font-mono font-bold">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> OTP VERIFIED
                         </span>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                        {IT_ACT_SECTIONS.map(s => {
-                          const isChecked = selectedIt.includes(s.id)
-                          const parts = s.label.split(' — ')
-                          return (
-                            <label
-                              key={s.id}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border transition-all cursor-pointer select-none ${
-                                isChecked
-                                  ? 'bg-cyan-950/40 border-cyan-500/60 shadow-[0_0_12px_rgba(6,182,212,0.2)] text-white'
-                                  : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04] text-slate-300'
-                              }`}
-                            >
-                              <div className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center border transition-all flex-shrink-0 ${
-                                isChecked ? 'bg-cyan-500 border-cyan-400 text-white' : 'border-white/[0.2] bg-white/[0.04]'
-                              }`}>
-                                {isChecked && <Check size={11} strokeWidth={3} />}
-                              </div>
-                              <input type="checkbox" value={s.id} {...register('itActSections')} className="sr-only" />
-                              <div className="space-y-0.5">
-                                <span className="font-mono text-[11px] font-bold text-cyan-300 block">
-                                  {parts[0]}
-                                </span>
-                                <span className="text-[11px] text-slate-300 leading-snug block font-sans">
-                                  {parts[1] || s.label}
-                                </span>
-                              </div>
-                            </label>
-                          )
-                        })}
-                      </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={otpInput}
+                            onChange={(e) => setOtpInput(e.target.value)}
+                            placeholder="Enter 6-digit OTP"
+                            className="w-28 rounded bg-[#0A192F] border border-[#233554] px-2 py-1 text-xs font-mono text-[#F8F9FA]"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleVerifyOtp}
+                            className="px-2.5 py-1 rounded bg-[#00A896] text-[#0A192F] text-[11px] font-bold cursor-pointer"
+                          >
+                            Verify
+                          </button>
+                        </div>
+                      )}
                     </div>
-
-                    {/* BSA 2023 Electronic Evidence Section */}
-                    <div className="p-4 rounded-xl bg-amber-950/15 border border-amber-500/20 space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <label className="text-amber-300 font-semibold text-[11px] uppercase tracking-wider flex items-center gap-1.5 font-mono">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                          Bharatiya Sakshya Adhiniyam (BSA 2023 — Digital Evidence Admissibility)
-                        </label>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-200 border border-amber-500/30">
-                          Replaced Sec 65B IEA
-                        </span>
-                      </div>
-                      <div className="text-xs">
-                        {BSA_SECTIONS.map(s => {
-                          const isChecked = selectedBsa.includes(s.id)
-                          const parts = s.label.split(' — ')
-                          return (
-                            <label
-                              key={s.id}
-                              className={`flex items-start gap-2.5 p-3 rounded-xl border transition-all cursor-pointer select-none ${
-                                isChecked
-                                  ? 'bg-amber-950/40 border-amber-500/60 shadow-[0_0_12px_rgba(245,158,11,0.2)] text-white'
-                                  : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04] text-slate-300'
-                              }`}
-                            >
-                              <div className={`w-4 h-4 rounded mt-0.5 flex items-center justify-center border transition-all flex-shrink-0 ${
-                                isChecked ? 'bg-amber-500 border-amber-400 text-white' : 'border-white/[0.2] bg-white/[0.04]'
-                              }`}>
-                                {isChecked && <Check size={11} strokeWidth={3} />}
-                              </div>
-                              <input type="checkbox" value={s.id} {...register('bsaSections')} className="sr-only" />
-                              <div className="space-y-0.5">
-                                <span className="font-mono text-[11px] font-bold text-amber-300 block">
-                                  {parts[0]}
-                                </span>
-                                <span className="text-[11px] text-slate-300 leading-snug block font-sans">
-                                  {parts[1] || s.label}
-                                </span>
-                              </div>
-                            </label>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.08] space-y-2">
-                    <label className="text-slate-300 font-medium block text-xs">
-                      Attach Supporting Evidence (Screenshot / Bank PDF / Log — hashed locally via SHA-256)
-                    </label>
-                    <input
-                      type="file"
-                      onChange={handleEvidenceFile}
-                      className="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border file:border-white/10 file:text-xs file:font-semibold file:bg-white/[0.06] file:text-slate-200 hover:file:bg-white/[0.1] cursor-pointer"
-                    />
-                    {attachedEvidence && (
-                      <div className="text-[11px] font-mono text-emerald-300 break-all">
-                        Attached: {attachedEvidence.name} ({attachedEvidence.sizeKb} KB) · SHA-256: {attachedEvidence.sha256}
-                      </div>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="text-slate-300 font-medium block mb-1">
-                      Detailed Incident Narrative (What happened? Chronological order) *
-                    </label>
-                    <textarea
-                      {...register('evidenceDescription', { required: true })}
-                      placeholder="Explain step-by-step: how you were contacted, what link was clicked, what OTP was shared, and the exact debit amounts..."
-                      rows={4}
-                      className="w-full p-3 bg-[#090D16] border border-white/[0.08] rounded-xl text-slate-200 placeholder:text-slate-500 outline-none focus:border-indigo-500 text-xs transition-colors font-mono"
-                    />
-                  </div>
-                </div>
-              </TerminalCard>
-
-              {/* Tactical Defense Command Action Button (Palantir Gotham Style) */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-4 px-6 bg-[#0E1424] hover:bg-[#141C32] border border-indigo-500/40 hover:border-indigo-400 text-white rounded-2xl shadow-xl shadow-indigo-950/50 transition-all flex flex-col sm:flex-row items-center justify-between gap-3 group cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 group-hover:scale-105 transition-transform">
-                    <FileText size={18} />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-mono text-xs font-bold text-white tracking-wide flex items-center gap-2">
-                      <span>[EXECUTE_STATUTORY_FIR_SYNTHESIS]</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    </div>
-                    <div className="text-[11px] text-slate-400 font-sans">
-                      Generates court-admissible PDF under Sec. 173 BNSS 2023 &amp; Sec. 63 BSA 2023
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-indigo-500/20 border border-indigo-500/30 font-mono text-[11px] text-indigo-200">
-                  <span>COMPOSE DOSSIER</span>
-                  <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-                </div>
-              </button>
-            </form>
-          ) : (
-            <div className="space-y-4">
-              <div className="p-5 rounded-2xl glass-card flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-emerald-500/30">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                    <CheckCircle2 size={22} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-emerald-300">FIR COMPLAINT GENERATED SUCCESSFULLY</p>
-                    <p className="text-xs text-slate-400">
-                      Formatted under Section 154 CrPC & BNS 2023. Valid for direct submission to Cyber Crime Police Station.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    onClick={() => setFirText(null)}
-                    className="px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] transition-all cursor-pointer"
-                  >
-                    ← Edit Form
-                  </button>
-                  <button
-                    onClick={exportBsa63Certificate}
-                    disabled={exportingCert}
-                    className="flex items-center gap-2 px-4 py-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-200 text-xs font-bold rounded-full transition-all cursor-pointer disabled:opacity-50"
-                  >
-                    <FileCheck2 size={14} />
-                    <span>{exportingCert ? 'Signing...' : 'Export BSA 2023 §63 Evidence Certificate'}</span>
-                  </button>
-                  <button
-                    onClick={downloadPDF}
-                    className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold rounded-full transition-all shadow-lg shadow-emerald-950/40 cursor-pointer"
-                  >
-                    <Download size={14} />
-                    <span>Download Official PDF</span>
-                  </button>
-                </div>
-              </div>
-
-              {certReceipt && (
-                <div className="p-3.5 rounded-xl bg-amber-950/25 border border-amber-500/30 font-mono text-xs text-amber-200 space-y-1">
-                  <div className="font-bold">BSA 2023 §63 Certificate Exported: {certReceipt.certId}</div>
-                  <div className="text-[11px] text-slate-300 break-all">SHA-256: {certReceipt.sha256Hash}</div>
+                  )}
                 </div>
               )}
 
-              <TerminalCard title="Generated Legal Dossier Preview" label="PRINT-READY" labelColor="green" noPadding>
-                <pre
-                  className="p-5 font-mono text-xs leading-relaxed overflow-auto max-h-[600px] text-emerald-400 bg-slate-950 whitespace-pre-wrap select-text"
-                >
-                  {firText}
-                </pre>
-              </TerminalCard>
-            </div>
-          )}
-        </div>
-      )}
+              {/* Incident & Financial Metadata */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                    {t('Incident Category', 'अपराध श्रेणी')} <span className="text-[#D64045]">*</span>
+                  </label>
+                  <select
+                    {...register('attackType')}
+                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                  >
+                    <option value="UPI / Banking KYC Phishing Scam">UPI / Banking KYC Phishing Scam</option>
+                    <option value="Deepfake Video KYC / Voice Impersonation">Deepfake / Voice Impersonation</option>
+                    <option value="Ransomware / Critical Infra Intrusion">Ransomware / CII Intrusion</option>
+                    <option value="Social Media Account Takeover / Extortion">Social Media Extortion / Takeover</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                    {t('Incident Date', 'घटना तिथि')} <span className="text-[#D64045]">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    {...register('incidentDate', { required: true })}
+                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                    {t('Time (IST)', 'समय (IST)')}
+                  </label>
+                  <input
+                    type="time"
+                    {...register('incidentTime')}
+                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA]"
+                  />
+                </div>
+              </div>
 
-      {/* Runbooks Tab */}
-      {tab === 'runbooks' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {RUNBOOKS.map(rb => (
-            <TerminalCard
-              key={rb.id}
-              title={rb.label}
-              label={`[${rb.severity}]`}
-              labelColor={rb.severity === 'CRITICAL' ? 'red' : 'amber'}
-              headerRight={
-                <span className="font-mono text-[11px] text-slate-400 flex items-center gap-1">
-                  <Clock size={11} />
-                  {rb.eta}
-                </span>
-              }
-            >
-              <div className="space-y-3 font-sans text-xs">
-                <div className="p-2 bg-slate-900 border border-slate-800 rounded-sm text-slate-400 font-mono text-[11px]">
-                  <strong>Primary Objective:</strong> {rb.actionItem}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                    {t('Bank / Payment Wallet', 'बैंक / पेमेंट वॉलेट')}
+                  </label>
+                  <input
+                    {...register('victimBank')}
+                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs text-[#F8F9FA]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                    {t('Loss Amount (INR)', 'नुकसान राशि (INR)')}
+                  </label>
+                  <input
+                    {...register('lossAmount')}
+                    placeholder="25000"
+                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                    {t('UTR / Transaction Reference', 'यूटीआर / लेनदेन आईडी')}
+                  </label>
+                  <input
+                    {...register('transactionId')}
+                    placeholder="428910348219"
+                    className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                  {t('Suspect URL / Phone / Attacker IP', 'संदिग्ध यूआरएल / फोन / आईपी')}
+                </label>
+                <input
+                  {...register('attackerIp')}
+                  placeholder="https://sbi-kyc-verif.top | +91-XXXXXXXXXX"
+                  className="w-full rounded-lg bg-[#0A192F] border border-[#233554] px-3 py-2 text-xs font-mono text-[#F8F9FA]"
+                />
+              </div>
+
+              {/* Mandatory Incident Narrative */}
+              <div>
+                <label className="block text-xs font-semibold text-[#F8F9FA] mb-1">
+                  {t('Detailed Incident Narrative', 'घटना का विस्तृत विवरण')} <span className="text-[#D64045]">*</span>
+                </label>
+                <textarea
+                  rows={4}
+                  {...register('evidenceDescription', {
+                    required: 'Detailed narrative is required (minimum 10 characters)',
+                    minLength: { value: 10, message: 'Enter at least 10 characters describing the incident' },
+                  })}
+                  placeholder="Describe chronologically how the fraud or intrusion occurred, URLs clicked, and unauthorized debits..."
+                  className="w-full rounded-lg bg-[#0A192F] border border-[#233554] p-3 text-xs text-[#F8F9FA] focus:outline-none focus:border-[#00A896]"
+                />
+                {errors.evidenceDescription && (
+                  <p className="text-[11px] text-[#D64045] mt-1">{errors.evidenceDescription.message}</p>
+                )}
+              </div>
+
+              {/* Client-Side SHA-256 File Hashing */}
+              <div className="p-3.5 rounded-lg bg-[#0A192F] border border-[#233554] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <div className="text-xs font-semibold text-[#F8F9FA] flex items-center gap-1.5">
+                    <Lock className="w-3.5 h-3.5 text-[#00A896]" />
+                    Attach Digital Evidence (Client-Side SHA-256 Digest)
+                  </div>
+                  <div className="text-[11px] text-[#8D99AE] font-mono">
+                    {attachedSha256
+                      ? `${attachedFileName} · SHA-256: ${attachedSha256.slice(0, 24)}...`
+                      : 'Select SMS screenshot, bank PDF, or PCAP — hashed locally in browser'}
+                  </div>
+                </div>
+                <label className="px-3 py-2 rounded-lg bg-[#172A45] hover:bg-[#1E3554] border border-[#233554] text-xs font-semibold text-[#00A896] flex items-center gap-1.5 cursor-pointer shrink-0">
+                  <Upload className="w-3.5 h-3.5" />
+                  Select File
+                  <input type="file" onChange={handleFileAttach} className="hidden" />
+                </label>
+              </div>
+
+              {/* Statutory Checkboxes */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="p-3 rounded-lg bg-[#0A192F] border border-[#233554] space-y-2">
+                  <div className="text-[10px] font-mono uppercase text-[#FF9F1C] font-bold">IT Act 2000 Sections</div>
+                  {IT_ACT_OPTIONS.map((opt) => (
+                    <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#F8F9FA] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={watchItAct.includes(opt.code)}
+                        onChange={() => toggleSection('itActSections', opt.code, watchItAct)}
+                        className="mt-0.5 accent-[#FF9F1C]"
+                      />
+                      <span>{opt.label}</span>
+                    </label>
+                  ))}
                 </div>
 
-                <div className="space-y-2">
-                  {rb.steps.map((step, i) => (
-                    <div key={i} className="flex items-start gap-2.5">
-                      <span className="font-mono text-emerald-400 font-bold flex-shrink-0 text-xs">
-                        {i + 1}.
-                      </span>
-                      <p className="text-slate-300 leading-relaxed">
-                        {step}
-                      </p>
-                    </div>
+                <div className="p-3 rounded-lg bg-[#0A192F] border border-[#233554] space-y-2">
+                  <div className="text-[10px] font-mono uppercase text-[#00A896] font-bold">BNS 2023 Provisions</div>
+                  {BNS_OPTIONS.map((opt) => (
+                    <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#F8F9FA] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={watchBns.includes(opt.code)}
+                        onChange={() => toggleSection('bnsSections', opt.code, watchBns)}
+                        className="mt-0.5 accent-[#00A896]"
+                      />
+                      <span>{opt.label}</span>
+                    </label>
+                  ))}
+                </div>
+
+                <div className="p-3 rounded-lg bg-[#0A192F] border border-[#233554] space-y-2">
+                  <div className="text-[10px] font-mono uppercase text-[#2E8B57] font-bold">BSA 2023 Admissibility</div>
+                  {BSA_OPTIONS.map((opt) => (
+                    <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#F8F9FA] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={watchBsa.includes(opt.code)}
+                        onChange={() => toggleSection('bsaSections', opt.code, watchBsa)}
+                        className="mt-0.5 accent-[#2E8B57]"
+                      />
+                      <span>{opt.label}</span>
+                    </label>
                   ))}
                 </div>
               </div>
-            </TerminalCard>
-          ))}
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className="w-full py-3 px-5 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#0A192F] text-xs font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
+              >
+                {submitting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" /> Synthesizing Statutory FIR Draft...
+                  </>
+                ) : (
+                  <>
+                    <FileText className="w-4 h-4" /> Generate Statutory FIR Draft &amp; Legal Dossier
+                  </>
+                )}
+              </button>
+            </form>
+          </TerminalCard>
         </div>
-      )}
+
+        {/* Right: Synthesized FIR Draft + PDF / BSA §63 Export */}
+        <div className="xl:col-span-5">
+          <TerminalCard
+            title="Synthesized FIR Complaint & BSA §63 Output"
+            label={firMeta ? firMeta.provider.toUpperCase() : 'STANDBY'}
+            labelColor={firOutput ? 'green' : 'white'}
+          >
+            {!firOutput ? (
+              <div className="py-16 text-center space-y-3">
+                <div className="w-12 h-12 rounded-xl bg-[#0A192F] border border-[#233554] mx-auto flex items-center justify-center text-[#00A896]">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div className="text-sm font-semibold text-[#F8F9FA]">Statutory Dossier Preview</div>
+                <p className="text-xs text-[#8D99AE] max-w-sm mx-auto leading-relaxed">
+                  Complete the mandatory fields marked with <span className="text-[#D64045] font-bold">*</span> and submit to generate a BNSS 2023 / BNS 2023 / IT Act compliant FIR draft and BSA §63 certificate.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <pre className="p-4 rounded-lg bg-[#0A192F] border border-[#233554] text-[11px] font-mono text-[#F8F9FA] whitespace-pre-wrap max-h-[520px] overflow-y-auto leading-relaxed">
+                  {firOutput}
+                </pre>
+
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={handleDownloadFirPdf}
+                    className="px-4 py-2 rounded-lg bg-[#FF9F1C] hover:bg-[#e88e12] text-[#0A192F] text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" /> Download FIR PDF
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleExportBsa63Certificate}
+                    disabled={issuingCert}
+                    className="px-3.5 py-2 rounded-lg bg-[#00A896] hover:bg-[#028a7b] text-[#0A192F] text-xs font-bold flex items-center gap-1.5 disabled:opacity-60 cursor-pointer"
+                  >
+                    <Lock className="w-3.5 h-3.5" />
+                    {issuingCert ? 'Signing...' : 'Export BSA 2023 §63 Cert'}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(firOutput)
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 2000)
+                    }}
+                    className="px-3 py-2 rounded-lg bg-[#0A192F] border border-[#233554] text-[#F8F9FA] text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5 text-[#00A896]" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? 'Copied' : 'Copy'}
+                  </button>
+                </div>
+
+                {certStatus && (
+                  <div className="p-2.5 rounded bg-[#00A896]/10 border border-[#00A896]/30 text-[11px] font-mono text-[#00A896]">
+                    {certStatus}
+                  </div>
+                )}
+
+                <div className="p-3 rounded-lg bg-[#0A192F] border border-[#FF9F1C]/30 flex items-start gap-2 text-[11px] text-[#8D99AE]">
+                  <AlertTriangle className="w-4 h-4 text-[#FF9F1C] shrink-0 mt-0.5" />
+                  <span>
+                    AI-assisted indication — verify all statutory sections, amounts, and transaction references manually before submission to Police or cybercrime.gov.in.
+                  </span>
+                </div>
+              </div>
+            )}
+          </TerminalCard>
+        </div>
+      </div>
     </div>
   )
 }
