@@ -2,16 +2,15 @@
 # 🛡️ TRINETRA // त्रिनेत्र (CyberShield Bharat)
 ### Sovereign Cyber Defense, Statutory Legal Intelligence & Explainable AI Forensics Console
 
-[![Live Deployment](https://img.shields.io/badge/LIVE_DEPLOYMENT-TRINETRA_CONSOLE-FF5A79?style=for-the-badge&logo=vercel&logoColor=white)](https://trinetra-bz1dg7rf4-sribendu-work.vercel.app/)
+[![Live Deployment](https://img.shields.io/badge/LIVE_DEPLOYMENT-TRINETRA_CONSOLE-FF5A79?style=for-the-badge&logo=vercel&logoColor=white)](https://trinetra-eight-sigma.vercel.app/)
 [![Powered By BharatCode AI](https://img.shields.io/badge/AI_ENGINE-BHARATCODE_API_v1-06B6D4?style=for-the-badge)](https://bharatcode.ai)
 [![Models](https://img.shields.io/badge/MODELS-Qwen_3.8_27B_%7C_DeepSeek_V4.1_Flash-10B981?style=for-the-badge)](https://bharatcode.ai)
-[![Legal Alignment](https://img.shields.io/badge/STATUTORY_ENGINE-BNS_2023_%7C_BSA_2023_%7C_DPDP_2023-F59E0B?style=for-the-badge)](https://trinetra-bz1dg7rf4-sribendu-work.vercel.app/incident)
+[![Legal Alignment](https://img.shields.io/badge/STATUTORY_ENGINE-BNS_2023_%7C_BSA_2023_%7C_DPDP_2023-F59E0B?style=for-the-badge)](https://trinetra-eight-sigma.vercel.app/incident)
 
-**🌐 Live Production URL:** [**[https://trinetra-bz1dg7rf4-sribendu-work.vercel.app/](https://trinetra-eight-sigma.vercel.app)](https://trinetra-eight-sigma.vercel.app)**](https://trinetra-bz1dg7rf4-sribendu-work.vercel.app/)
+**🌐 Live Production URL:** [**https://trinetra-eight-sigma.vercel.app/**](https://trinetra-eight-sigma.vercel.app/)
 
 *"Unifying 100% deterministic client-side cryptographic math, stateless BharatCode AI Harness orchestration, automated BNS 2023 police FIR synthesis, and explainable deepfake forensics (CGFD/FADI + Grad-CAM) in one sovereign platform."*
 
-</div>
 
 ---
 
