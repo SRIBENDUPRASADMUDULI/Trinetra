@@ -203,7 +203,7 @@ export default function DevSecPage() {
             <div className="flex flex-wrap items-center gap-3">
               <span><span className="text-slate-500">VULN:</span> <strong className="text-red-400">[{selectedPair.cweId}] {selectedPair.cweName}</strong></span>
               <span><span className="text-slate-500">SEVERITY CVSS:</span> <strong className="text-[#D97706]">{selectedPair.cvssScore}</strong></span>
-              <span><span className="text-slate-500">LANGUAGE:</span> <strong className="text-[#0284C7]">{selectedPair.language.toUpperCase()}</strong></span>
+              <span><span className="text-slate-500">LANGUAGE:</span> <strong className="text-[#059669]">{selectedPair.language.toUpperCase()}</strong></span>
               <span><span className="text-slate-500">CATEGORY:</span> <span className="text-slate-700">{selectedPair.owaspCategory}</span></span>
             </div>
             <StatusBadge label="VERIFIED PATCH AVAILABLE" variant="ok" />
@@ -285,7 +285,7 @@ export default function DevSecPage() {
                 <button
                   onClick={auditCustomCode}
                   disabled={sastLoading || customCode.trim().length < 10}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white font-mono text-xs font-bold rounded-sm cursor-pointer"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-[#ECFDF5]0 disabled:opacity-40 text-white font-mono text-xs font-bold rounded-sm cursor-pointer"
                 >
                   {sastLoading ? '[AUDITING SOURCE CODE...]' : '[RUN LIVE SAST AUDIT]'}
                 </button>
@@ -314,7 +314,7 @@ export default function DevSecPage() {
                   className="py-0.5 px-1 rounded-none"
                   style={{
                     backgroundColor: line.startsWith('+') ? 'rgba(16,185,129,0.1)' : line.startsWith('-') ? 'rgba(239,68,68,0.1)' : 'transparent',
-                    color: line.startsWith('+') ? '#4ade80' : line.startsWith('-') ? '#f87171' : line.startsWith('@') ? '#38bdf8' : '#64748b',
+                    color: line.startsWith('+') ? '#4ade80' : line.startsWith('-') ? '#f87171' : line.startsWith('@') ? '#34D399' : '#6B726D',
                   }}
                 >
                   {line}

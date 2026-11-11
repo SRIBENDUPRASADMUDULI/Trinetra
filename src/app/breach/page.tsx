@@ -139,12 +139,12 @@ export default function BreachPage() {
         </div>
 
         <div className="p-4 rounded-2xl glass-card space-y-1.5">
-          <div className="flex items-center gap-2 text-[#0284C7] font-mono font-bold text-xs uppercase">
+          <div className="flex items-center gap-2 text-[#059669] font-mono font-bold text-xs uppercase">
             <span className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center text-[10px]">2</span>
             <span>k-Anonymity Slice</span>
           </div>
           <p className="text-slate-600 leading-relaxed">
-            Only the first 5 characters (e.g. <code className="text-[#0369A1] font-mono font-semibold">CBFDA</code>) are queried. Millions of passwords share the exact same prefix.
+            Only the first 5 characters (e.g. <code className="text-[#047857] font-mono font-semibold">CBFDA</code>) are queried. Millions of passwords share the exact same prefix.
           </p>
         </div>
 

@@ -131,7 +131,7 @@ export function ScanResultCard({
             type="button"
             onClick={onSaveReport}
             disabled={savingReport}
-            className="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
+            className="px-4 py-2 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-semibold flex items-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
             {savingReport ? 'Saving PDF...' : 'Save Evidence Report (PDF)'}
@@ -144,7 +144,7 @@ export function ScanResultCard({
             onClick={onExportJson}
             className="px-3.5 py-2 rounded-lg bg-[#FFFFFF] hover:bg-[#F1F5F9] border border-[#E5E7EB] text-[#1A1A1A] text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
           >
-            <FileJson className="w-3.5 h-3.5 text-[#2563EB]" />
+            <FileJson className="w-3.5 h-3.5 text-[#059669]" />
             Download JSON
           </button>
         )}
@@ -164,7 +164,7 @@ export function ScanResultCard({
           <button
             type="button"
             onClick={() => setShowDetails((v) => !v)}
-            className="ml-auto px-3 py-1.5 rounded-lg text-xs font-medium text-[#2563EB] hover:bg-[#EFF6FF] flex items-center gap-1 cursor-pointer"
+            className="ml-auto px-3 py-1.5 rounded-lg text-xs font-medium text-[#059669] hover:bg-[#ECFDF5] flex items-center gap-1 cursor-pointer"
           >
             <span>{showDetails ? 'Hide Technical Details' : 'Show Technical Details'}</span>
             {showDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}

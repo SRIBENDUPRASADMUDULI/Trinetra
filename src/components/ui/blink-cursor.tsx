@@ -14,7 +14,7 @@ const colorMap: Record<CursorColor, string> = {
   red:   '#ef4444',
   amber: '#f59e0b',
   cyan:  '#06b6d4',
-  white: '#e2e8f0',
+  white: '#E5E2DA',
 }
 
 export function BlinkCursor({ char = '█', color = 'green', className = '' }: BlinkCursorProps) {

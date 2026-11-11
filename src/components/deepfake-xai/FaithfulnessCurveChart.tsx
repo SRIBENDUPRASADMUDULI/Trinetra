@@ -90,7 +90,7 @@ export function FaithfulnessCurveChart({
                   x={padL - 8}
                   y={y + 3}
                   textAnchor="end"
-                  fill="#64748B"
+                  fill="#6B726D"
                   fontSize="10"
                   fontFamily="monospace"
                 >
@@ -139,7 +139,7 @@ export function FaithfulnessCurveChart({
                 x={x}
                 y={padT + plotH + 16}
                 textAnchor="middle"
-                fill="#64748B"
+                fill="#6B726D"
                 fontSize="10"
                 fontFamily="monospace"
               >

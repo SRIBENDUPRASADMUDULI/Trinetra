@@ -14,7 +14,7 @@ const variantStyles: Record<BadgeVariant, { pill: string; dot: string }> = {
   ok:       { pill: 'text-[#15803D] bg-[#F0FDF4] border-[#BBF7D0]', dot: 'bg-[#15803D]' },
   critical: { pill: 'text-[#DC2626] bg-[#FEF2F2] border-[#FECACA]', dot: 'bg-[#DC2626]' },
   warning:  { pill: 'text-[#D97706] bg-[#FFFBEB] border-[#FDE68A]', dot: 'bg-[#D97706]' },
-  info:     { pill: 'text-[#2563EB] bg-[#EFF6FF] border-[#BFDBFE]', dot: 'bg-[#2563EB]' },
+  info:     { pill: 'text-[#059669] bg-[#ECFDF5] border-[#A7F3D0]', dot: 'bg-[#059669]' },
   neutral:  { pill: 'text-[#4B5563] bg-[#F3F4F6] border-[#E5E7EB]', dot: 'bg-[#6B7280]' },
 }
 

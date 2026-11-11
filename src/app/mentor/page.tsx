@@ -152,20 +152,20 @@ export default function MentorPage() {
   }
 
   return (
-    <div className="flex h-[calc(100vh-140px)] min-h-[600px] overflow-hidden bg-white rounded-xl border border-[#E5E7EB] shadow-xs">
+    <div className="flex h-[calc(100vh-140px)] min-h-[600px] overflow-hidden bg-[#FFFFFF] rounded-xl border border-[#E0DDD5] shadow-xs">
       {/* Main Chat Column */}
       <div className="flex-1 flex flex-col min-w-0 border-r border-slate-200">
         {/* Terminal Header */}
-        <div className="px-6 py-4 flex items-center justify-between flex-shrink-0 bg-white backdrop-blur-xl border-b border-slate-200">
+        <div className="px-6 py-4 flex items-center justify-between flex-shrink-0 bg-[#1E2420] border-b border-[#323D36] text-white">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB]">
+            <div className="w-9 h-9 rounded-xl bg-[#2A332D] border border-[#3E4B42] flex items-center justify-center text-[#F59E0B]">
               <Eye size={18} />
             </div>
             <div>
-              <h1 className="text-sm font-bold text-slate-900 tracking-wide">
+              <h1 className="text-sm font-bold text-white tracking-wide">
                 AI Cyber Safety Assistant
               </h1>
-              <p className="text-[11px] text-slate-600">
+              <p className="text-[11px] text-[#CBD5E1]">
                 Ask any cybersecurity or online scam question in plain language
               </p>
             </div>
@@ -175,7 +175,7 @@ export default function MentorPage() {
             <button
               onClick={handlePingBharatCode}
               disabled={pinging}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold text-[#2563EB] hover:bg-[#DBEAFE] rounded-full bg-[#EFF6FF] border border-[#BFDBFE] transition-colors cursor-pointer disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-semibold text-[#A7F3D0] hover:bg-[#344038] rounded-full bg-[#2A332D] border border-[#3E4B42] transition-colors cursor-pointer disabled:opacity-50"
               title="Verify BharatCode Gateway Connectivity"
             >
               <Activity size={12} className={pinging ? 'animate-spin' : ''} />
@@ -183,7 +183,7 @@ export default function MentorPage() {
             </button>
             <button
               onClick={handleReset}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 rounded-full bg-slate-50 hover:bg-slate-50 border border-slate-200 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-[#E5E2DA] hover:text-white rounded-full bg-[#2A332D] hover:bg-[#344038] border border-[#3E4B42] transition-colors cursor-pointer"
               title="Reset conversation"
             >
               <RotateCcw size={12} />
@@ -195,7 +195,7 @@ export default function MentorPage() {
               whoShouldUse="Anyone who has a security doubt or wants clear advice without technical jargon."
               whatResultMeans="Gives practical defense steps. Always verify legal sections or banking instructions with official sources."
             />
-            <span className="text-[11px] font-semibold px-3 py-1 rounded-full bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0] flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold px-3 py-1 rounded-full bg-[#064E3B] text-[#A7F3D0] border border-[#10B981]/40 flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               STREAMING READY
             </span>
@@ -205,7 +205,7 @@ export default function MentorPage() {
         {/* Message Log Transcript */}
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#F8F9FA]"
+          className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#F2F1EC]"
         >
           {messages.map(msg => (
             <div
@@ -214,7 +214,7 @@ export default function MentorPage() {
             >
               <div className={`w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center text-xs font-bold ${
                 msg.role === 'agent'
-                  ? 'bg-indigo-500/20 text-indigo-700 border border-indigo-500/30'
+                  ? 'bg-[#ECFDF5]0/20 text-[#047857] border border-indigo-500/30'
                   : 'bg-slate-50 text-slate-900 border border-slate-200'
               }`}>
                 {msg.role === 'agent' ? <Eye size={16} /> : 'OP'}
@@ -238,7 +238,7 @@ export default function MentorPage() {
                 <div className={`p-4 rounded-2xl text-xs leading-relaxed ${
                   msg.role === 'agent'
                     ? 'glass-card text-slate-800 border-slate-200 whitespace-pre-wrap'
-                    : 'bg-[#2563EB] text-white font-medium shadow-xs ml-auto'
+                    : 'bg-[#1E2420] text-white font-medium shadow-xs ml-auto'
                 }`}>
                   {msg.content}
                 </div>
@@ -255,7 +255,7 @@ export default function MentorPage() {
 
           {loading && (
             <div className="flex gap-4 max-w-xl">
-              <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-700 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-[#ECFDF5]0/20 text-[#047857] border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
                 <Eye size={16} />
               </div>
               <div className="p-4 rounded-2xl glass-card text-xs text-slate-600 space-y-2 flex-1 animate-pulse">
@@ -306,7 +306,7 @@ export default function MentorPage() {
             <button
               onClick={() => sendMessage(input)}
               disabled={loading || !input.trim()}
-              className="p-2 rounded-full text-white bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-40 shadow-xs transition-colors cursor-pointer"
+              className="p-2 rounded-full text-white bg-[#059669] hover:bg-[#047857] disabled:opacity-40 shadow-xs transition-colors cursor-pointer"
             >
               <Send size={14} />
             </button>
@@ -314,49 +314,45 @@ export default function MentorPage() {
         </div>
       </div>
 
-      {/* Right Intelligence Sidebar */}
-      <div className="w-80 bg-[#F8F9FA] border-l border-[#E5E7EB] p-5 space-y-4 overflow-y-auto hidden xl:block text-xs">
-        <div className="p-4 rounded-2xl glass-card space-y-3">
-          <div className="flex items-center gap-2 text-[#2563EB] font-bold">
-            <Cpu size={16} />
-            <span>AI Engine Specifications</span>
+      {/* Right Plain-English Info Sidebar */}
+      <div className="w-80 bg-[#F2F1EC] border-l border-[#E0DDD5] p-5 space-y-4 overflow-y-auto hidden xl:block text-xs">
+        <div className="p-4 rounded-xl bg-white border border-[#E0DDD5] space-y-3">
+          <div className="flex items-center gap-2 text-[#1E2420] font-bold">
+            <Cpu size={16} className="text-[#059669]" />
+            <span>Assistant Overview</span>
           </div>
-          <div className="space-y-2 text-slate-700">
-            <div className="flex justify-between border-b border-slate-200 pb-1.5">
-              <span className="text-slate-500">Engine:</span>
-              <strong className="text-slate-900 font-mono">TRINETRA SecOps Core</strong>
+          <div className="space-y-2 text-[#334155]">
+            <div className="flex justify-between border-b border-[#E5E2DA] pb-1.5">
+              <span className="text-[#6B726D]">Engine:</span>
+              <strong className="text-[#1E2420]">BharatCode Safety AI</strong>
             </div>
-            <div className="flex justify-between border-b border-slate-200 pb-1.5">
-              <span className="text-slate-500">Architecture:</span>
-              <strong className="text-slate-900">Hybrid Transformer-AST</strong>
-            </div>
-            <div className="flex justify-between border-b border-slate-200 pb-1.5">
-              <span className="text-slate-500">Latency:</span>
-              <strong className="text-[#15803D] font-mono">&lt; 1,200 ms</strong>
+            <div className="flex justify-between border-b border-[#E5E2DA] pb-1.5">
+              <span className="text-[#6B726D]">Topics:</span>
+              <strong className="text-[#1E2420]">Scam Help &amp; Indian Law</strong>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Domain:</span>
-              <strong className="text-slate-800">SecOps & Indian Law</strong>
+              <span className="text-[#6B726D]">Chat History:</span>
+              <strong className="text-[#15803D]">Private (Not Saved)</strong>
             </div>
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl glass-card space-y-3">
-          <span className="font-bold text-slate-800 block border-b border-slate-200 pb-1.5">
-            Knowledge Capabilities
+        <div className="p-4 rounded-xl bg-white border border-[#E0DDD5] space-y-3">
+          <span className="font-bold text-[#1E2420] block border-b border-[#E5E2DA] pb-1.5">
+            What You Can Ask
           </span>
-          <ul className="space-y-2 text-slate-600 text-xs">
-            <li>• <strong>Bharatiya Nyaya Sanhita (BNS 2023)</strong> criminal sections.</li>
-            <li>• <strong>Information Technology Act 2000</strong> (§43, §66C, §66D).</li>
-            <li>• <strong>CERT-In 2022 Directions</strong> & 6-hour disclosure rule.</li>
-            <li>• <strong>MITRE ATT&CK v14</strong> enterprise techniques.</li>
+          <ul className="space-y-2.5 text-[#334155] text-xs leading-relaxed">
+            <li>• <strong>Online Fraud &amp; Money Loss:</strong> Urgent steps to freeze money via helpline 1930.</li>
+            <li>• <strong>Indian Cyber Laws (Simple Guide):</strong> How hacking, OTP theft, and fake profile laws (IT Act &amp; BNS 2023) protect you.</li>
+            <li>• <strong>6-Hour Cyber Reporting Rule:</strong> How fast security teams must report attacks.</li>
+            <li>• <strong>Everyday Safety Tips:</strong> Securing WhatsApp, UPI, Wi-Fi, and leaked passwords.</li>
           </ul>
         </div>
 
-        <div className="p-4 rounded-xl bg-[#F0FDF4] border border-[#BBF7D0] text-[#166534] space-y-1">
-          <span className="font-bold text-emerald-700 block">Confidentiality Guarantee</span>
-          <p className="text-[11px] text-slate-600 leading-relaxed">
-            Incident queries are processed in an isolated memory buffer and never retained for public model training.
+        <div className="p-4 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] space-y-1">
+          <span className="font-bold text-[#15803D] block">Privacy Guarantee</span>
+          <p className="text-[11px] text-[#047857] leading-relaxed">
+            Your questions run in a private session (store: false) and are never saved or used to train public AI models.
           </p>
         </div>
       </div>

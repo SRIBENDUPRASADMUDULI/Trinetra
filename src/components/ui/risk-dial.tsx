@@ -72,7 +72,7 @@ export function RiskDial({ value, size = 80 }: RiskDialProps) {
           fontSize={size * 0.11}
           fontFamily="'JetBrains Mono', monospace"
           fontWeight="400"
-          fill="#475569"
+          fill="#5C645E"
         >
           /100
         </text>

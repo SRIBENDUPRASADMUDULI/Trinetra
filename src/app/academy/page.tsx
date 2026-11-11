@@ -221,7 +221,7 @@ export default function AcademyPage() {
       <div className="p-5 sm:p-6 rounded-2xl bg-white border border-slate-200 relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5 shadow-xl">
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-700 font-mono text-[11px] font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#ECFDF5]0/10 border border-indigo-500/25 text-[#047857] font-mono text-[11px] font-bold">
               01 // CYBER RANGE & ACADEMY
             </span>
             <span className="text-slate-600 text-xs">•</span>
@@ -358,7 +358,7 @@ export default function AcademyPage() {
 
                   <Link
                     href="/video-gen"
-                    className="font-mono text-xs font-semibold px-3 py-1.5 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-700 border border-indigo-500/30 flex items-center gap-1.5 transition-all"
+                    className="font-mono text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#ECFDF5]0/15 hover:bg-[#ECFDF5]0/25 text-[#047857] border border-indigo-500/30 flex items-center gap-1.5 transition-all"
                   >
                     <span>LAUNCH VIDEO STUDIO</span>
                     <ArrowRight size={12} />
@@ -382,12 +382,12 @@ export default function AcademyPage() {
                       onClick={() => handleSelectChapter(c.ch)}
                       className={`p-2.5 rounded-lg border transition-all cursor-pointer flex items-center justify-between ${
                         activeChapter === c.ch
-                          ? 'bg-indigo-50 border-indigo-500/40 text-indigo-800'
+                          ? 'bg-[#ECFDF5] border-indigo-500/40 text-[#065F46]'
                           : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-800 hover:bg-slate-50'
                       }`}
                     >
                       <span className="flex items-center gap-2">
-                        <span className={activeChapter === c.ch ? 'text-[#2563EB]' : 'text-slate-600'}>
+                        <span className={activeChapter === c.ch ? 'text-[#059669]' : 'text-slate-600'}>
                           ▶
                         </span>
                         <span>{c.title}</span>
@@ -421,7 +421,7 @@ export default function AcademyPage() {
               <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
                 <div className="p-2 rounded bg-slate-50 border border-slate-200">
                   <span className="text-slate-500 block">L2/L3 HEADER</span>
-                  <span className="text-indigo-700">IPv4 · 192.168.1.105:8080</span>
+                  <span className="text-[#047857]">IPv4 · 192.168.1.105:8080</span>
                 </div>
                 <div className="p-2 rounded bg-slate-50 border border-slate-200">
                   <span className="text-slate-500 block">VULNERABILITY</span>
@@ -438,7 +438,7 @@ export default function AcademyPage() {
                 {HEX_DUMP_DATA.map((row, idx) => (
                   <div key={idx} className="flex justify-between hover:bg-slate-50 px-1 rounded transition-colors">
                     <span className="text-slate-500 mr-2">{row.offset}</span>
-                    <span className="text-indigo-700 font-medium tracking-wider mr-4">
+                    <span className="text-[#047857] font-medium tracking-wider mr-4">
                       {row.hex}
                     </span>
                     <span className="text-[#15803D] font-bold tracking-tight">
@@ -467,7 +467,7 @@ export default function AcademyPage() {
                   </button>
                   <button
                     onClick={() => setActivePanel('phishing')}
-                    className="p-2 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-blue-700 border border-sky-500/30 text-center font-bold text-xs transition-all cursor-pointer"
+                    className="p-2 rounded-lg bg-[#F2F1EC]0/10 hover:bg-[#F2F1EC]0/20 text-[#047857] border border-sky-500/30 text-center font-bold text-xs transition-all cursor-pointer"
                   >
                     [SANDBOX ANALYSIS]
                   </button>
@@ -484,7 +484,7 @@ export default function AcademyPage() {
           <div ref={termRef} className="overflow-y-auto p-4 font-mono text-xs space-y-1" style={{ height: '360px', backgroundColor: '#020304' }}>
             {termHistory.map((line, i) => (
               <pre key={i} className="whitespace-pre-wrap leading-relaxed" style={{
-                color: line.type === 'input' ? '#e2e8f0' : line.type === 'error' ? '#ef4444' : line.type === 'system' ? '#06b6d4' : '#22c55e',
+                color: line.type === 'input' ? '#E5E2DA' : line.type === 'error' ? '#ef4444' : line.type === 'system' ? '#06b6d4' : '#22c55e',
               }}>
                 {line.content}
               </pre>
@@ -495,7 +495,7 @@ export default function AcademyPage() {
             <input value={termInput} onChange={e => setTermInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') submitCommand(termInput) }}
               className="flex-1 font-mono text-xs bg-transparent outline-none"
-              style={{ color: '#e2e8f0' }}
+              style={{ color: '#E5E2DA' }}
               placeholder="Type command..." autoFocus />
             <BlinkCursor />
           </div>

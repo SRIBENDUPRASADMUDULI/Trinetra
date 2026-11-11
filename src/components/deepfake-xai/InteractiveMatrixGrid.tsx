@@ -19,8 +19,8 @@ function getCellStyle(metric: 'CGFD' | 'FADI', value: number): string {
   }
   // FADI
   if (value >= 0.5) return 'bg-rose-500/20 border-rose-500/40 text-rose-200'
-  if (value <= -0.5) return 'bg-sky-500/20 border-sky-500/40 text-sky-200'
-  return 'bg-indigo-500/15 border-indigo-500/30 text-indigo-200'
+  if (value <= -0.5) return 'bg-[#F2F1EC]0/20 border-sky-500/40 text-sky-200'
+  return 'bg-[#ECFDF5]0/15 border-indigo-500/30 text-indigo-200'
 }
 
 export function InteractiveMatrixGrid({

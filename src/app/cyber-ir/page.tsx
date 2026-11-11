@@ -205,7 +205,7 @@ export default function CyberIRPage() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
           <div className="space-y-2 max-w-3xl">
             <div className="flex items-center gap-2.5">
-              <span className="px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/25 text-indigo-700 font-mono text-[11px] font-bold flex items-center gap-1.5">
+              <span className="px-2.5 py-1 rounded-full bg-[#ECFDF5]0/10 border border-indigo-500/25 text-[#047857] font-mono text-[11px] font-bold flex items-center gap-1.5">
                 <Cpu size={13} />
                 CYBER-IR ENGINE
               </span>
@@ -283,7 +283,7 @@ export default function CyberIRPage() {
           {/* Preset Selectors */}
           <div className="p-3.5 bg-slate-100 border border-slate-200 rounded-sm space-y-2">
             <span className="text-xs font-mono font-bold text-slate-700 flex items-center gap-1.5">
-              <Sparkles size={14} className="text-[#0284C7]" />
+              <Sparkles size={14} className="text-[#059669]" />
               LOAD PRESET CYBER INCIDENT SCENARIOS (1-CLICK TEST):
             </span>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -293,7 +293,7 @@ export default function CyberIRPage() {
                   onClick={() => { setFirForm(p.data); setFirResult(null) }}
                   className="text-left p-3.5 rounded-xl bg-slate-50 hover:bg-slate-50 border border-slate-200 hover:border-indigo-500/40 transition-all text-xs group"
                 >
-                  <p className="font-bold text-slate-800 group-hover:text-indigo-700 transition-colors mb-1">{p.title}</p>
+                  <p className="font-bold text-slate-800 group-hover:text-[#047857] transition-colors mb-1">{p.title}</p>
                   <p className="text-[11px] text-slate-500 font-mono line-clamp-1">{p.data.incident_type}</p>
                 </button>
               ))}
@@ -307,7 +307,7 @@ export default function CyberIRPage() {
                 <div className="space-y-4 text-xs">
                   {/* Complainant Details */}
                   <div className="space-y-2.5 pb-4 border-b border-slate-200">
-                    <span className="text-xs font-bold text-[#2563EB] block tracking-wider uppercase">I. Complainant Particulars</span>
+                    <span className="text-xs font-bold text-[#059669] block tracking-wider uppercase">I. Complainant Particulars</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-slate-600 block mb-1 font-medium">Victim Name *</label>
@@ -341,7 +341,7 @@ export default function CyberIRPage() {
 
                   {/* Incident Specs */}
                   <div className="space-y-2.5 pb-4 border-b border-slate-200">
-                    <span className="text-xs font-bold text-[#2563EB] block tracking-wider uppercase">II. Incident Details</span>
+                    <span className="text-xs font-bold text-[#059669] block tracking-wider uppercase">II. Incident Details</span>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
                         <label className="text-slate-600 block mb-1 font-medium">Type *</label>
@@ -391,7 +391,7 @@ export default function CyberIRPage() {
 
                   {/* Financial Particulars */}
                   <div className="space-y-2.5">
-                    <span className="text-xs font-bold text-[#2563EB] block tracking-wider uppercase">III. Financial Loss Details</span>
+                    <span className="text-xs font-bold text-[#059669] block tracking-wider uppercase">III. Financial Loss Details</span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-slate-600 block mb-1 font-medium">Amount Lost (INR ₹)</label>
@@ -482,8 +482,8 @@ export default function CyberIRPage() {
                   }
                 >
                   <div className="p-4 bg-slate-50 space-y-4 max-h-[600px] overflow-y-auto font-mono text-xs">
-                    <div className="p-3 bg-sky-50 border border-slate-200 rounded-sm flex items-center justify-between">
-                      <span className="text-[#0369A1] font-bold">FIR Reference: {firResult.firNumber}</span>
+                    <div className="p-3 bg-[#F2F1EC] border border-slate-200 rounded-sm flex items-center justify-between">
+                      <span className="text-[#047857] font-bold">FIR Reference: {firResult.firNumber}</span>
                       <span className="text-slate-600">CERT-In Ref: {firResult.certInRef}</span>
                     </div>
 
@@ -501,7 +501,7 @@ export default function CyberIRPage() {
                         ))}
                         {firResult.fir_data?.legal_provisions?.it_act_sections?.map((s: any, i: number) => (
                           <div key={i} className="flex gap-2">
-                            <span className="text-[#0284C7] font-semibold">{s.section}:</span>
+                            <span className="text-[#059669] font-semibold">{s.section}:</span>
                             <span className="text-slate-600">{s.offence}</span>
                           </div>
                         ))}
@@ -701,7 +701,7 @@ export default function CyberIRPage() {
               </p>
 
               <div className="p-3 bg-black rounded-sm border border-slate-200 space-y-1">
-                <span className="text-[#0284C7] font-bold block">// cURL Request</span>
+                <span className="text-[#059669] font-bold block">// cURL Request</span>
                 <pre className="text-slate-600 overflow-x-auto text-[11px] leading-relaxed">
 {`curl -X POST http://localhost:3000/api/fir/generate \\
   -H "Content-Type: application/json" \\

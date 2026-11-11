@@ -50,17 +50,16 @@ export function TopBar() {
   return (
     <>
       <header
-        className="sticky top-0 z-40 w-full bg-[#FFFFFF] border-b border-[#E5E7EB]"
+        className="sticky top-0 z-40 w-full bg-[#1E2420] border-b border-[#323D36] text-white"
         aria-label="Top Navigation Bar"
       >
         <div className="h-16 flex items-center justify-between px-4 sm:px-6 gap-3">
-          {/* Mobile Brand Mark + Primary Page Links */}
           <div className="flex items-center gap-3 min-w-0 flex-1">
             <Link href="/" className="flex lg:hidden items-center gap-2 shrink-0">
-              <div className="w-8 h-8 rounded-lg bg-[#2563EB] text-white flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-[#D97706] text-white flex items-center justify-center">
                 <Shield size={16} />
               </div>
-              <span className="font-bold text-sm text-[#1A1A1A]">TRINETRA</span>
+              <span className="font-bold text-sm text-white">TRINETRA</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1 overflow-x-auto no-scrollbar">
@@ -76,8 +75,8 @@ export function TopBar() {
                     href={tab.path}
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
                       isActive
-                        ? 'bg-[#EFF6FF] text-[#2563EB] font-semibold'
-                        : 'text-[#4B5563] hover:text-[#1A1A1A] hover:bg-[#F3F4F6]'
+                        ? 'bg-[#2A332D] text-[#F59E0B] font-semibold border border-[#3E4B42]'
+                        : 'text-[#CBD5E1] hover:text-white hover:bg-[#2A332D]/70'
                     }`}
                   >
                     <span className={lang === 'hi' ? 'font-hindi' : ''}>
@@ -89,14 +88,14 @@ export function TopBar() {
             </nav>
           </div>
 
-          {/* Right Controls: Search + AI Harness + Language Toggle + Help + File Complaint */}
+          {/* Right Controls */}
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setPaletteOpen(true)}
-              className="flex items-center gap-2 h-9 px-3 rounded-lg bg-[#F8F9FA] hover:bg-[#F1F5F9] border border-[#E5E7EB] text-[#6B7280] text-xs transition-colors cursor-pointer"
+              className="flex items-center gap-2 h-9 px-3 rounded-lg bg-[#2A332D] hover:bg-[#344038] border border-[#3E4B42] text-[#E5E2DA] text-xs transition-colors cursor-pointer"
               title="Search tools"
             >
-              <Search size={14} className="text-[#6B7280]" />
+              <Search size={14} className="text-[#94A3B8]" />
               <span className="hidden sm:inline">{t('Search tools', 'टूल खोजें')}</span>
             </button>
 
@@ -104,26 +103,26 @@ export function TopBar() {
 
             <button
               onClick={toggleLang}
-              className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E5E7EB] text-xs font-semibold text-[#1A1A1A] cursor-pointer transition-colors"
+              className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-lg bg-[#2A332D] hover:bg-[#344038] border border-[#3E4B42] text-xs font-semibold text-white cursor-pointer transition-colors"
               title="Switch Language (English / Hindi)"
             >
-              <Languages size={14} className="text-[#2563EB]" />
-              <span className={lang === 'en' ? 'text-[#2563EB]' : 'text-[#6B7280]'}>EN</span>
-              <span className="text-[#D1D5DB]">|</span>
-              <span className={lang === 'hi' ? 'text-[#2563EB]' : 'text-[#6B7280]'}>हिन्दी</span>
+              <Languages size={14} className="text-[#F59E0B]" />
+              <span className={lang === 'en' ? 'text-[#F59E0B]' : 'text-[#94A3B8]'}>EN</span>
+              <span className="text-[#5C645E]">|</span>
+              <span className={lang === 'hi' ? 'text-[#F59E0B]' : 'text-[#94A3B8]'}>हिन्दी</span>
             </button>
 
             <button
               onClick={() => setShowHelp(true)}
-              className="hidden sm:flex items-center gap-1.5 h-9 px-3 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E5E7EB] text-xs font-medium text-[#4B5563] hover:text-[#1A1A1A] transition-colors cursor-pointer"
+              className="hidden sm:flex items-center gap-1.5 h-9 px-3 rounded-lg bg-[#2A332D] hover:bg-[#344038] border border-[#3E4B42] text-xs font-medium text-[#E5E2DA] hover:text-white transition-colors cursor-pointer"
             >
-              <HelpCircle size={14} className="text-[#2563EB]" />
+              <HelpCircle size={14} className="text-[#34D399]" />
               <span>{t('Help', 'सहायता')}</span>
             </button>
 
             <Link
               href="/incident"
-              className="h-9 px-3.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold text-xs flex items-center gap-1.5 transition-colors shrink-0"
+              className="h-9 px-3.5 rounded-lg bg-[#D97706] hover:bg-[#B45309] text-white font-semibold text-xs flex items-center gap-1.5 transition-colors shrink-0 shadow-xs"
             >
               <FileText size={14} />
               <span className="hidden sm:inline">{t('File Complaint', 'शिकायत दर्ज करें')}</span>
@@ -142,38 +141,38 @@ export function TopBar() {
           onClick={() => setShowHelp(false)}
         >
           <div
-            className="relative w-full max-w-xl rounded-xl bg-[#FFFFFF] border border-[#E5E7EB] shadow-xl overflow-hidden text-[#1A1A1A]"
+            className="relative w-full max-w-xl rounded-xl bg-[#FFFFFF] border border-[#E0DDD5] shadow-xl overflow-hidden text-[#1C201D]"
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between p-4 border-b border-[#E5E7EB] bg-[#F8F9FA]">
+            <div className="flex items-center justify-between p-4 border-b border-[#E0DDD5] bg-[#F2F1EC]">
               <div className="flex items-center gap-2.5">
-                <Shield size={18} className="text-[#2563EB]" />
-                <h3 className="text-sm font-bold text-[#1A1A1A]">
+                <Shield size={18} className="text-[#1E2420]" />
+                <h3 className="text-sm font-bold text-[#1E2420]">
                   How to Use TRINETRA
                 </h3>
               </div>
               <button
                 onClick={() => setShowHelp(false)}
                 aria-label="Close help"
-                className="text-[#6B7280] hover:text-[#1A1A1A] p-1 rounded-lg hover:bg-[#E5E7EB]/60 cursor-pointer"
+                className="text-[#6B726D] hover:text-[#1C201D] p-1 rounded-lg hover:bg-[#E5E2DA] cursor-pointer"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <div className="p-5 space-y-3 text-xs text-[#4B5563] leading-relaxed">
+            <div className="p-5 space-y-3 text-xs text-[#5C645E] leading-relaxed">
               <p>
-                <strong className="text-[#1A1A1A]">1. Check Suspicious Messages:</strong> Go to{' '}
+                <strong className="text-[#1C201D]">1. Check Suspicious Messages:</strong> Go to{' '}
                 <strong>Message Checker</strong>, paste any strange SMS or WhatsApp link, and click{' '}
                 <strong>Check Now</strong>.
               </p>
               <p>
-                <strong className="text-[#1A1A1A]">2. Lost Money or Hacked?</strong> Dial{' '}
+                <strong className="text-[#1C201D]">2. Lost Money or Hacked?</strong> Dial{' '}
                 <strong className="text-[#DC2626]">1930</strong> immediately and use{' '}
                 <strong>File Complaint</strong> to download a formal complaint letter for Indian Police.
               </p>
               <p>
-                <strong className="text-[#1A1A1A]">3. Your Privacy is Safe:</strong> Passwords, photos, and ID numbers are checked locally in your browser or automatically masked before reaching the BharatCode AI assistant.
+                <strong className="text-[#1C201D]">3. Your Privacy is Safe:</strong> Passwords, photos, and ID numbers are checked locally in your browser or automatically masked before reaching BharatCode AI.
               </p>
               <div className="pt-2 flex justify-end">
                 <a

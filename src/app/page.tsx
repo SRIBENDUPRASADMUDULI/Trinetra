@@ -154,7 +154,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Friendly Hero Overview */}
-      <section className="rounded-xl bg-[#FFFFFF] border border-[#E5E7EB] p-6 shadow-xs">
+      <section className="rounded-xl bg-[#FFFFFF] border border-[#E0DDD5] p-6 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
@@ -170,7 +170,7 @@ export default function DashboardPage() {
               />
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1E2420] tracking-tight">
               {t(
                 'Stay Safe Online: Check Scams, Verify Files & Get Help',
                 'ऑनलाइन सुरक्षित रहें: धोखाधड़ी जांचें, फ़ाइल सत्यापित करें और सहायता पाएं'
@@ -187,23 +187,23 @@ export default function DashboardPage() {
             <div className="flex flex-wrap items-center gap-3 pt-1">
               <Link
                 href="/nlp"
-                className="px-4 py-2.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold flex items-center gap-2 transition-colors"
+                className="px-4 py-2.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-semibold flex items-center gap-2 transition-colors"
               >
                 <MessageSquare className="w-4 h-4" />
                 {t('Check a Suspicious Message', 'संदेश जांचें')}
               </Link>
               <Link
                 href="/incident"
-                className="px-4 py-2.5 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E5E7EB] text-[#1A1A1A] text-xs font-semibold flex items-center gap-2 transition-colors"
+                className="px-4 py-2.5 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E0DDD5] text-[#1E2420] text-xs font-semibold flex items-center gap-2 transition-colors"
               >
                 <FileText className="w-4 h-4 text-[#DC2626]" />
                 {t('File Police Complaint', 'पुलिस शिकायत दर्ज करें')}
               </Link>
               <Link
                 href="/mentor"
-                className="px-4 py-2.5 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E5E7EB] text-[#1A1A1A] text-xs font-semibold flex items-center gap-2 transition-colors"
+                className="px-4 py-2.5 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E0DDD5] text-[#1E2420] text-xs font-semibold flex items-center gap-2 transition-colors"
               >
-                <Bot className="w-4 h-4 text-[#2563EB]" />
+                <Bot className="w-4 h-4 text-[#059669]" />
                 {t('Ask AI Assistant', 'एआई सहायक से पूछें')}
               </Link>
             </div>
@@ -226,13 +226,13 @@ export default function DashboardPage() {
               </div>
             </a>
 
-            <div className="p-4 rounded-xl bg-[#F8F9FA] border border-[#E5E7EB] flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] text-[#2563EB] flex items-center justify-center shrink-0">
+            <div className="p-4 rounded-xl bg-[#F2F1EC] border border-[#E0DDD5] flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] text-[#059669] flex items-center justify-center shrink-0">
                 <Cpu className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-bold text-[#1A1A1A]">BharatCode AI Gateway</div>
-                <div className="text-[11px] text-[#6B7280] truncate">
+                <div className="text-xs font-bold text-[#1E2420]">BharatCode AI Gateway</div>
+                <div className="text-[11px] text-[#5C645E] truncate">
                   {telemetry && telemetry.totalCalls > 0
                     ? `${telemetry.totalCalls} live checks · ${telemetry.latencyMs}ms`
                     : 'Ready · Privacy shield active'}
@@ -247,19 +247,19 @@ export default function DashboardPage() {
       <BharatCodeShowcase />
 
       {/* Common Current Scams in Plain Language */}
-      <section className="rounded-xl bg-[#FFFFFF] border border-[#E5E7EB] p-5 sm:p-6 space-y-4">
+      <section className="rounded-xl bg-[#FFFFFF] border border-[#E0DDD5] p-5 sm:p-6 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 className="text-base font-bold text-[#1A1A1A]">
+            <h2 className="text-base font-bold text-[#1E2420]">
               {t('Common Scams to Watch Out For', 'सावधान रहें: आम ऑनलाइन धोखाधड़ी')}
             </h2>
-            <p className="text-xs text-[#6B7280]">
+            <p className="text-xs text-[#5C645E]">
               Recent fraud tricks reported across banking, traffic challans, and social media.
             </p>
           </div>
           <Link
             href="/intel"
-            className="text-xs font-semibold text-[#2563EB] hover:underline flex items-center gap-1"
+            className="text-xs font-semibold text-[#059669] hover:underline flex items-center gap-1"
           >
             View All Alerts <ArrowRight className="w-3.5 h-3.5" />
           </Link>
@@ -269,15 +269,15 @@ export default function DashboardPage() {
           {PLAIN_ALERTS.map((item) => (
             <div
               key={item.title}
-              className="p-4 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] space-y-2"
+              className="p-4 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] space-y-2"
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-[11px] font-semibold text-[#DC2626] bg-[#FEF2F2] border border-[#FECACA] px-2 py-0.5 rounded-full flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" /> {item.severity}
                 </span>
-                <span className="text-[11px] text-[#6B7280] font-medium">{item.tag}</span>
+                <span className="text-[11px] text-[#5C645E] font-medium">{item.tag}</span>
               </div>
-              <h3 className="text-xs font-bold text-[#1A1A1A] leading-snug">{item.title}</h3>
+              <h3 className="text-xs font-bold text-[#1E2420] leading-snug">{item.title}</h3>
               <p className="text-xs text-[#4B5563] leading-relaxed">{item.action}</p>
             </div>
           ))}
@@ -288,10 +288,10 @@ export default function DashboardPage() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-[#1A1A1A]">
+            <h2 className="text-lg font-bold text-[#1E2420]">
               {t('All 12 Safety Tools', 'सभी 12 सुरक्षा टूल')}
             </h2>
-            <p className="text-xs text-[#6B7280]">
+            <p className="text-xs text-[#5C645E]">
               Each page handles one clear task in plain language.
             </p>
           </div>
@@ -307,24 +307,24 @@ export default function DashboardPage() {
               <Link
                 key={tool.href}
                 href={tool.href}
-                className="group p-5 rounded-xl bg-[#FFFFFF] border border-[#E5E7EB] hover:border-[#2563EB]/50 hover:shadow-sm transition-all flex flex-col justify-between gap-4"
+                className="group p-5 rounded-xl bg-[#FFFFFF] border border-[#E0DDD5] hover:border-[#059669]/50 hover:shadow-sm transition-all flex flex-col justify-between gap-4"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
-                    <div className="w-9 h-9 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] text-[#2563EB] flex items-center justify-center">
+                    <div className="w-9 h-9 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] text-[#059669] flex items-center justify-center">
                       <Icon className="w-4 h-4" />
                     </div>
-                    <span className="text-[11px] font-medium text-[#6B7280] bg-[#F3F4F6] px-2.5 py-0.5 rounded-full">
+                    <span className="text-[11px] font-medium text-[#5C645E] bg-[#F3F4F6] px-2.5 py-0.5 rounded-full">
                       {tool.badge}
                     </span>
                   </div>
-                  <h3 className="text-sm font-bold text-[#1A1A1A] group-hover:text-[#2563EB] transition-colors">
+                  <h3 className="text-sm font-bold text-[#1E2420] group-hover:text-[#059669] transition-colors">
                     {t(tool.name, tool.hiName)}
                   </h3>
-                  <p className="text-xs text-[#6B7280] leading-relaxed">{tool.summary}</p>
+                  <p className="text-xs text-[#5C645E] leading-relaxed">{tool.summary}</p>
                 </div>
 
-                <div className="pt-3 border-t border-[#E5E7EB] flex items-center justify-between text-xs font-semibold text-[#2563EB]">
+                <div className="pt-3 border-t border-[#E0DDD5] flex items-center justify-between text-xs font-semibold text-[#059669]">
                   <span>Open Tool</span>
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </div>

@@ -137,13 +137,13 @@ export default function ResearchPage() {
       <div className="p-4 sm:p-6 rounded-2xl glass-card flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1.5 max-w-3xl">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-700 font-mono text-[11px] font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-[#ECFDF5]0/15 border border-indigo-500/30 text-[#047857] font-mono text-[11px] font-bold">
               RESEARCH &amp; OPEN-SOURCE ARCHITECTURE
             </span>
             <span className="text-[11px] font-mono text-slate-600">10 PEER-REVIEWED SOURCES · 6 OSS INTEGRATIONS</span>
           </div>
           <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2.5">
-            <BookOpen className="text-[#2563EB] shrink-0" size={26} />
+            <BookOpen className="text-[#059669] shrink-0" size={26} />
             <span>Academic Grounding &amp; Open-Source Stack</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
@@ -173,7 +173,7 @@ export default function ResearchPage() {
             <tbody className="divide-y divide-white/[0.06]">
               {ACADEMIC_PAPERS.map(paper => (
                 <tr key={paper.id} className="hover:bg-slate-50">
-                  <td className="p-3.5 font-mono font-bold text-indigo-700 align-top">{paper.id}</td>
+                  <td className="p-3.5 font-mono font-bold text-[#047857] align-top">{paper.id}</td>
                   <td className="p-3.5 font-semibold text-slate-900 whitespace-nowrap align-top">{paper.domain}</td>
                   <td className="p-3.5 text-slate-700 leading-relaxed align-top max-w-md">
                     <p>{paper.citation}</p>
@@ -181,7 +181,7 @@ export default function ResearchPage() {
                       href={paper.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] font-mono text-[#2563EB] hover:text-blue-700 mt-1"
+                      className="inline-flex items-center gap-1 text-[11px] font-mono text-[#059669] hover:text-[#047857] mt-1"
                     >
                       <span>{paper.doi}</span>
                       <ExternalLink size={11} />
@@ -206,7 +206,7 @@ export default function ResearchPage() {
               className="p-4 rounded-xl bg-slate-50 hover:bg-slate-50 border border-slate-200 hover:border-indigo-500/40 transition-all space-y-2 block group"
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/15 text-indigo-700 border border-indigo-500/30">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#ECFDF5]0/15 text-[#047857] border border-indigo-500/30">
                   {item.category}
                 </span>
                 <ExternalLink size={13} className="text-slate-500 group-hover:text-slate-900 shrink-0" />
@@ -224,7 +224,7 @@ export default function ResearchPage() {
 
       <div className="p-4 rounded-2xl glass-card flex flex-wrap items-center justify-between gap-3 text-xs text-slate-700">
         <div className="flex items-center gap-2">
-          <Layers size={15} className="text-[#2563EB]" />
+          <Layers size={15} className="text-[#059669]" />
           <span>Full technical architecture &amp; security guardrails documented in <code>DOCS.md</code> and <code>README.md</code>.</span>
         </div>
       </div>

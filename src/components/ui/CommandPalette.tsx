@@ -115,7 +115,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
         onClick={e => e.stopPropagation()}
       >
         <div className="flex items-center px-4 py-3.5 border-b border-[#E5E7EB] bg-[#F8F9FA] gap-3">
-          <Search size={18} className="text-[#2563EB] shrink-0" />
+          <Search size={18} className="text-[#059669] shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -145,7 +145,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
               {query.length > 2 && (
                 <button
                   onClick={() => navigateTo(`/intel?q=${encodeURIComponent(query)}`)}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#EFF6FF] border border-[#BFDBFE] text-xs font-semibold text-[#2563EB] hover:bg-[#DBEAFE] transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] text-xs font-semibold text-[#059669] hover:bg-[#D1FAE5] transition-colors cursor-pointer"
                 >
                   <span>Search &quot;{query}&quot; in Latest Threats</span>
                   <ArrowRight size={13} />
@@ -162,7 +162,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`flex items-center justify-between p-3 rounded-lg transition-colors cursor-pointer border ${
                     isSelected
-                      ? 'bg-[#EFF6FF] border-[#BFDBFE]'
+                      ? 'bg-[#ECFDF5] border-[#A7F3D0]'
                       : 'hover:bg-[#F8F9FA] border-transparent'
                   }`}
                 >
@@ -170,7 +170,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                     <div
                       className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
                         isSelected
-                          ? 'bg-[#2563EB] text-white'
+                          ? 'bg-[#059669] text-white'
                           : 'bg-[#F3F4F6] text-[#4B5563]'
                       }`}
                     >
@@ -193,7 +193,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                     <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-[#F8F9FA] border border-[#E5E7EB] text-[#6B7280]">
                       {item.tag}
                     </span>
-                    {isSelected && <CornerDownLeft size={13} className="text-[#2563EB]" />}
+                    {isSelected && <CornerDownLeft size={13} className="text-[#059669]" />}
                   </div>
                 </div>
               )

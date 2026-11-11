@@ -283,12 +283,12 @@ export default function MessageCheckerPage() {
   return (
     <div className="space-y-6">
       {/* Page Title & Plain Help Button */}
-      <section className="rounded-xl bg-[#FFFFFF] border border-[#E5E7EB] p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <section className="rounded-xl bg-[#FFFFFF] border border-[#E0DDD5] p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold text-[#1A1A1A]">
+          <h1 className="text-2xl font-bold text-[#1E2420]">
             {t('Check Suspicious Message or Link', 'संदिग्ध संदेश या लिंक जांचें')}
           </h1>
-          <p className="text-xs text-[#6B7280] max-w-2xl">
+          <p className="text-xs text-[#5C645E] max-w-2xl">
             {t(
               'Paste an SMS, WhatsApp forward, email, or website link below. We will tell you in plain English if it looks safe or like a scam.',
               'नीचे कोई भी संदिग्ध एसएमएस, व्हाट्सएप संदेश या लिंक पेस्ट करें और जांचें कि वह सुरक्षित है या धोखाधड़ी।'
@@ -304,9 +304,9 @@ export default function MessageCheckerPage() {
       </section>
 
       {/* Input Card */}
-      <section className="rounded-xl bg-[#FFFFFF] border border-[#E5E7EB] p-6 shadow-xs space-y-5">
+      <section className="rounded-xl bg-[#FFFFFF] border border-[#E0DDD5] p-6 shadow-xs space-y-5">
         <div className="space-y-2">
-          <span className="text-xs font-medium text-[#6B7280]">
+          <span className="text-xs font-medium text-[#5C645E]">
             Try an example to see how it works:
           </span>
           <div className="flex flex-wrap gap-2">
@@ -319,7 +319,7 @@ export default function MessageCheckerPage() {
                   setUrlInput(ex.url)
                   setErrorMsg(null)
                 }}
-                className="px-3 py-1.5 rounded-lg bg-[#F8F9FA] hover:bg-[#EFF6FF] border border-[#E5E7EB] hover:border-[#BFDBFE] text-xs font-medium text-[#2563EB] transition-colors cursor-pointer"
+                className="px-3 py-1.5 rounded-lg bg-[#F2F1EC] hover:bg-[#ECFDF5] border border-[#E0DDD5] hover:border-[#A7F3D0] text-xs font-medium text-[#059669] transition-colors cursor-pointer"
               >
                 {ex.label}
               </button>
@@ -330,11 +330,11 @@ export default function MessageCheckerPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-xs">
-              <label htmlFor="msg-input" className="font-semibold text-[#1A1A1A] flex items-center gap-1.5">
-                <MailWarning className="w-4 h-4 text-[#2563EB]" />
+              <label htmlFor="msg-input" className="font-semibold text-[#1E2420] flex items-center gap-1.5">
+                <MailWarning className="w-4 h-4 text-[#059669]" />
                 Paste SMS or Email Here
               </label>
-              <span className="text-[#6B7280] font-mono text-[11px]">
+              <span className="text-[#5C645E] font-mono text-[11px]">
                 {msgText.length} / {MAX_CHARS}
               </span>
             </div>
@@ -345,14 +345,14 @@ export default function MessageCheckerPage() {
               value={msgText}
               onChange={(e) => setMsgText(e.target.value)}
               placeholder="Example: Your SBI KYC is expired, click this link to verify..."
-              className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] p-3.5 text-sm text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#2563EB] focus:bg-[#FFFFFF]"
+              className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] p-3.5 text-sm text-[#1E2420] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#059669] focus:bg-[#FFFFFF]"
             />
           </div>
 
           <div className="space-y-4 flex flex-col justify-between">
             <div className="space-y-1.5">
-              <label htmlFor="link-input" className="font-semibold text-[#1A1A1A] text-xs flex items-center gap-1.5">
-                <Link2 className="w-4 h-4 text-[#2563EB]" />
+              <label htmlFor="link-input" className="font-semibold text-[#1E2420] text-xs flex items-center gap-1.5">
+                <Link2 className="w-4 h-4 text-[#059669]" />
                 Paste Website Link Here (Optional)
               </label>
               <input
@@ -361,7 +361,7 @@ export default function MessageCheckerPage() {
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
                 placeholder="https://example-suspicious-link.top"
-                className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3.5 py-2.5 text-sm font-mono text-[#1A1A1A] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#2563EB] focus:bg-[#FFFFFF]"
+                className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] px-3.5 py-2.5 text-sm font-mono text-[#1E2420] placeholder:text-[#9CA3AF] focus:outline-none focus:border-[#059669] focus:bg-[#FFFFFF]"
               />
             </div>
 
@@ -377,7 +377,7 @@ export default function MessageCheckerPage() {
                 type="button"
                 onClick={handleCheckNow}
                 disabled={analyzing}
-                className="flex-1 py-3 px-6 rounded-lg bg-[#EA580C] hover:bg-[#C2410C] text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer shadow-xs"
+                className="flex-1 py-3 px-6 rounded-lg bg-[#D97706] hover:bg-[#B45309] text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer shadow-xs"
               >
                 {analyzing ? (
                   <>
@@ -399,7 +399,7 @@ export default function MessageCheckerPage() {
                   setErrorMsg(null)
                   setCertStatus(null)
                 }}
-                className="px-4 py-3 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E5E7EB] text-xs font-semibold text-[#4B5563] cursor-pointer"
+                className="px-4 py-3 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E0DDD5] text-xs font-semibold text-[#4B5563] cursor-pointer"
               >
                 Clear
               </button>
@@ -430,25 +430,25 @@ export default function MessageCheckerPage() {
           extraContent={
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                <div className="p-3 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB]">
-                  <div className="text-[#6B7280]">Urgency Score</div>
+                <div className="p-3 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5]">
+                  <div className="text-[#5C645E]">Urgency Score</div>
                   <div className="text-base font-bold font-mono text-[#D97706]">{result.urgencyScore} / 100</div>
                 </div>
-                <div className="p-3 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB]">
-                  <div className="text-[#6B7280]">Impersonation Score</div>
+                <div className="p-3 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5]">
+                  <div className="text-[#5C645E]">Impersonation Score</div>
                   <div className="text-base font-bold font-mono text-[#DC2626]">{result.impersonationScore} / 100</div>
                 </div>
-                <div className="p-3 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB]">
-                  <div className="text-[#6B7280]">Link Risk Score</div>
+                <div className="p-3 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5]">
+                  <div className="text-[#5C645E]">Link Risk Score</div>
                   <div className="text-base font-bold font-mono text-[#DC2626]">{result.linkRiskScore} / 100</div>
                 </div>
               </div>
 
               {lookalikeChecks.length > 0 && (
-                <div className="overflow-x-auto rounded-lg border border-[#E5E7EB]">
+                <div className="overflow-x-auto rounded-lg border border-[#E0DDD5]">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="bg-[#F8F9FA] border-b border-[#E5E7EB] text-[#6B7280]">
+                      <tr className="bg-[#F2F1EC] border-b border-[#E0DDD5] text-[#5C645E]">
                         <th className="py-2 px-3">Website Host Found</th>
                         <th className="py-2 px-3">Closest Official Website</th>
                         <th className="py-2 px-3">Edit Distance</th>
@@ -458,8 +458,8 @@ export default function MessageCheckerPage() {
                     <tbody className="divide-y divide-[#E5E7EB]">
                       {lookalikeChecks.map((m) => (
                         <tr key={m.host}>
-                          <td className="py-2 px-3 font-mono text-[#1A1A1A]">{m.host}</td>
-                          <td className="py-2 px-3 font-mono text-[#6B7280]">{m.closestOfficial}</td>
+                          <td className="py-2 px-3 font-mono text-[#1E2420]">{m.host}</td>
+                          <td className="py-2 px-3 font-mono text-[#5C645E]">{m.closestOfficial}</td>
                           <td className="py-2 px-3 font-mono">{m.distance}</td>
                           <td className="py-2 px-3">
                             {m.isOfficial ? (
@@ -477,7 +477,7 @@ export default function MessageCheckerPage() {
                 </div>
               )}
 
-              <div className="text-[11px] font-mono text-[#6B7280]">
+              <div className="text-[11px] font-mono text-[#5C645E]">
                 Engine: {result.provider} ({result.model}) · Latency: {result.latencyMs}ms
                 {result.requestId ? ` · x-request-id: ${result.requestId}` : ''}
               </div>

@@ -109,7 +109,7 @@ export default function ExifPage() {
       <div className="p-6 rounded-2xl glass-card relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-5">
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-[#0284C7] font-mono text-[11px] font-bold">
+            <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-[#059669] font-mono text-[11px] font-bold">
               05 // DIGITAL IMAGE FORENSICS
             </span>
             <span className="text-slate-600 text-xs">•</span>

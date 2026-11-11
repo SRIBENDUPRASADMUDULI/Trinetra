@@ -25,9 +25,9 @@ const notoDevanagari = Noto_Sans_Devanagari({
 })
 
 export const metadata: Metadata = {
-  title: 'TRINETRA | Simple Cyber Safety & Scam Checker for Citizens',
+  title: 'TRINETRA | Sovereign Cyber Safety & Scam Defense Console',
   description:
-    'Check suspicious SMS or WhatsApp messages, verify links, spot edited photos or deepfake videos, check leaked data, and file cybercrime complaints (1930).',
+    'Check suspicious SMS or WhatsApp messages, verify links, spot edited photos or deepfake videos, check leaked data, and prepare cybercrime complaints (1930).',
   keywords: ['TRINETRA', 'scam checker', 'phishing', '1930 helpline', 'cybercrime India', 'BNS 2023', 'BSA 2023'],
 }
 
@@ -42,9 +42,9 @@ export default function RootLayout({
     >
       <head>
         <meta name="color-scheme" content="light" />
-        <meta name="theme-color" content="#F8F9FA" />
+        <meta name="theme-color" content="#1E2420" />
       </head>
-      <body className={`${interSans.className} antialiased bg-[#F8F9FA] text-[#1A1A1A]`}>
+      <body className={`${interSans.className} antialiased bg-[#F7F6F2] text-[#1C201D]`}>
         <GlobalShell>{children}</GlobalShell>
       </body>
     </html>

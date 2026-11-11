@@ -27,7 +27,7 @@ export function InfoExplain({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFFFFF] hover:bg-[#F1F5F9] border border-[#E5E7EB] text-xs font-medium text-[#2563EB] shadow-xs transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FFFFFF] hover:bg-[#F1F5F9] border border-[#E5E7EB] text-xs font-medium text-[#059669] shadow-xs transition-colors cursor-pointer"
         aria-label={`Explain ${title}`}
       >
         <HelpCircle className="w-3.5 h-3.5 shrink-0" />
@@ -47,7 +47,7 @@ export function InfoExplain({
           >
             <div className="flex items-center justify-between px-5 py-3.5 border-b border-[#E5E7EB] bg-[#F8F9FA]">
               <div className="flex items-center gap-2">
-                <HelpCircle className="w-4 h-4 text-[#2563EB]" />
+                <HelpCircle className="w-4 h-4 text-[#059669]" />
                 <h3 className="text-sm font-bold text-[#1A1A1A]">{title}</h3>
               </div>
               <button
@@ -79,7 +79,7 @@ export function InfoExplain({
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="px-4 py-1.5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold cursor-pointer"
+                className="px-4 py-1.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-semibold cursor-pointer"
               >
                 Got it
               </button>

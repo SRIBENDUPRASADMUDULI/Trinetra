@@ -334,11 +334,11 @@ export default function FileComplaintPage() {
   return (
     <div className="space-y-6">
       {/* Header + 1930 Emergency Callout */}
-      <section className="rounded-xl bg-[#FFFFFF] border border-[#E5E7EB] p-6 shadow-xs">
+      <section className="rounded-xl bg-[#FFFFFF] border border-[#E0DDD5] p-6 shadow-xs">
         <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-5">
           <div className="space-y-2 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-2xl font-bold text-[#1A1A1A]">
+              <h1 className="text-2xl font-bold text-[#1E2420]">
                 {t('File a Police Complaint (Cybercrime)', 'साइबर अपराध पुलिस शिकायत दर्ज करें')}
               </h1>
               <InfoExplain
@@ -348,7 +348,7 @@ export default function FileComplaintPage() {
                 whatResultMeans="You get a ready-to-submit PDF complaint to take to your nearest Cyber Police Station or upload on cybercrime.gov.in."
               />
             </div>
-            <p className="text-xs text-[#6B7280] leading-relaxed">
+            <p className="text-xs text-[#5C645E] leading-relaxed">
               {t(
                 'Fill in what happened below to create a ready-to-submit complaint PDF and digital evidence receipt for Indian Police or cybercrime.gov.in.',
                 'नीचे विवरण भरें और पुलिस या cybercrime.gov.in के लिए औपचारिक शिकायत PDF तैयार करें।'
@@ -373,7 +373,7 @@ export default function FileComplaintPage() {
               <Clock className="w-5 h-5 text-[#D97706] shrink-0" />
               <div>
                 <div className="text-[11px] font-bold text-[#92400E]">6-Hour Reporting Window</div>
-                <div className="text-base font-mono font-bold text-[#1A1A1A] tabular-nums">
+                <div className="text-base font-mono font-bold text-[#1E2420] tabular-nums">
                   {formatDuration(certInSeconds)}
                 </div>
                 <div className="text-[10px] text-[#92400E]">CERT-In / Golden Hour target</div>
@@ -390,12 +390,12 @@ export default function FileComplaintPage() {
             label={reportMode === 'track' ? 'With Tracking' : 'Anonymous'}
             labelColor={reportMode === 'track' ? 'cyan' : 'amber'}
             headerRight={
-              <div className="flex items-center gap-1 bg-[#FFFFFF] p-0.5 rounded-lg border border-[#E5E7EB]">
+              <div className="flex items-center gap-1 bg-[#FFFFFF] p-0.5 rounded-lg border border-[#E0DDD5]">
                 <button
                   type="button"
                   onClick={() => setReportMode('track')}
                   className={`px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
-                    reportMode === 'track' ? 'bg-[#2563EB] text-white' : 'text-[#6B7280] hover:text-[#1A1A1A]'
+                    reportMode === 'track' ? 'bg-[#059669] text-white' : 'text-[#5C645E] hover:text-[#1E2420]'
                   }`}
                 >
                   <UserCheck className="w-3 h-3" /> Report &amp; Track
@@ -404,7 +404,7 @@ export default function FileComplaintPage() {
                   type="button"
                   onClick={() => setReportMode('anonymous')}
                   className={`px-2.5 py-1 rounded text-[11px] font-semibold flex items-center gap-1 transition-colors cursor-pointer ${
-                    reportMode === 'anonymous' ? 'bg-[#D97706] text-white' : 'text-[#6B7280] hover:text-[#1A1A1A]'
+                    reportMode === 'anonymous' ? 'bg-[#D97706] text-white' : 'text-[#5C645E] hover:text-[#1E2420]'
                   }`}
                 >
                   <EyeOff className="w-3 h-3" /> Anonymous
@@ -415,12 +415,12 @@ export default function FileComplaintPage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">
+                  <label className="block text-xs font-semibold text-[#1E2420] mb-1">
                     State / Union Territory <span className="text-[#DC2626]">*</span>
                   </label>
                   <select
                     {...register('stateUt', { required: true })}
-                    className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-2 text-xs text-[#1A1A1A] focus:outline-none focus:border-[#2563EB]"
+                    className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] px-3 py-2 text-xs text-[#1E2420] focus:outline-none focus:border-[#059669]"
                   >
                     {INDIAN_STATES_UTS.map((s) => (
                       <option key={s} value={s}>{s}</option>
@@ -428,84 +428,84 @@ export default function FileComplaintPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">
+                  <label className="block text-xs font-semibold text-[#1E2420] mb-1">
                     District / Cyber Police Station <span className="text-[#DC2626]">*</span>
                   </label>
                   <input
                     {...register('districtStation', { required: true })}
-                    className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-2 text-xs text-[#1A1A1A] focus:outline-none focus:border-[#2563EB]"
+                    className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] px-3 py-2 text-xs text-[#1E2420] focus:outline-none focus:border-[#059669]"
                   />
                 </div>
               </div>
 
               {reportMode === 'track' && (
-                <div className="p-4 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] space-y-4">
-                  <div className="text-xs font-semibold text-[#2563EB]">
+                <div className="p-4 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] space-y-4">
+                  <div className="text-xs font-semibold text-[#059669]">
                     Your Contact Information (Required to track complaint status)
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">
+                      <label className="block text-xs font-semibold text-[#1E2420] mb-1">
                         Full Name <span className="text-[#DC2626]">*</span>
                       </label>
                       <input
                         {...register('complainantName', { required: reportMode === 'track' })}
                         placeholder="e.g. Rajesh Kumar Sharma"
-                        className="w-full rounded-lg bg-[#FFFFFF] border border-[#E5E7EB] px-3 py-2 text-xs text-[#1A1A1A] focus:outline-none focus:border-[#2563EB]"
+                        className="w-full rounded-lg bg-[#FFFFFF] border border-[#E0DDD5] px-3 py-2 text-xs text-[#1E2420] focus:outline-none focus:border-[#059669]"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">
+                      <label className="block text-xs font-semibold text-[#1E2420] mb-1">
                         Email Address
                       </label>
                       <input
                         type="email"
                         {...register('complainantEmail')}
                         placeholder="you@example.com"
-                        className="w-full rounded-lg bg-[#FFFFFF] border border-[#E5E7EB] px-3 py-2 text-xs text-[#1A1A1A] focus:outline-none focus:border-[#2563EB]"
+                        className="w-full rounded-lg bg-[#FFFFFF] border border-[#E0DDD5] px-3 py-2 text-xs text-[#1E2420] focus:outline-none focus:border-[#059669]"
                       />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
                     <div className="sm:col-span-5">
-                      <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">
+                      <label className="block text-xs font-semibold text-[#1E2420] mb-1">
                         Mobile Number <span className="text-[#DC2626]">*</span>
                       </label>
                       <input
                         {...register('complainantPhone', { required: reportMode === 'track' })}
                         placeholder="9876543210"
-                        className="w-full rounded-lg bg-[#FFFFFF] border border-[#E5E7EB] px-3 py-2 text-xs font-mono text-[#1A1A1A] focus:outline-none focus:border-[#2563EB]"
+                        className="w-full rounded-lg bg-[#FFFFFF] border border-[#E0DDD5] px-3 py-2 text-xs font-mono text-[#1E2420] focus:outline-none focus:border-[#059669]"
                       />
                     </div>
                     <div className="sm:col-span-3">
                       <button
                         type="button"
                         onClick={handleSendOtp}
-                        className="w-full py-2 px-3 rounded-lg bg-[#EFF6FF] hover:bg-[#DBEAFE] border border-[#BFDBFE] text-[#2563EB] text-xs font-semibold transition-colors cursor-pointer"
+                        className="w-full py-2 px-3 rounded-lg bg-[#ECFDF5] hover:bg-[#D1FAE5] border border-[#A7F3D0] text-[#059669] text-xs font-semibold transition-colors cursor-pointer"
                       >
                         Send OTP
                       </button>
                     </div>
                     <div className="sm:col-span-4">
-                      <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">
+                      <label className="block text-xs font-semibold text-[#1E2420] mb-1">
                         Aadhaar Last 4 Digits (Optional)
                       </label>
                       <input
                         maxLength={4}
                         {...register('aadhaarLast4')}
                         placeholder="4321"
-                        className="w-full rounded-lg bg-[#FFFFFF] border border-[#E5E7EB] px-3 py-2 text-xs font-mono text-[#1A1A1A] focus:outline-none focus:border-[#2563EB]"
+                        className="w-full rounded-lg bg-[#FFFFFF] border border-[#E0DDD5] px-3 py-2 text-xs font-mono text-[#1E2420] focus:outline-none focus:border-[#059669]"
                       />
                     </div>
                   </div>
 
                   {generatedOtp && (
-                    <div className="p-3 rounded-lg bg-[#FFFFFF] border border-[#BFDBFE] flex flex-wrap items-center justify-between gap-2 text-xs">
-                      <div className="text-[#1E40AF]">
-                        Demo OTP: <strong className="font-mono text-[#2563EB]">{generatedOtp}</strong>{' '}
-                        <span className="text-[11px] text-[#6B7280]">
+                    <div className="p-3 rounded-lg bg-[#FFFFFF] border border-[#A7F3D0] flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <div className="text-[#065F46]">
+                        Demo OTP: <strong className="font-mono text-[#059669]">{generatedOtp}</strong>{' '}
+                        <span className="text-[11px] text-[#5C645E]">
                           (Valid for {formatDuration(otpSecondsLeft)})
                         </span>
                       </div>
@@ -520,12 +520,12 @@ export default function FileComplaintPage() {
                             value={otpInput}
                             onChange={(e) => setOtpInput(e.target.value)}
                             placeholder="Enter 6-digit OTP"
-                            className="w-32 rounded border border-[#E5E7EB] px-2 py-1 text-xs font-mono text-[#1A1A1A]"
+                            className="w-32 rounded border border-[#E0DDD5] px-2 py-1 text-xs font-mono text-[#1E2420]"
                           />
                           <button
                             type="button"
                             onClick={handleVerifyOtp}
-                            className="px-3 py-1 rounded bg-[#2563EB] text-white text-xs font-semibold cursor-pointer"
+                            className="px-3 py-1 rounded bg-[#059669] text-white text-xs font-semibold cursor-pointer"
                           >
                             Verify
                           </button>
@@ -538,12 +538,12 @@ export default function FileComplaintPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">
+                  <label className="block text-xs font-semibold text-[#1E2420] mb-1">
                     Type of Scam / Incident <span className="text-[#DC2626]">*</span>
                   </label>
                   <select
                     {...register('attackType')}
-                    className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-2 text-xs text-[#1A1A1A] focus:outline-none focus:border-[#2563EB]"
+                    className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] px-3 py-2 text-xs text-[#1E2420] focus:outline-none focus:border-[#059669]"
                   >
                     <option value="UPI / Banking KYC Phishing Scam">UPI / Banking KYC Phishing Scam</option>
                     <option value="Deepfake Video KYC / Voice Impersonation">Deepfake / Voice Impersonation</option>
@@ -552,64 +552,64 @@ export default function FileComplaintPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">
+                  <label className="block text-xs font-semibold text-[#1E2420] mb-1">
                     Date <span className="text-[#DC2626]">*</span>
                   </label>
                   <input
                     type="date"
                     {...register('incidentDate', { required: true })}
-                    className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-2 text-xs font-mono text-[#1A1A1A]"
+                    className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] px-3 py-2 text-xs font-mono text-[#1E2420]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">Time</label>
+                  <label className="block text-xs font-semibold text-[#1E2420] mb-1">Time</label>
                   <input
                     type="time"
                     {...register('incidentTime')}
-                    className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-2 text-xs font-mono text-[#1A1A1A]"
+                    className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] px-3 py-2 text-xs font-mono text-[#1E2420]"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">Bank / UPI App</label>
+                  <label className="block text-xs font-semibold text-[#1E2420] mb-1">Bank / UPI App</label>
                   <input
                     {...register('victimBank')}
-                    className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-2 text-xs text-[#1A1A1A]"
+                    className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] px-3 py-2 text-xs text-[#1E2420]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">Money Lost (INR)</label>
+                  <label className="block text-xs font-semibold text-[#1E2420] mb-1">Money Lost (INR)</label>
                   <input
                     {...register('lossAmount')}
                     placeholder="25000"
-                    className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-2 text-xs font-mono text-[#1A1A1A]"
+                    className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] px-3 py-2 text-xs font-mono text-[#1E2420]"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">Transaction / UTR ID</label>
+                  <label className="block text-xs font-semibold text-[#1E2420] mb-1">Transaction / UTR ID</label>
                   <input
                     {...register('transactionId')}
                     placeholder="428910348219"
-                    className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-2 text-xs font-mono text-[#1A1A1A]"
+                    className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] px-3 py-2 text-xs font-mono text-[#1E2420]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">
+                <label className="block text-xs font-semibold text-[#1E2420] mb-1">
                   Scammer Link, Phone Number, or UPI ID
                 </label>
                 <input
                   {...register('attackerIp')}
                   placeholder="https://sbi-kyc-verif.top | +91-XXXXXXXXXX"
-                  className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] px-3 py-2 text-xs font-mono text-[#1A1A1A]"
+                  className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] px-3 py-2 text-xs font-mono text-[#1E2420]"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#1A1A1A] mb-1">
+                <label className="block text-xs font-semibold text-[#1E2420] mb-1">
                   Describe What Happened <span className="text-[#DC2626]">*</span>
                 </label>
                 <textarea
@@ -619,7 +619,7 @@ export default function FileComplaintPage() {
                     minLength: { value: 10, message: 'Enter at least 10 characters' },
                   })}
                   placeholder="Write step by step how the scam happened, what link you clicked, and how much money was taken..."
-                  className="w-full rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] p-3 text-xs text-[#1A1A1A] focus:outline-none focus:border-[#2563EB]"
+                  className="w-full rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] p-3 text-xs text-[#1E2420] focus:outline-none focus:border-[#059669]"
                 />
                 {errors.evidenceDescription && (
                   <p className="text-xs text-[#DC2626] mt-1">{errors.evidenceDescription.message}</p>
@@ -627,19 +627,19 @@ export default function FileComplaintPage() {
               </div>
 
               {/* Optional Evidence File Upload */}
-              <div className="p-3.5 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-3.5 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-0.5">
-                  <div className="text-xs font-semibold text-[#1A1A1A] flex items-center gap-1.5">
+                  <div className="text-xs font-semibold text-[#1E2420] flex items-center gap-1.5">
                     <Lock className="w-3.5 h-3.5 text-[#15803D]" />
                     Attach Screenshot or Bank Receipt (Optional)
                   </div>
-                  <div className="text-[11px] text-[#6B7280] font-mono">
+                  <div className="text-[11px] text-[#5C645E] font-mono">
                     {attachedSha256
                       ? `${attachedFileName} · Fingerprint: ${attachedSha256.slice(0, 20)}...`
                       : 'Creates a tamper-proof fingerprint locally on your device'}
                   </div>
                 </div>
-                <label className="px-3.5 py-2 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E5E7EB] text-xs font-semibold text-[#2563EB] flex items-center gap-1.5 cursor-pointer shrink-0">
+                <label className="px-3.5 py-2 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E0DDD5] text-xs font-semibold text-[#059669] flex items-center gap-1.5 cursor-pointer shrink-0">
                   <Upload className="w-3.5 h-3.5" />
                   Choose File
                   <input type="file" onChange={handleFileAttach} className="hidden" />
@@ -648,38 +648,38 @@ export default function FileComplaintPage() {
 
               {/* Law Checkboxes */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="p-3 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] space-y-2">
-                  <div className="text-[11px] font-bold text-[#1A1A1A]">IT Act 2000</div>
+                <div className="p-3 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] space-y-2">
+                  <div className="text-[11px] font-bold text-[#1E2420]">IT Act 2000</div>
                   {IT_ACT_OPTIONS.map((opt) => (
                     <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#374151] cursor-pointer">
                       <input
                         type="checkbox"
                         checked={watchItAct.includes(opt.code)}
                         onChange={() => toggleSection('itActSections', opt.code, watchItAct)}
-                        className="mt-0.5 accent-[#2563EB]"
+                        className="mt-0.5 accent-[#059669]"
                       />
                       <span>{opt.label}</span>
                     </label>
                   ))}
                 </div>
 
-                <div className="p-3 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] space-y-2">
-                  <div className="text-[11px] font-bold text-[#1A1A1A]">BNS 2023 Laws</div>
+                <div className="p-3 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] space-y-2">
+                  <div className="text-[11px] font-bold text-[#1E2420]">BNS 2023 Laws</div>
                   {BNS_OPTIONS.map((opt) => (
                     <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#374151] cursor-pointer">
                       <input
                         type="checkbox"
                         checked={watchBns.includes(opt.code)}
                         onChange={() => toggleSection('bnsSections', opt.code, watchBns)}
-                        className="mt-0.5 accent-[#2563EB]"
+                        className="mt-0.5 accent-[#059669]"
                       />
                       <span>{opt.label}</span>
                     </label>
                   ))}
                 </div>
 
-                <div className="p-3 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] space-y-2">
-                  <div className="text-[11px] font-bold text-[#1A1A1A]">Digital Evidence</div>
+                <div className="p-3 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] space-y-2">
+                  <div className="text-[11px] font-bold text-[#1E2420]">Digital Evidence</div>
                   {BSA_OPTIONS.map((opt) => (
                     <label key={opt.code} className="flex items-start gap-2 text-[11px] text-[#374151] cursor-pointer">
                       <input
@@ -697,7 +697,7 @@ export default function FileComplaintPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 px-5 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
+                className="w-full py-3 px-5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors disabled:opacity-60 cursor-pointer"
               >
                 {submitting ? (
                   <>
@@ -723,15 +723,15 @@ export default function FileComplaintPage() {
             {!firOutput ? (
               <div className="py-16 text-center space-y-3">
                 <FileText className="w-10 h-10 text-[#9CA3AF] mx-auto" />
-                <div className="text-sm font-semibold text-[#1A1A1A]">No Draft Created Yet</div>
-                <p className="text-xs text-[#6B7280] max-w-sm mx-auto leading-relaxed">
+                <div className="text-sm font-semibold text-[#1E2420]">No Draft Created Yet</div>
+                <p className="text-xs text-[#5C645E] max-w-sm mx-auto leading-relaxed">
                   Fill in the fields marked with <span className="text-[#DC2626] font-bold">*</span> on the left and click{' '}
                   <strong>Create Police Complaint Draft</strong> to download your PDF.
                 </p>
               </div>
             ) : (
               <div className="space-y-4">
-                <pre className="p-4 rounded-lg bg-[#F8F9FA] border border-[#E5E7EB] text-[11px] font-mono text-[#1A1A1A] whitespace-pre-wrap max-h-[500px] overflow-y-auto leading-relaxed">
+                <pre className="p-4 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] text-[11px] font-mono text-[#1E2420] whitespace-pre-wrap max-h-[500px] overflow-y-auto leading-relaxed">
                   {firOutput}
                 </pre>
 
@@ -739,7 +739,7 @@ export default function FileComplaintPage() {
                   <button
                     type="button"
                     onClick={handleDownloadFirPdf}
-                    className="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                    className="px-4 py-2 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5" /> Download Complaint PDF
                   </button>
@@ -761,7 +761,7 @@ export default function FileComplaintPage() {
                       setCopied(true)
                       setTimeout(() => setCopied(false), 2000)
                     }}
-                    className="px-3 py-2 rounded-lg bg-[#FFFFFF] border border-[#E5E7EB] text-[#1A1A1A] text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+                    className="px-3 py-2 rounded-lg bg-[#FFFFFF] border border-[#E0DDD5] text-[#1E2420] text-xs font-medium flex items-center gap-1.5 cursor-pointer"
                   >
                     {copied ? <Check className="w-3.5 h-3.5 text-[#15803D]" /> : <Copy className="w-3.5 h-3.5" />}
                     {copied ? 'Copied' : 'Copy'}

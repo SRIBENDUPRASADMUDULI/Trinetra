@@ -174,7 +174,7 @@ export default function IntelPage() {
               <span className="text-slate-600 w-20 flex-shrink-0">{evt.timestamp.slice(11, 19)}Z</span>
               <span className="font-bold flex-shrink-0" style={{ color: sevColor(evt.severity) }}>[{evt.severity.slice(0, 4)}]</span>
               <span className="flex-shrink-0 px-2 py-0.5 rounded text-[11px] font-semibold"
-                style={{ color: '#38bdf8', border: '1px solid rgba(56,189,248,0.3)', backgroundColor: 'rgba(56,189,248,0.08)' }}>
+                style={{ color: '#34D399', border: '1px solid rgba(56,189,248,0.3)', backgroundColor: 'rgba(56,189,248,0.08)' }}>
                 {evt.sector}
               </span>
               <span className="text-slate-800 flex-1 truncate font-sans text-xs">{evt.attackType}</span>
@@ -207,7 +207,7 @@ export default function IntelPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     {cs.ttps.slice(0, 2).map(t => (
-                      <span key={t} className="font-mono text-xs px-2 py-0.5 rounded text-[#0284C7] border border-cyan-500/30 bg-sky-50 hidden sm:inline">{t}</span>
+                      <span key={t} className="font-mono text-xs px-2 py-0.5 rounded text-[#059669] border border-cyan-500/30 bg-[#F2F1EC] hidden sm:inline">{t}</span>
                     ))}
                     <div className="p-1 rounded bg-slate-100 text-slate-600">
                       {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -265,7 +265,7 @@ export default function IntelPage() {
           <button
             onClick={scanAll}
             disabled={scanningAll}
-            className="flex items-center gap-1.5 font-mono text-xs px-3 py-1 rounded-lg border border-cyan-500/40 bg-sky-50 text-[#0369A1] hover:bg-sky-50 transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 font-mono text-xs px-3 py-1 rounded-lg border border-cyan-500/40 bg-[#F2F1EC] text-[#047857] hover:bg-[#F2F1EC] transition-colors disabled:opacity-40"
           >
             <RefreshCw size={11} className={scanningAll ? 'animate-spin' : ''} />
             <span>{scanningAll ? `AUDITING ${scanProgress}%` : 'AUDIT ALL ENDPOINTS'}</span>

@@ -12,7 +12,7 @@ interface GlobalShellProps {
 export function GlobalShell({ children }: GlobalShellProps) {
   return (
     <LanguageProvider>
-      <div className="flex min-h-dvh bg-[#F8F9FA] text-[#1A1A1A] overflow-x-clip">
+      <div className="flex min-h-dvh bg-[#F7F6F2] text-[#1C201D] overflow-x-clip">
         <Sidebar />
         <div className="flex flex-col flex-1 min-w-0 pb-16 lg:pb-0 lg:ml-60">
           <TopBar />
