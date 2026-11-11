@@ -1,7 +1,8 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { THREAT_FEED, type ThreatEvent } from '@/data/mock/threat-feed'
+import { BharatCodeShowcase } from '@/components/shell/BharatCodeShowcase'
 import {
   Shield,
   Activity,
@@ -122,6 +123,26 @@ function SeverityChip({ s }: { s: string }) {
 export default function CommandCenterPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterSector, setFilterSector] = useState('ALL')
+  const [aiStats, setAiStats] = useState({ model: 'qwen-3.8-27b', latencyMs: 148, status: 'connected' })
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch('/api/telemetry', { cache: 'no-store' })
+        const data = await res.json()
+        if (data.success && data.telemetry) {
+          setAiStats({
+            model: data.telemetry.activeModel,
+            latencyMs: data.telemetry.latencyMs,
+            status: data.telemetry.status,
+          })
+        }
+      } catch {}
+    }
+    load()
+    const id = setInterval(load, 8000)
+    return () => clearInterval(id)
+  }, [])
 
   const filteredFeed = THREAT_FEED.filter(evt => {
     const matchesSearch =
@@ -213,15 +234,15 @@ export default function CommandCenterPage() {
               <span className="text-xs font-bold uppercase tracking-wider text-[#1E2235]/70 font-sans">
                 BharatCode Sovereign AI
               </span>
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#1E2235]/10 text-[#1E2235]">
-                QWEN 3.8 27B
+              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#1E2235]/10 text-[#1E2235] uppercase">
+                {aiStats.model}
               </span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1E2235] font-sans mb-1">
-              148ms Latency
+              {aiStats.latencyMs}ms Latency
             </h2>
             <p className="text-xs text-[#1E2235]/80 font-medium">
-              Stateless (`store: false`) · Complete PII mask · Zero retention
+              Stateless (store: false) · Complete PII mask · Zero retention
             </p>
           </div>
 
@@ -240,6 +261,11 @@ export default function CommandCenterPage() {
           </div>
         </div>
       </section>
+
+      {/* ============================================================ */}
+      {/* 1B. BHARATCODE API & AI HARNESS CONTROL PLANE SHOWCASE       */}
+      {/* ============================================================ */}
+      <BharatCodeShowcase />
 
       {/* ============================================================ */}
       {/* 2. MAIN EXECUTIVE DASHBOARD: 2-COLUMN STRUCTURE              */}
