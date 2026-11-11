@@ -25,10 +25,7 @@ interface TopNavTab {
 const TOP_NAV_TABS: TopNavTab[] = [
   { id: 'overview', labelEn: 'Dashboard', labelHi: 'डैशबोर्ड', path: '/' },
   { id: 'nlp', labelEn: 'Check Message', labelHi: 'संदेश जांचें', path: '/nlp' },
-  { id: 'incident', labelEn: 'File Complaint', labelHi: 'शिकायत दर्ज करें', path: '/incident' },
-  { id: 'deepfake-xai', labelEn: 'Check Fake Video', labelHi: 'वीडियो जांचें', path: '/deepfake-xai' },
-  { id: 'mentor', labelEn: 'AI Assistant', labelHi: 'एआई सहायक', path: '/mentor' },
-  { id: 'intel', labelEn: 'Latest Threats', labelHi: 'ताज़ा खतरे', path: '/intel' },
+  { id: 'deepfake-xai', labelEn: 'Fake Video Checker', labelHi: 'वीडियो जांचें', path: '/deepfake-xai' },
 ]
 
 export function TopBar() {

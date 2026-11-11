@@ -106,7 +106,7 @@ const GENERATOR_PROFILES = [
 ]
 
 export default function DeepfakeXaiPage() {
-  const [activeTab, setActiveTab] = useState<ActiveTab>('overview')
+  const [activeTab, setActiveTab] = useState<ActiveTab>('inspector')
   const [data, setData] = useState<ApiOverviewResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -331,76 +331,55 @@ export default function DeepfakeXaiPage() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="p-6 rounded-xl bg-white border border-slate-200 relative overflow-hidden flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div className="space-y-2 max-w-3xl">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded bg-slate-50 border border-slate-200 text-[#FF9F1C] font-mono text-[11px] font-bold">
-              11 // DEEPFAKE FORENSICS &amp; XAI LAB
-            </span>
-            <span className="text-slate-600 text-xs">•</span>
-            <span className="text-[11px] font-mono text-slate-700">
-              GRAD-CAM · CGFD · FADI · DISTRIBUTION SHIFT
-            </span>
+      <div className="p-6 rounded-xl bg-white border border-slate-200 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div className="space-y-1.5 max-w-3xl">
+            <h1 className="text-2xl font-bold text-[#1A1A1A] tracking-tight flex items-center gap-2.5">
+              <ScanFace className="text-[#2563EB] shrink-0" size={24} />
+              <span>Fake Photo &amp; Deepfake Checker</span>
+            </h1>
+            <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
+              Upload a suspicious photo or pick a sample below to check for signs of AI editing, see which face zones look manipulated, and inspect cross-generator benchmarks (CGFD / FADI).
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-            <ScanFace className="text-sky-400 shrink-0" size={28} />
-            Fake Video &amp; Image Checker (Deepfake XAI Lab)
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-            Evaluates whether deepfake detectors stay <strong className="text-slate-900">honestly explainable</strong> under
-            cross-generator distribution shift — measuring Grad-CAM Deletion/Insertion AUC, Cross-Generator
-            Faithfulness Drop (<strong className="text-blue-700">CGFD</strong>), and Faithfulness-Accuracy Decoupling Index (
-            <strong className="text-indigo-700">FADI</strong>).
-          </p>
-        </div>
-
-        <div className="flex flex-col items-start lg:items-end gap-2.5 shrink-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <StatusBadge
-              label={
-                data?.pythonAvailable
-                  ? `LIVE PYTHON RUNTIME · ${data.pythonVersion ?? 'PYTHON'}`
-                  : 'RESEARCH BENCHMARK — FACEFORENSICS++ / CELEB-DF'
-              }
-              variant={data?.pythonAvailable ? 'ok' : 'warning'}
-              blink={data?.pythonAvailable}
-            />
-            <StatusBadge label="3 GENERATORS · 900 IMAGES" variant="info" />
-            <StatusBadge
-              label={
-                data?.bharatcodeEnabled
-                  ? `BHARATCODE · ${data.bharatcodeModel ?? 'qwen-3.8-27b'}`
-                  : 'BHARATCODE · NOT CONFIGURED'
-              }
-              variant={data?.bharatcodeEnabled ? 'ok' : 'neutral'}
-            />
+          <div className="flex items-center gap-2 shrink-0">
             <InfoExplain
               title="Fake Video & Image Checker"
               whatIsIt="Checks suspicious photos for AI manipulation and highlights facial regions (eyes, mouth, jawline, hairline) that look edited."
               whoShouldUse="Anyone who received a shocking celebrity video, fake KYC selfie, or suspicious photo."
               whatResultMeans="Shows AI-assisted manipulation probability and heatmap highlights. This is a research tool and is not court-proof by itself."
             />
-            <span className="hidden"
-            />
+            <button
+              onClick={fetchOverview}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F8F9FA] hover:bg-[#F1F5F9] border border-[#E5E7EB] text-[#1A1A1A] transition-colors cursor-pointer"
+            >
+              <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
+              <span>Refresh</span>
+            </button>
           </div>
-          <button
-            onClick={fetchOverview}
-            disabled={loading}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-slate-50 hover:bg-white/[0.1] border border-slate-200 text-slate-800 transition-all cursor-pointer"
-          >
-            <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
-            <span>Sync Telemetry</span>
-          </button>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-slate-100">
+          <StatusBadge
+            label={data?.pythonAvailable ? `Live Python Engine · ${data.pythonVersion ?? "Active"}` : "Research Benchmark — FaceForensics++ / Celeb-DF"}
+            variant={data?.pythonAvailable ? "ok" : "warning"}
+            blink={data?.pythonAvailable}
+          />
+          <StatusBadge label="3 Generators · 900 Images" variant="info" />
+          <StatusBadge
+            label={data?.bharatcodeEnabled ? `BharatCode AI · ${data.bharatcodeModel ?? "qwen-3.8-27b"}` : "BharatCode AI · Not Configured"}
+            variant={data?.bharatcodeEnabled ? "ok" : "neutral"}
+          />
         </div>
       </div>
 
       {/* Mode Switcher Tabs */}
       <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-white border border-slate-200">
         {[
-          { id: 'overview', label: 'Static Matrices & Benchmarks', Icon: BarChart3 },
-          { id: 'inspector', label: 'Live Grad-CAM & Faithfulness Inspector', Icon: Eye },
-          { id: 'runner', label: 'Live Cross-Generator Study Runner', Icon: Play },
-          { id: 'methodology', label: 'CGFD / FADI Research Spec', Icon: BookOpen },
+          { id: 'overview', label: 'Benchmark Results (CGFD / FADI)', Icon: BarChart3 },
+          { id: 'inspector', label: 'Photo & Face Checker', Icon: Eye },
+          { id: 'runner', label: 'Compare Generators', Icon: Play },
+          { id: 'methodology', label: 'How It Works', Icon: BookOpen },
         ].map(({ id, label, Icon }) => {
           const active = activeTab === id
           return (
@@ -409,7 +388,7 @@ export default function DeepfakeXaiPage() {
               onClick={() => setActiveTab(id as ActiveTab)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 active
-                  ? 'bg-[#FF9F1C] text-[#03030A] font-bold border border-[#FF9F1C]'
+                  ? 'bg-[#2563EB] text-white font-semibold border border-[#2563EB]'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
@@ -425,8 +404,8 @@ export default function DeepfakeXaiPage() {
         <span>
           <strong>{data?.pythonAvailable ? 'AI-Assisted Forensic Indication:' : 'Research Benchmark Viewer:'}</strong>{' '}
           {data?.pythonAvailable
-            ? 'Probabilistic Grad-CAM & faithfulness estimation — verify manually before legal or enforcement action.'
-            : 'Displaying pre-computed research benchmark outputs (StyleGAN2 / FaceSwapAE / StableDiffusion) because the local PyTorch inference server is not attached in serverless mode. AI-assisted indication — verify manually before legal action.'}
+            ? 'Probabilistic Grad-CAM & faithfulness estimation â€” verify manually before legal or enforcement action.'
+            : 'Displaying pre-computed research benchmark outputs (StyleGAN2 / FaceSwapAE / StableDiffusion) because the local PyTorch inference server is not attached in serverless mode. AI-assisted indication â€” verify manually before legal action.'}
         </span>
       </div>
 
@@ -495,7 +474,7 @@ export default function DeepfakeXaiPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <TerminalCard
               title="Cross-Generator Faithfulness Drop (CGFD)"
-              label="F(src) − F(target)"
+              label="F(src) âˆ’ F(target)"
               labelColor="cyan"
             >
               <InteractiveMatrixGrid
@@ -510,7 +489,7 @@ export default function DeepfakeXaiPage() {
 
             <TerminalCard
               title="Faithfulness-Accuracy Decoupling Index (FADI)"
-              label="norm(CGFD) − norm(ΔAcc)"
+              label="norm(CGFD) âˆ’ norm(Î”Acc)"
               labelColor="amber"
             >
               <InteractiveMatrixGrid
@@ -532,7 +511,7 @@ export default function DeepfakeXaiPage() {
                   Selected Shift Vector Inspection
                 </div>
                 <div className="text-base font-bold text-slate-900 font-mono">
-                  {selectedPair.source} <span className="text-sky-400">──►</span> {selectedPair.target}
+                  {selectedPair.source} <span className="text-sky-400">â”€â”€â–º</span> {selectedPair.target}
                 </div>
                 <p className="text-xs text-slate-700">
                   Accuracy shifted from{' '}
@@ -569,7 +548,7 @@ export default function DeepfakeXaiPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {data?.matrices.cgfd && (
               <TerminalCard
-                title="Generated Matplotlib Matrix — CGFD"
+                title="Generated Matplotlib Matrix â€” CGFD"
                 label="outputs/cgfd_matrix.png"
                 labelColor="white"
               >
@@ -592,7 +571,7 @@ export default function DeepfakeXaiPage() {
             )}
             {data?.matrices.fadi && (
               <TerminalCard
-                title="Generated Matplotlib Matrix — FADI"
+                title="Generated Matplotlib Matrix â€” FADI"
                 label="outputs/fadi_matrix.png"
                 labelColor="white"
               >
@@ -649,9 +628,9 @@ export default function DeepfakeXaiPage() {
                   <tr className="border-b border-slate-200 text-[10px] text-slate-600 uppercase">
                     <th className="py-2.5 pr-4">Source (Train)</th>
                     <th className="py-2.5 pr-4">Target (Test)</th>
-                    <th className="py-2.5 pr-4">Acc (Src → Tgt)</th>
+                    <th className="py-2.5 pr-4">Acc (Src â†’ Tgt)</th>
                     <th className="py-2.5 pr-4">Acc Drop</th>
-                    <th className="py-2.5 pr-4">Faithfulness (Src → Tgt)</th>
+                    <th className="py-2.5 pr-4">Faithfulness (Src â†’ Tgt)</th>
                     <th className="py-2.5 pr-4">CGFD</th>
                     <th className="py-2.5">FADI</th>
                   </tr>
@@ -665,7 +644,7 @@ export default function DeepfakeXaiPage() {
                       <td className="py-2.5 pr-4 text-slate-900 font-semibold">{row.source}</td>
                       <td className="py-2.5 pr-4 text-blue-700">{row.target}</td>
                       <td className="py-2.5 pr-4 text-slate-700">
-                        {(row.src_accuracy * 100).toFixed(0)}% → {(row.target_accuracy * 100).toFixed(0)}%
+                        {(row.src_accuracy * 100).toFixed(0)}% â†’ {(row.target_accuracy * 100).toFixed(0)}%
                       </td>
                       <td className="py-2.5 pr-4">
                         <span
@@ -679,7 +658,7 @@ export default function DeepfakeXaiPage() {
                         </span>
                       </td>
                       <td className="py-2.5 pr-4 text-slate-700">
-                        {row.src_faithfulness.toFixed(3)} → {row.target_faithfulness.toFixed(3)}
+                        {row.src_faithfulness.toFixed(3)} â†’ {row.target_faithfulness.toFixed(3)}
                       </td>
                       <td className="py-2.5 pr-4 font-bold text-blue-700">
                         {row.CGFD >= 0 ? `+${row.CGFD.toFixed(4)}` : row.CGFD.toFixed(4)}
@@ -749,7 +728,7 @@ export default function DeepfakeXaiPage() {
 
           {/* Grad-CAM Explanation Overlays Gallery */}
           <TerminalCard
-            title="Grad-CAM Saliency Overlays (Research Benchmark — FaceForensics++ / Celeb-DF)"
+            title="Grad-CAM Saliency Overlays (Research Benchmark â€” FaceForensics++ / Celeb-DF)"
             label={`${data?.gradcamSamples.length ?? 0} OVERLAYS`}
             labelColor="amber"
           >
@@ -812,7 +791,7 @@ export default function DeepfakeXaiPage() {
                           onClick={() => setInspectSource(g)}
                           className={`px-2.5 py-2 rounded-xl text-xs font-mono border transition-all cursor-pointer ${
                             inspectSource === g
-                              ? 'bg-indigo-500/20 border-indigo-400/60 text-white font-bold'
+                              ? 'bg-[#2563EB] border-[#2563EB] text-white font-bold'
                               : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900'
                           }`}
                         >
@@ -836,7 +815,7 @@ export default function DeepfakeXaiPage() {
                           onClick={() => setInspectBackbone(b.id as 'simple' | 'efficientnet_b0')}
                           className={`p-2.5 rounded-xl text-left border transition-all cursor-pointer ${
                             inspectBackbone === b.id
-                              ? 'bg-sky-500/20 border-sky-400/60 text-white'
+                              ? 'bg-[#2563EB] border-[#2563EB] text-white'
                               : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900'
                           }`}
                         >
@@ -902,7 +881,7 @@ export default function DeepfakeXaiPage() {
                             }}
                             className={`p-1.5 rounded-xl border text-left transition-all cursor-pointer ${
                               selected
-                                ? 'bg-sky-500/20 border-sky-400 text-white'
+                                ? 'bg-[#EFF6FF] border-[#2563EB] text-[#1A1A1A] ring-2 ring-[#2563EB]/20'
                                 : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-white/20'
                             }`}
                           >
@@ -931,7 +910,7 @@ export default function DeepfakeXaiPage() {
                     type="button"
                     onClick={handleAnalyzeSingleImage}
                     disabled={analyzingImage}
-                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-sky-600 hover:from-indigo-500 hover:to-sky-500 disabled:opacity-50 text-slate-900 text-xs font-bold tracking-wide flex items-center justify-center gap-2 shadow-lg shadow-indigo-950/50 transition-all cursor-pointer"
+                    className="w-full py-3 px-4 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white text-xs font-bold tracking-wide flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
                   >
                     {analyzingImage ? (
                       <>
@@ -947,7 +926,7 @@ export default function DeepfakeXaiPage() {
                   </button>
 
                   {imageError && (
-                    <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-200 text-xs">
+                    <div className="p-3 rounded-xl bg-[#FEF2F2] border border-[#FECACA] text-[#991B1B] text-xs">
                       {imageError}
                     </div>
                   )}
@@ -1006,7 +985,7 @@ export default function DeepfakeXaiPage() {
                         <div className="text-lg font-extrabold font-mono text-blue-700">
                           {imageAnalysis.composite_faithfulness.toFixed(4)}
                         </div>
-                        <div className="text-[10px] font-mono text-slate-600">0.5·(1−Del)+0.5·Ins</div>
+                        <div className="text-[10px] font-mono text-slate-600">0.5·(1âˆ’Del)+0.5·Ins</div>
                       </div>
                       <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
                         <div className="text-[10px] font-mono text-slate-600">DELETION AUC</div>
@@ -1194,10 +1173,10 @@ export default function DeepfakeXaiPage() {
                     onChange={e => setStudySource(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl bg-[#0A0E17] border border-slate-200 text-slate-900 font-mono"
                   >
-                    <option value="ALL">ALL (Full 3×3 Cross-Generator Matrix)</option>
+                    <option value="ALL">ALL (Full 3Ã—3 Cross-Generator Matrix)</option>
                     {generators.map(g => (
                       <option key={g} value={g}>
-                        {g} (Single Source → All Targets)
+                        {g} (Single Source â†’ All Targets)
                       </option>
                     ))}
                   </select>
@@ -1210,7 +1189,7 @@ export default function DeepfakeXaiPage() {
                     onChange={e => setStudyBackbone(e.target.value as 'simple' | 'efficientnet_b0')}
                     className="w-full px-3 py-2 rounded-xl bg-[#0A0E17] border border-slate-200 text-slate-900 font-mono"
                   >
-                    <option value="simple">simple (3-Layer CNN — fast CPU demo)</option>
+                    <option value="simple">simple (3-Layer CNN â€” fast CPU demo)</option>
                     <option value="efficientnet_b0">efficientnet_b0 (Research Backbone)</option>
                   </select>
                 </div>
@@ -1245,9 +1224,9 @@ export default function DeepfakeXaiPage() {
                       onChange={e => setStudyImgSize(Number(e.target.value))}
                       className="w-full px-3 py-2 rounded-xl bg-[#0A0E17] border border-slate-200 text-slate-900 font-mono"
                     >
-                      <option value={64}>64×64</option>
-                      <option value={128}>128×128</option>
-                      <option value={224}>224×224</option>
+                      <option value={64}>64Ã—64</option>
+                      <option value={128}>128Ã—128</option>
+                      <option value={224}>224Ã—224</option>
                     </select>
                   </div>
                 </div>
@@ -1317,13 +1296,13 @@ export default function DeepfakeXaiPage() {
                   <div className="flex items-center justify-between p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-200 text-xs">
                     <span className="flex items-center gap-2">
                       <CheckCircle2 size={15} />
-                      Study complete — static matrices and tables updated with live results.
+                      Study complete â€” static matrices and tables updated with live results.
                     </span>
                     <button
                       onClick={() => setActiveTab('overview')}
                       className="underline font-semibold hover:text-slate-900 cursor-pointer"
                     >
-                      View Updated Matrices →
+                      View Updated Matrices â†’
                     </button>
                   </div>
                 )}
@@ -1355,10 +1334,10 @@ export default function DeepfakeXaiPage() {
               <div className="space-y-4 text-xs text-slate-700 leading-relaxed">
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
                   <div className="font-bold text-slate-900 font-mono">
-                    1. Composite Faithfulness F(x) ∈ [0, 1]
+                    1. Composite Faithfulness F(x) âˆˆ [0, 1]
                   </div>
                   <div className="font-mono text-blue-700 text-[11px]">
-                    F(x) = 0.5 · (1 − Deletion_AUC) + 0.5 · Insertion_AUC
+                    F(x) = 0.5 · (1 âˆ’ Deletion_AUC) + 0.5 · Insertion_AUC
                   </div>
                   <p className="text-slate-600">
                     Tests whether removing top Grad-CAM pixels collapses confidence rapidly (low Deletion AUC)
@@ -1371,7 +1350,7 @@ export default function DeepfakeXaiPage() {
                     2. Cross-Generator Faithfulness Drop (CGFD)
                   </div>
                   <div className="font-mono text-amber-700 text-[11px]">
-                    CGFD(src → target) = F_mean(src) − F_mean(target)
+                    CGFD(src â†’ target) = F_mean(src) âˆ’ F_mean(target)
                   </div>
                   <p className="text-slate-600">
                     Measures how much explanation faithfulness degrades when a detector trained on one
@@ -1384,7 +1363,7 @@ export default function DeepfakeXaiPage() {
                     3. Faithfulness-Accuracy Decoupling Index (FADI)
                   </div>
                   <div className="font-mono text-rose-700 text-[11px]">
-                    FADI = norm(CGFD) − norm(Accuracy_Drop)
+                    FADI = norm(CGFD) âˆ’ norm(Accuracy_Drop)
                   </div>
                   <p className="text-slate-600">
                     Captures whether accuracy and explanation faithfulness degrade together or decouple
