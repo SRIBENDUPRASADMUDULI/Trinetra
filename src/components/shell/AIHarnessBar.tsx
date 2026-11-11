@@ -119,7 +119,7 @@ export function AIHarnessBar() {
       onClick={() => setIsOpen(false)}
     >
       <div
-        className="relative w-full max-w-xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[90dvh] flex flex-col rounded-2xl bg-[#262B40] border border-white/10 shadow-2xl overflow-hidden text-slate-200 font-sans"
+        className="relative w-full max-w-2xl max-h-[calc(100dvh-1.5rem)] sm:max-h-[90dvh] flex flex-col rounded-2xl bg-[#262B40] border border-white/10 shadow-2xl overflow-hidden text-slate-200 font-sans"
         onClick={e => e.stopPropagation()}
       >
         {/* Modal Header */}

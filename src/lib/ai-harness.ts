@@ -483,7 +483,7 @@ export async function pingBharatCode(): Promise<{
       latencyMs: 0,
       requestId: null,
       status: 'NOT_CONFIGURED',
-      note: 'BHARATCODE_API_KEY missing in .env.local',
+      note: 'BHARATCODE_API_KEY missing in environment (.env.local or Vercel Environment Variables)',
     }
   }
 

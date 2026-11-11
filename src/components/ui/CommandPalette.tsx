@@ -207,11 +207,11 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150"
+      className="fixed inset-0 z-[100] flex items-start justify-center pt-10 sm:pt-24 px-3 sm:px-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl rounded-2xl bg-[#262B40] border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[80vh] text-slate-100"
+        className="relative w-full max-w-2xl rounded-2xl bg-[#262B40] border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[85dvh] text-slate-100"
         onClick={e => e.stopPropagation()}
       >
         {/* Search Input Bar */}
