@@ -3,7 +3,8 @@ import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { TerminalCard } from '@/components/ui/terminal-card'
 import { StatusBadge } from '@/components/ui/status-badge'
-import { FileText, Download, AlertCircle, Clock, Shield, Sparkles, CheckCircle2, PhoneCall, HelpCircle, ChevronRight, Check } from 'lucide-react'
+import { sha256 } from '@/lib/crypto-utils'
+import { FileText, Download, AlertCircle, Clock, Shield, Sparkles, CheckCircle2, PhoneCall, HelpCircle, ChevronRight, Check, FileCheck2 } from 'lucide-react'
 
 interface FIRFormData {
   complainantName: string
@@ -180,6 +181,8 @@ Official Reference: ${firNo} | Portal: cybercrime.gov.in | Helpline: 1930`
 export default function IncidentPage() {
   const [tab, setTab] = useState<'runbooks' | 'fir'>('fir')
   const [firText, setFirText] = useState<string | null>(null)
+  const [certReceipt, setCertReceipt] = useState<{ certId: string; sha256Hash: string; timestampIso: string } | null>(null)
+  const [exportingCert, setExportingCert] = useState(false)
   const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm<FIRFormData>({
     defaultValues: {
       itActSections: ['43', '66', '66D'],
@@ -214,6 +217,53 @@ export default function IncidentPage() {
   function onSubmit(data: FIRFormData) {
     const fir = generateFIR(data)
     setFirText(fir)
+    setCertReceipt(null)
+  }
+
+  async function exportBsa63Certificate() {
+    if (!firText) return
+    setExportingCert(true)
+    try {
+      const timestampIso = new Date().toISOString()
+      const sha256Hash = await sha256(`${timestampIso}\n${firText}`)
+      const certId = `BSA63-FIR-${sha256Hash.slice(0, 10).toUpperCase()}`
+      const { jsPDF } = await import('jspdf')
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' })
+      doc.setFont('Courier', 'bold')
+      doc.setFontSize(12)
+      doc.text('CERTIFICATE UNDER SECTION 63(4) OF BHARATIYA SAKSHYA ADHINIYAM (BSA), 2023', 40, 48)
+      doc.setFont('Courier', 'normal')
+      doc.setFontSize(9)
+      const bodyLines = [
+        `Certificate ID  : ${certId}`,
+        `Timestamp (UTC) : ${timestampIso}`,
+        `Timestamp (IST) : ${new Date(timestampIso).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}`,
+        `SHA-256 Digest  : ${sha256Hash}`,
+        '',
+        '--------------------------------------------------------------------------------',
+        'ATTESTATION OF ELECTRONIC RECORD INTEGRITY',
+        '--------------------------------------------------------------------------------',
+        ...doc.splitTextToSize(
+          'This electronic FIR complaint dossier and associated incident narrative were hashed locally in-browser using Web Crypto SHA-256 without external alteration. The SHA-256 digest above uniquely identifies the attached complaint record for statutory preservation under BSA 2023 Section 63.',
+          515
+        ),
+        '',
+        '--------------------------------------------------------------------------------',
+        'HASHED FIR RECORD PREVIEW',
+        '--------------------------------------------------------------------------------',
+        ...doc.splitTextToSize(firText, 515),
+      ]
+      let y = 74
+      for (const line of bodyLines) {
+        if (y > 795) { doc.addPage(); y = 45 }
+        doc.text(line, 40, y)
+        y += 13
+      }
+      doc.save(`TRINETRA_${certId}.pdf`)
+      setCertReceipt({ certId, sha256Hash, timestampIso })
+    } finally {
+      setExportingCert(false)
+    }
   }
 
   async function downloadPDF() {
@@ -638,22 +688,37 @@ export default function IncidentPage() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <button
                     onClick={() => setFirText(null)}
-                    className="px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] transition-all"
+                    className="px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.1] transition-all cursor-pointer"
                   >
                     ← Edit Form
                   </button>
                   <button
+                    onClick={exportBsa63Certificate}
+                    disabled={exportingCert}
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-200 text-xs font-bold rounded-full transition-all cursor-pointer disabled:opacity-50"
+                  >
+                    <FileCheck2 size={14} />
+                    <span>{exportingCert ? 'Signing...' : 'Export BSA 2023 §63 Evidence Certificate'}</span>
+                  </button>
+                  <button
                     onClick={downloadPDF}
-                    className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold rounded-full transition-all shadow-lg shadow-emerald-950/40"
+                    className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold rounded-full transition-all shadow-lg shadow-emerald-950/40 cursor-pointer"
                   >
                     <Download size={14} />
                     <span>Download Official PDF</span>
                   </button>
                 </div>
               </div>
+
+              {certReceipt && (
+                <div className="p-3.5 rounded-xl bg-amber-950/25 border border-amber-500/30 font-mono text-xs text-amber-200 space-y-1">
+                  <div className="font-bold">BSA 2023 §63 Certificate Exported: {certReceipt.certId}</div>
+                  <div className="text-[11px] text-slate-300 break-all">SHA-256: {certReceipt.sha256Hash}</div>
+                </div>
+              )}
 
               <TerminalCard title="Generated Legal Dossier Preview" label="PRINT-READY" labelColor="green" noPadding>
                 <pre
