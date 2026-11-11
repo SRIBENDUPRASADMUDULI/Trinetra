@@ -10,10 +10,13 @@ import {
   X,
   Languages,
   FileText,
+  Sun,
+  Moon,
 } from 'lucide-react'
 import { AIHarnessBar } from '@/components/shell/AIHarnessBar'
 import { CommandPalette } from '@/components/ui/CommandPalette'
 import { useLang } from '@/lib/i18n-context'
+import { useTheme } from '@/lib/theme-context'
 
 interface TopNavTab {
   id: string
@@ -31,6 +34,7 @@ const TOP_NAV_TABS: TopNavTab[] = [
 export function TopBar() {
   const pathname = usePathname()
   const { lang, toggleLang, t } = useLang()
+  const { isDark, toggleTheme } = useTheme()
   const [showHelp, setShowHelp] = useState(false)
   const [paletteOpen, setPaletteOpen] = useState(false)
 
@@ -50,7 +54,7 @@ export function TopBar() {
   return (
     <>
       <header
-        className="sticky top-0 z-40 w-full bg-[#1E2420] border-b border-[#323D36] text-white"
+        className="sticky top-0 z-40 w-full bg-[#1E2420] dark:bg-[#090D0A] border-b border-[#323D36] dark:border-[#1E2821] text-white transition-colors duration-200"
         aria-label="Top Navigation Bar"
       >
         <div className="h-16 flex items-center justify-between px-4 sm:px-6 gap-3">
@@ -110,6 +114,26 @@ export function TopBar() {
               <span className={lang === 'en' ? 'text-[#F59E0B]' : 'text-[#94A3B8]'}>EN</span>
               <span className="text-[#5C645E]">|</span>
               <span className={lang === 'hi' ? 'text-[#F59E0B]' : 'text-[#94A3B8]'}>हिन्दी</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-lg bg-[#2A332D] hover:bg-[#344038] border border-[#3E4B42] text-xs font-semibold text-white cursor-pointer transition-colors"
+              title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {isDark ? (
+                <>
+                  <Sun size={14} className="text-[#F59E0B]" />
+                  <span className="hidden xl:inline text-[#F59E0B]">{t('Light', 'लाइट')}</span>
+                </>
+              ) : (
+                <>
+                  <Moon size={14} className="text-[#34D399]" />
+                  <span className="hidden xl:inline text-[#E5E2DA]">{t('Dark', 'डार्क')}</span>
+                </>
+              )}
             </button>
 
             <button

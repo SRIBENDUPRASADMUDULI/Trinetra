@@ -51,7 +51,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className="fixed bottom-0 left-0 right-0 h-16 w-full lg:top-0 lg:bottom-auto lg:right-auto lg:h-screen lg:w-60 bg-[#1E2420] border-t lg:border-t-0 lg:border-r border-[#323D36] flex flex-row lg:flex-col z-50 select-none overflow-x-auto lg:overflow-y-auto no-scrollbar text-white"
+      className="fixed bottom-0 left-0 right-0 h-16 w-full lg:top-0 lg:bottom-auto lg:right-auto lg:h-screen lg:w-60 bg-[#1E2420] dark:bg-[#090D0A] border-t lg:border-t-0 lg:border-r border-[#323D36] dark:border-[#1E2821] flex flex-row lg:flex-col z-50 select-none overflow-x-auto lg:overflow-y-auto no-scrollbar text-white transition-colors duration-200"
       aria-label="Main Navigation"
     >
       {/* Desktop Ink Navy Brand Header */}

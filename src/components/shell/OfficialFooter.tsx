@@ -10,7 +10,7 @@ export function OfficialFooter() {
 
   return (
     <>
-      <footer className="bg-[#1E2420] border-t border-[#323D36] text-[#CBD5E1] text-xs px-4 sm:px-6 lg:px-8 py-5">
+      <footer className="bg-[#1E2420] dark:bg-[#090D0A] border-t border-[#323D36] dark:border-[#1E2821] text-[#CBD5E1] text-xs px-4 sm:px-6 lg:px-8 py-5 transition-colors duration-200">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-4">
             <span className="inline-flex items-center gap-1.5 font-semibold text-white">

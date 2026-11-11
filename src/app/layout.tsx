@@ -41,10 +41,15 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <meta name="color-scheme" content="light" />
+        <meta name="color-scheme" content="light dark" />
         <meta name="theme-color" content="#1E2420" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('trinetra-theme');var d=t==='dark'||(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}}catch(e){}})();`,
+          }}
+        />
       </head>
-      <body className={`${interSans.className} antialiased bg-[#F7F6F2] text-[#1C201D]`}>
+      <body className={`${interSans.className} antialiased bg-[#F7F6F2] text-[#1C201D] dark:bg-[#0D120F] dark:text-[#F1F5F3] transition-colors duration-200`}>
         <GlobalShell>{children}</GlobalShell>
       </body>
     </html>
