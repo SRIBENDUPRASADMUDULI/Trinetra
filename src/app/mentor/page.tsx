@@ -222,7 +222,7 @@ export default function MentorPage() {
 
               <div className="space-y-1.5 flex-1 min-w-0">
                 <div className={`flex items-center gap-2 text-[11px] text-slate-500 ${msg.role === 'user' ? 'justify-end' : ''}`}>
-                  <span>{msg.role === 'agent' ? 'TRINETRA_AI' : 'OPERATOR'}</span>
+                  <span>{msg.role === 'agent' ? 'TRINETRA AI' : 'OPERATOR'}</span>
                   <span>•</span>
                   <span>{msg.ts}</span>
                   {msg.role === 'agent' && (

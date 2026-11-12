@@ -249,7 +249,7 @@ export default function AcademyPage() {
       {/* Panel Tabs */}
       <div className="flex gap-2 flex-wrap font-mono text-xs">
         {[
-          { id: 'briefing' as const, icon: Terminal, label: 'Tactical Briefing Workbench' },
+          { id: 'briefing' as const, icon: Play, label: 'Briefing Workbench' },
           { id: 'ctf' as const, icon: Flag, label: 'CTF Challenge Shell' },
           { id: 'phishing' as const, icon: Shield, label: 'Phishing Sandbox' },
           { id: 'flashcards' as const, icon: BookOpen, label: 'Threat Flashcards' },
@@ -257,12 +257,7 @@ export default function AcademyPage() {
           <button
             key={id}
             onClick={() => setActivePanel(id)}
-            className="flex items-center gap-1.5 px-3.5 py-2 font-bold rounded-xl transition-all cursor-pointer"
-            style={{
-              border: `1px solid ${activePanel === id ? 'rgba(99,102,241,0.5)' : 'rgba(255,255,255,0.08)'}`,
-              color: activePanel === id ? '#818cf8' : '#94a3b8',
-              backgroundColor: activePanel === id ? 'rgba(99,102,241,0.15)' : 'rgba(15,21,35,0.6)',
-            }}
+            className={`flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${activePanel === id ? 'bg-[#059669] border-[#059669] text-white shadow-xs' : 'bg-white border-[#E0DDD5] text-[#5C645E] hover:text-[#1C201D]'}`}
           >
             <Icon size={13} />
             <span>{label}</span>
@@ -274,7 +269,7 @@ export default function AcademyPage() {
       {activePanel === 'briefing' && (
         <TerminalCard
           title="Tactical Briefing Workbench — Split-Pane Operations Console"
-          label="MODULE_07"
+          label="Module 07"
           labelColor="cyan"
           noPadding
           headerRight={
@@ -295,7 +290,7 @@ export default function AcademyPage() {
 
               <div>
                 <h3 className="font-mono text-base font-bold text-[#1C201D] flex items-center gap-2">
-                  <span className="text-[#15803D]">MODULE_07:</span>
+                  <span className="text-[#15803D]">Module 07:</span>
                   <span>Advanced Persistent Threat — Supply Chain Intrusion</span>
                 </h3>
                 <p className="text-xs text-[#5C645E] font-sans mt-1">
@@ -351,7 +346,7 @@ export default function AcademyPage() {
                     ) : (
                       <>
                         <Play size={12} />
-                        <span>[PLAY BRIEFING]</span>
+                        <span>Play Briefing</span>
                       </>
                     )}
                   </button>
@@ -403,9 +398,9 @@ export default function AcademyPage() {
             <div className="lg:col-span-6 p-5 sm:p-6 space-y-4 bg-slate-50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <StatusBadge label="PCAP_DISSECTION" variant="info" />
+                  <StatusBadge label="Packet Capture" variant="info" />
                   <span className="font-mono text-xs text-[#1C201D] font-semibold">
-                    wire_packet_04.hex
+                    packet-04.hex
                   </span>
                 </div>
                 <button
@@ -523,7 +518,7 @@ export default function AcademyPage() {
           {phishingTab === 'body' ? (
             <div className="p-4 space-y-3 font-mono text-xs">
               <div className="space-y-1" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '12px' }}>
-                <p><span className="text-slate-500">FROM:</span> <span style={{ color: '#ef4444' }}>alerts@sbi-kyc-helpdesk.in</span> <StatusBadge label="SPF_FAIL" variant="critical" /></p>
+                <p><span className="text-slate-500">FROM:</span> <span style={{ color: '#ef4444' }}>alerts@sbi-kyc-helpdesk.in</span> <StatusBadge label="SPF Fail" variant="critical" /></p>
                 <p><span className="text-slate-500">TO:</span> <span className="text-[#444B46]">customer@domain.com</span></p>
                 <p><span className="text-slate-500">SUBJECT:</span> <span style={{ color: '#f59e0b' }}>⚠ URGENT: Your SBI account will be BLOCKED in 24 hours</span></p>
                 <p><span className="text-slate-500">DATE:</span> <span className="text-[#5C645E]">Mon, 18 Nov 2024 02:14:33 +0530</span></p>

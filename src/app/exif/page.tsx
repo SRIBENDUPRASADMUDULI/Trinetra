@@ -66,7 +66,7 @@ export default function ExifPage() {
     setScrubbing(true)
     setScrubLog([])
     const steps = [
-      '[SCANNING] Inspecting Exchangeable Image File (EXIF) header segments...',
+      'Scanning: Inspecting Exchangeable Image File (EXIF) header segments...',
       '[IDENTIFIED] Found GPS Latitude/Longitude tags (0x0002, 0x0004)...',
       '[STRIPPING] Removing precise coordinates and altitude markers...',
       '[STRIPPING] Zeroing hardware device serial numbers (0xa431)...',

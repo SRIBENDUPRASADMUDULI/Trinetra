@@ -210,7 +210,7 @@ export default function DevSecPage() {
             {/* Vulnerable Code */}
             <TerminalCard
               title="Vulnerable Source Code"
-              label="[INSECURE PATTERN]"
+              label="Insecure Pattern"
               labelColor="red"
               noPadding
             >
@@ -228,7 +228,7 @@ export default function DevSecPage() {
             {/* Sanitized Patch Code */}
             <TerminalCard
               title="Sanitized & Patched Code"
-              label="[REMEDIATION READY]"
+              label="Patched Fix"
               labelColor="green"
               noPadding
               headerRight={
@@ -272,7 +272,7 @@ export default function DevSecPage() {
                   disabled={sastLoading || customCode.trim().length < 10}
                   className="px-4 py-2 bg-[#059669] hover:bg-[#047857] disabled:opacity-40 text-white font-mono text-xs font-bold rounded-sm cursor-pointer"
                 >
-                  {sastLoading ? '[AUDITING SOURCE CODE...]' : '[RUN LIVE SAST AUDIT]'}
+                  {sastLoading ? 'Auditing Code...' : 'Run Code Audit'}
                 </button>
               </div>
               {sastLoading && (
@@ -291,7 +291,7 @@ export default function DevSecPage() {
           </TerminalCard>
 
           {/* Unified Diff View */}
-          <TerminalCard title="Git Diff Representation" label="[CHANGESET]" labelColor="cyan" noPadding>
+          <TerminalCard title="Git Diff Representation" label="Changeset" labelColor="cyan" noPadding>
             <div className="p-4 bg-slate-50 font-mono text-xs leading-relaxed overflow-x-auto">
               {selectedPair.diff.split('\n').map((line, i) => (
                 <div
@@ -360,7 +360,7 @@ export default function DevSecPage() {
                   disabled={analyzing || !privacyText.trim()}
                   className="px-5 py-2 bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-black font-mono text-xs font-bold rounded-sm transition-all"
                 >
-                  {analyzing ? '[SCANNING POLICY CLAUSES...]' : '[ANALYZE FOR PRIVACY VIOLATIONS]'}
+                  {analyzing ? 'Scanning Policy...' : 'Check Privacy Violations'}
                 </button>
               </div>
             </div>
@@ -369,7 +369,7 @@ export default function DevSecPage() {
           {/* Policy Scan Results */}
           <TerminalCard
             title="Policy Audit & Statutory Compliance Report"
-            label="[DPDP ACT 2023 ASSESSMENT]"
+            label="DPDP Act 2023 Audit"
             labelColor="red"
             noPadding
           >
