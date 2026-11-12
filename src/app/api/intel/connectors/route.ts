@@ -156,11 +156,67 @@ async function fetchOpsHealth(): Promise<OpsHealthSnapshot> {
   }
 }
 
+export interface LiveThreatFeedItem {
+  id: string
+  timestamp: string
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM'
+  sector: 'CRITICAL' | 'FINANCE' | 'TELECOM' | 'GOVT' | 'CLOUD'
+  attackType: string
+  status: 'ACTIVE' | 'INVESTIGATING'
+  source: string
+}
+
 export async function GET() {
-  const [intel, ops] = await Promise.all([fetchThreatIocs(), fetchOpsHealth()])
+  const [intel, ops, kevRes] = await Promise.all([
+    fetchThreatIocs(),
+    fetchOpsHealth(),
+    fetchWithTimeout('https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json', {}, 4500)
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null) as Promise<{
+        vulnerabilities?: Array<{
+          cveID?: string
+          vendorProject?: string
+          product?: string
+          vulnerabilityName?: string
+          dateAdded?: string
+          knownRansomwareCampaignUse?: string
+        }>
+      } | null>,
+  ])
+
+  const liveFeed: LiveThreatFeedItem[] = []
+  const nowIso = new Date().toISOString()
+
+  if (kevRes?.vulnerabilities?.length) {
+    const recent = kevRes.vulnerabilities.slice(-8).reverse()
+    for (const v of recent) {
+      liveFeed.push({
+        id: String(v.cveID || Math.random()),
+        timestamp: v.dateAdded ? `${v.dateAdded}T00:00:00Z` : nowIso,
+        severity: v.knownRansomwareCampaignUse === 'Known' ? 'CRITICAL' : 'HIGH',
+        sector: 'CRITICAL',
+        attackType: `${v.cveID}: ${v.vendorProject ?? ''} ${v.product ?? ''} — ${v.vulnerabilityName ?? 'Exploited Vulnerability'}`.trim(),
+        status: 'ACTIVE',
+        source: 'CISA KEV',
+      })
+    }
+  }
+
+  for (const ioc of intel.iocs.slice(0, 8)) {
+    liveFeed.push({
+      id: ioc.id,
+      timestamp: ioc.firstSeen ? `${ioc.firstSeen}T00:00:00Z` : nowIso,
+      severity: 'HIGH',
+      sector: 'FINANCE',
+      attackType: `${ioc.source === 'MISP' ? 'MISP IOC' : 'C2 Botnet'} ${ioc.value} (${ioc.category})`,
+      status: 'INVESTIGATING',
+      source: ioc.source,
+    })
+  }
+
   return NextResponse.json({
     success: true,
-    generatedAt: new Date().toISOString(),
+    generatedAt: nowIso,
     connectors: {
       misp: features.mispEnabled ? 'CONFIGURED' : 'PUBLIC_FALLBACK',
       netdata: features.netdataEnabled ? 'CONFIGURED' : 'RUNTIME_FALLBACK',
@@ -169,6 +225,7 @@ export async function GET() {
     },
     intelSource: intel.source,
     iocs: intel.iocs,
+    liveFeed,
     ops,
   })
 }

@@ -75,13 +75,23 @@ let openPhishCache: { fetchedAt: number; urls: Set<string> } | null = null
 const OPENPHISH_TTL_MS = 10 * 60 * 1000
 
 function extractUrlsFromText(text: string, explicitUrl?: string): string[] {
-  const matches = text.match(/https?:\/\/[^\s"'<>]+/gi) ?? []
+  const schemeMatches = text.match(/https?:\/\/[^\s"'<>]+/gi) ?? []
+  const bareDomainMatches =
+    text.match(/(?<![@\w.-])\b(?:[a-z0-9-]+\.)+(?:top|xyz|tk|ml|ga|cf|gq|click|link|info|biz|online|site|icu|vip|com|in|co\.in|net|org|sbi)(?:\/[^\s"'<>]*)?\b/gi) ?? []
   const set = new Set<string>()
   if (explicitUrl && explicitUrl.trim()) {
-    set.add(explicitUrl.trim())
+    const cleanExplicit = explicitUrl.trim()
+    set.add(/^https?:\/\//i.test(cleanExplicit) ? cleanExplicit : `https://${cleanExplicit}`)
   }
-  for (const m of matches) {
+  for (const m of schemeMatches) {
     set.add(m.replace(/[),.;!?]+$/, ''))
+  }
+  for (const d of bareDomainMatches) {
+    const clean = d.replace(/[),.;!?]+$/, '')
+    const withScheme = `https://${clean}`
+    if (!Array.from(set).some((existing) => existing.toLowerCase().includes(clean.toLowerCase()))) {
+      set.add(withScheme)
+    }
   }
   return Array.from(set).slice(0, 3)
 }
@@ -285,8 +295,8 @@ function analyzeDeterministically(
   const lower = text.toLowerCase()
 
   const urgencyMarkers = [
-    'immediately', 'urgent', 'today', 'tonight', 'blocked', 'suspended', 'freeze',
-    'disconnect', 'within 24 hours', '12:00', '9:30', 'expire', 'expiry', 'penalty',
+    'immediately', 'urgent', 'expire today', 'blocked today', 'tonight only', 'blocked', 'suspended', 'freeze',
+    'disconnect', 'within 24 hours', '12:00', '9:30', 'midnight', 'deactivate', 'expire', 'expiry', 'penalty', 'last chance',
     'तुरंत', 'ब्लॉक', 'फ्रीज', 'आज रात', 'बंद',
   ]
   const impersonationMarkers = [

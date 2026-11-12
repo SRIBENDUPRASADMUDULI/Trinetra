@@ -1,12 +1,12 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { THREAT_FEED, type ThreatEvent } from '@/data/mock/threat-feed'
+// Live threat feed populated from /api/intel/connectors (CISA KEV + Abuse.ch Feodo / MISP)
 import { FAMILY_ENDPOINTS } from '@/data/mock/family-endpoints'
 import { TerminalCard } from '@/components/ui/terminal-card'
 import { StatusBadge } from '@/components/ui/status-badge'
 import { InfoExplain } from '@/components/ui/InfoExplain'
 import { Pause, Play, RefreshCw, Radar, ChevronDown, ChevronUp, Search, Server, Shield } from 'lucide-react'
-import type { ConnectorIoc, DomainOsintResult, OpsHealthSnapshot } from '@/app/api/intel/connectors/route'
+import type { ConnectorIoc, DomainOsintResult, LiveThreatFeedItem, OpsHealthSnapshot } from '@/app/api/intel/connectors/route'
 import { ThreatGlobe } from '@/components/three/ThreatGlobe'
 
 const CASE_STUDIES = [
@@ -55,8 +55,8 @@ const CASE_STUDIES = [
 type SectorFilter = 'ALL' | 'CRITICAL' | 'FINANCE' | 'POWER' | 'TELECOM' | 'GOVT' | 'HEALTHCARE'
 
 export default function IntelPage() {
-  const [feedItems, setFeedItems] = useState<ThreatEvent[]>(THREAT_FEED.slice(0, 10))
-  const [paused, setPaused] = useState(false)
+  const [feedItems, setFeedItems] = useState<LiveThreatFeedItem[]>([])
+  const [feedLoading, setFeedLoading] = useState(true)
   const [filter, setFilter] = useState<SectorFilter>('ALL')
   // Pre-expand CS-001 by default so kill-chain, attribution, and TTPs are visible on load
   const [expandedCase, setExpandedCase] = useState<string | null>('CS-001')
@@ -73,20 +73,32 @@ export default function IntelPage() {
   const [osintResult, setOsintResult] = useState<DomainOsintResult | null>(null)
   const [osintError, setOsintError] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetch('/api/intel/connectors')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d?.success) {
-          setConnectorData({
-            connectors: d.connectors,
-            intelSource: d.intelSource,
-            iocs: d.iocs ?? [],
-            ops: d.ops ?? null,
-          })
+  const loadConnectors = async () => {
+    setFeedLoading(true)
+    try {
+      const r = await fetch('/api/intel/connectors', { cache: 'no-store' })
+      if (!r.ok) return
+      const d = await r.json()
+      if (d?.success) {
+        setConnectorData({
+          connectors: d.connectors,
+          intelSource: d.intelSource,
+          iocs: d.iocs ?? [],
+          ops: d.ops ?? null,
+        })
+        if (Array.isArray(d.liveFeed)) {
+          setFeedItems(d.liveFeed)
         }
-      })
-      .catch(() => {})
+      }
+    } catch {
+      // Ignore transient network errors
+    } finally {
+      setFeedLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadConnectors()
   }, [])
 
   async function runDomainOsint() {
@@ -111,14 +123,6 @@ export default function IntelPage() {
     }
   }
 
-  useEffect(() => {
-    if (paused) return
-    const id = setInterval(() => {
-      const next = THREAT_FEED[Math.floor(Math.random() * THREAT_FEED.length)]
-      setFeedItems(prev => [next, ...prev.slice(0, 14)])
-    }, 4000)
-    return () => clearInterval(id)
-  }, [paused])
 
   const filteredFeed = filter === 'ALL' ? feedItems
     : filter === 'CRITICAL' ? feedItems.filter(e => e.severity === 'CRITICAL')
@@ -189,13 +193,13 @@ export default function IntelPage() {
         headerRight={
           <div className="flex items-center gap-2.5">
             <span className="font-mono text-xs text-[#5C645E]">
-              BUFFER: <strong className="text-[#1C201D]">{THREAT_FEED.length}</strong> EVENTS
+              LIVE: <strong className="text-[#1C201D]">{feedItems.length}</strong> EVENTS
             </span>
             <button
-              onClick={() => setPaused(p => !p)}
+              onClick={loadConnectors} disabled={feedLoading}
               className="flex items-center gap-1 font-mono text-xs px-2.5 py-1 rounded-lg border border-slate-300 bg-slate-100 hover:bg-slate-100 text-[#444B46] transition-colors"
             >
-              {paused ? <><Play size={11} className="text-[#15803D] mr-1" /> RESUME</> : <><Pause size={11} className="text-[#D97706] mr-1" /> PAUSE</>}
+              <RefreshCw size={11} className={feedLoading ? 'animate-spin' : ''} /> <span>{feedLoading ? 'SYNCING' : 'REFRESH'}</span>
             </button>
           </div>
         }>
