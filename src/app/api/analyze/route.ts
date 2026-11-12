@@ -28,6 +28,15 @@ export interface UrlReputationResult {
   }
 }
 
+export interface HfPhishingSignal {
+  checked: boolean
+  model: string
+  label?: string
+  score?: number
+  phishingProbability?: number
+  status: 'SCORED' | 'NOT_CONFIGURED' | 'ERROR'
+}
+
 export interface AnalyzeResponsePayload {
   verdict: string
   confidence: string
@@ -40,6 +49,7 @@ export interface AnalyzeResponsePayload {
   recommendation: string
   extractedUrls: string[]
   urlReputations: UrlReputationResult[]
+  hfSignal?: HfPhishingSignal
   provider: string
   model: string
   latencyMs: number
@@ -189,6 +199,69 @@ async function checkOpenPhish(targetUrl: string): Promise<UrlReputationResult['o
   }
 }
 
+const HF_PHISHING_MODEL = 'Horizon-Labs/phishing-scam-detector-base'
+
+async function checkHuggingFacePhishing(text: string): Promise<HfPhishingSignal> {
+  if (!env.HF_TOKEN) {
+    return { checked: false, model: HF_PHISHING_MODEL, status: 'NOT_CONFIGURED' }
+  }
+  const snippet = text.trim().slice(0, 512)
+  if (!snippet) {
+    return { checked: false, model: HF_PHISHING_MODEL, status: 'NOT_CONFIGURED' }
+  }
+  try {
+    const res = await fetchWithTimeout(
+      `https://router.huggingface.co/hf-inference/models/${HF_PHISHING_MODEL}`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${env.HF_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ inputs: snippet }),
+      },
+      4000
+    )
+    if (!res.ok) {
+      return { checked: true, model: HF_PHISHING_MODEL, status: 'ERROR' }
+    }
+    const raw = (await res.json()) as unknown
+    const candidates = Array.isArray(raw)
+      ? Array.isArray(raw[0])
+        ? (raw[0] as Array<{ label?: string; score?: number }>)
+        : (raw as Array<{ label?: string; score?: number }>)
+      : []
+
+    const valid = candidates.filter(
+      (item): item is { label: string; score: number } =>
+        typeof item?.label === 'string' && typeof item?.score === 'number'
+    )
+    if (valid.length === 0) {
+      return { checked: true, model: HF_PHISHING_MODEL, status: 'ERROR' }
+    }
+
+    const sorted = [...valid].sort((a, b) => b.score - a.score)
+    const top = sorted[0]
+    const phishingEntry = valid.find((c) => /phish|scam|spam|malicious|fraud|label_1|positive/i.test(c.label))
+    const phishingProbability = phishingEntry
+      ? phishingEntry.score
+      : /phish|scam|spam|malicious|fraud|label_1|positive/i.test(top.label)
+      ? top.score
+      : Math.max(0, 1 - top.score)
+
+    return {
+      checked: true,
+      model: HF_PHISHING_MODEL,
+      label: top.label,
+      score: Number(top.score.toFixed(4)),
+      phishingProbability: Number(phishingProbability.toFixed(4)),
+      status: 'SCORED',
+    }
+  } catch {
+    return { checked: true, model: HF_PHISHING_MODEL, status: 'ERROR' }
+  }
+}
+
 async function inspectUrlReputations(urls: string[]): Promise<UrlReputationResult[]> {
   return Promise.all(
     urls.map(async u => {
@@ -206,8 +279,9 @@ async function inspectUrlReputations(urls: string[]): Promise<UrlReputationResul
 
 function analyzeDeterministically(
   text: string,
-  urlReputations: UrlReputationResult[]
-): Omit<AnalyzeResponsePayload, 'extractedUrls' | 'urlReputations' | 'provider' | 'model' | 'latencyMs'> {
+  urlReputations: UrlReputationResult[],
+  hfSignal?: HfPhishingSignal
+): Omit<AnalyzeResponsePayload, 'extractedUrls' | 'urlReputations' | 'hfSignal' | 'provider' | 'model' | 'latencyMs'> {
   const lower = text.toLowerCase()
 
   const urgencyMarkers = [
@@ -239,7 +313,14 @@ function analyzeDeterministically(
   const linkRiskScore = externalThreatHit ? Math.max(94, maxLexicalRisk) : maxLexicalRisk
   const urgencyScore = Math.min(98, urgencyHits.length > 0 ? 52 + urgencyHits.length * 14 : 14)
   const impersonationScore = Math.min(99, impHits.length > 0 ? 50 + impHits.length * 13 : 12)
-  const overall = Math.round(urgencyScore * 0.34 + impersonationScore * 0.36 + linkRiskScore * 0.30)
+  const hfBoost =
+    hfSignal?.status === 'SCORED' && typeof hfSignal.phishingProbability === 'number'
+      ? Math.round(hfSignal.phishingProbability * 100 * 0.85)
+      : 0
+  const overall = Math.max(
+    hfBoost,
+    Math.round(urgencyScore * 0.34 + impersonationScore * 0.36 + linkRiskScore * 0.30)
+  )
 
   const flags: string[] = []
   if (urgencyHits.length > 0) {
@@ -267,6 +348,15 @@ function analyzeDeterministically(
   }
   if (/\+91[-\s]?\d{10}|\b[6-9]\d{9}\b/.test(text)) {
     flags.push('Unverified 10-digit personal mobile number used for official support claims')
+  }
+  if (
+    hfSignal?.status === 'SCORED' &&
+    typeof hfSignal.phishingProbability === 'number' &&
+    hfSignal.phishingProbability >= 0.65
+  ) {
+    flags.push(
+      `Hugging Face ML classifier flagged ${(hfSignal.phishingProbability * 100).toFixed(1)}% phishing probability (${hfSignal.label})`
+    )
   }
   if (flags.length === 0) {
     flags.push('No urgency coercion, spoofed TLD, or institutional lure patterns detected')
@@ -330,17 +420,24 @@ export async function POST(req: NextRequest) {
 
     const start = performance.now()
     const extractedUrls = extractUrlsFromText(text, explicitUrl)
-    const urlReputations = await inspectUrlReputations(extractedUrls)
     const combinedInput = [text, explicitUrl ? `Explicit URL: ${explicitUrl}` : ''].filter(Boolean).join('\n')
-    const deterministic = analyzeDeterministically(combinedInput, urlReputations)
+    const [urlReputations, hfSignal] = await Promise.all([
+      inspectUrlReputations(extractedUrls),
+      checkHuggingFacePhishing(combinedInput),
+    ])
+    const deterministic = analyzeDeterministically(combinedInput, urlReputations, hfSignal)
 
     try {
-      const repContext = urlReputations.length
-        ? `\n\nURL REPUTATION TELEMETRY:\n${JSON.stringify(urlReputations, null, 2)}`
-        : ''
+      const repContext = [
+        urlReputations.length ? `URL REPUTATION TELEMETRY:\n${JSON.stringify(urlReputations, null, 2)}` : '',
+        hfSignal.status === 'SCORED' ? `HUGGING FACE ML CLASSIFIER SIGNAL:\n${JSON.stringify(hfSignal, null, 2)}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n\n')
+      const contextBlock = repContext ? `\n\n${repContext}` : ''
 
       const harnessRes = await callAIHarness(
-        [{ role: 'user', content: `Analyze this payload:\n\n${combinedInput.slice(0, 2500)}${repContext}` }],
+        [{ role: 'user', content: `Analyze this payload:\n\n${combinedInput.slice(0, 2500)}${contextBlock}` }],
         {
           systemPrompt: PHISHING_SYSTEM_PROMPT,
           temperature: 0.15,
@@ -372,6 +469,7 @@ export async function POST(req: NextRequest) {
               recommendation: String(parsed.recommendation || deterministic.recommendation),
               extractedUrls,
               urlReputations,
+              hfSignal,
               provider: harnessRes.provider,
               model: harnessRes.model,
               latencyMs: harnessRes.latencyMs,
@@ -390,6 +488,7 @@ export async function POST(req: NextRequest) {
         ...deterministic,
         extractedUrls,
         urlReputations,
+        hfSignal,
         provider: 'deterministic-kernel',
         model: 'trinetra-nlp-heuristics',
         latencyMs: Math.max(1, Math.round(performance.now() - start)),

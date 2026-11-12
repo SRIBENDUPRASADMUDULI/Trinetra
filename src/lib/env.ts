@@ -13,7 +13,7 @@ export const env = {
   VIRUSTOTAL_API_KEY: process.env.VIRUSTOTAL_API_KEY ?? '',
   GOOGLE_SAFE_BROWSING_KEY: process.env.GOOGLE_SAFE_BROWSING_KEY ?? '',
   DEEPFAKE_XAI_API_URL: process.env.DEEPFAKE_XAI_API_URL ?? '',
-  HF_TOKEN: process.env.HF_TOKEN ?? '',
+  HF_TOKEN: process.env.HF_TOKEN ?? process.env.HF_API_TOKEN ?? '',
   PWNED_API_BASE: 'https://api.pwnedpasswords.com',
   NODE_ENV: process.env.NODE_ENV ?? 'development',
 }

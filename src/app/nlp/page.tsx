@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import {
-  MailWarning, Link2, Search, RefreshCw, AlertTriangle
+  MailWarning, Link2, Search, RefreshCw, AlertTriangle, Flag, CheckCircle2
 } from 'lucide-react'
 import { InfoExplain } from '@/components/ui/InfoExplain'
 import { ScanResultCard } from '@/components/ui/ScanResultCard'
@@ -28,11 +28,22 @@ interface AnalysisResult {
   recommendation: string
   extractedUrls: string[]
   urlReputations: UrlReputation[]
+  hfSignal?: {
+    checked: boolean
+    model: string
+    label?: string
+    score?: number
+    phishingProbability?: number
+    status: string
+  }
   provider: string
   model: string
   latencyMs: number
   requestId?: string
 }
+
+const ACCURACY_DISCLAIMER =
+  'This is an AI-powered heuristic & URL-reputation tool. Results are not 100% guaranteed. Always verify with your bank or official source before entering credentials or transferring money.'
 
 const MAX_CHARS = 2500
 
@@ -101,6 +112,7 @@ export default function MessageCheckerPage() {
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [certStatus, setCertStatus] = useState<string | null>(null)
   const [exportingCert, setExportingCert] = useState(false)
+  const [feedbackStatus, setFeedbackStatus] = useState<'false_positive' | 'false_negative' | null>(null)
 
   // Fake Website Lookalike Check (Levenshtein distance vs official Indian bank/govt domains)
   const lookalikeChecks = useMemo(() => {
@@ -159,6 +171,7 @@ export default function MessageCheckerPage() {
     setAnalyzing(true)
     setErrorMsg(null)
     setCertStatus(null)
+    setFeedbackStatus(null)
 
     try {
       const res = await fetch('/api/analyze', {
@@ -225,7 +238,7 @@ export default function MessageCheckerPage() {
       link: urlInput,
       lookalikeChecks,
       result,
-      disclaimer: 'AI tool. Verify with your bank before taking action.',
+      disclaimer: ACCURACY_DISCLAIMER,
     }
     const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' })
     const href = URL.createObjectURL(blob)
@@ -234,6 +247,27 @@ export default function MessageCheckerPage() {
     link.download = `TRINETRA_CHECK_${Date.now()}.json`
     link.click()
     URL.revokeObjectURL(href)
+  }
+
+  const handleReportFeedback = (kind: 'false_positive' | 'false_negative') => {
+    if (!result) return
+    setFeedbackStatus(kind)
+    try {
+      const storageKey = 'trinetra_nlp_feedback_v1'
+      const raw = localStorage.getItem(storageKey)
+      const existing = raw ? (JSON.parse(raw) as unknown[]) : []
+      const entry = {
+        kind,
+        verdict: result.verdict,
+        confidence: result.confidence,
+        textSample: msgText.slice(0, 240),
+        url: urlInput || undefined,
+        recordedAt: new Date().toISOString(),
+      }
+      localStorage.setItem(storageKey, JSON.stringify([entry, ...existing].slice(0, 50)))
+    } catch {
+      // Ignore storage quota errors
+    }
   }
 
   // Convert technical verdict into plain-English guidance for ScanResultCard
@@ -398,6 +432,7 @@ export default function MessageCheckerPage() {
                   setResult(null)
                   setErrorMsg(null)
                   setCertStatus(null)
+                  setFeedbackStatus(null)
                 }}
                 className="px-4 py-3 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E0DDD5] text-xs font-semibold text-[#4B5563] cursor-pointer"
               >
@@ -416,7 +451,7 @@ export default function MessageCheckerPage() {
           subheadline={cardData.subheadline}
           whyList={cardData.whyList}
           todoList={cardData.todoList}
-          disclaimer="AI tool. Verify with your bank or official website before taking action."
+          disclaimer={ACCURACY_DISCLAIMER}
           onSaveReport={handleExportBsa63Pdf}
           savingReport={exportingCert}
           onExportJson={handleExportJson}
@@ -425,6 +460,7 @@ export default function MessageCheckerPage() {
             setMsgText('')
             setUrlInput('')
             setCertStatus(null)
+            setFeedbackStatus(null)
           }}
           certNote={certStatus}
           extraContent={
@@ -479,7 +515,42 @@ export default function MessageCheckerPage() {
 
               <div className="text-[11px] font-mono text-[#5C645E]">
                 Engine: {result.provider} ({result.model}) · Latency: {result.latencyMs}ms
+                {result.hfSignal?.status === 'SCORED' && typeof result.hfSignal.phishingProbability === 'number'
+                  ? ` · HF ML (${result.hfSignal.model}): ${(result.hfSignal.phishingProbability * 100).toFixed(1)}%`
+                  : ''}
                 {result.requestId ? ` · x-request-id: ${result.requestId}` : ''}
+              </div>
+
+              <div className="pt-2 border-t border-[#E0DDD5] flex flex-wrap items-center justify-between gap-3">
+                <span className="text-xs text-[#5C645E] flex items-center gap-1.5">
+                  <Flag className="w-3.5 h-3.5 text-[#D97706]" />
+                  Think this result is wrong?
+                </span>
+                {feedbackStatus ? (
+                  <span className="text-xs font-medium text-[#15803D] flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4" />
+                    {feedbackStatus === 'false_positive'
+                      ? 'Flagged as false positive (safe message). Saved locally.'
+                      : 'Reported as false negative (missed scam). Saved locally.'}
+                  </span>
+                ) : (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleReportFeedback('false_positive')}
+                      className="px-3 py-1.5 rounded-lg bg-[#F2F1EC] hover:bg-[#ECFDF5] border border-[#E0DDD5] text-xs font-medium text-[#1E2420] transition-colors cursor-pointer"
+                    >
+                      Report False Positive
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleReportFeedback('false_negative')}
+                      className="px-3 py-1.5 rounded-lg bg-[#F2F1EC] hover:bg-[#FEF2F2] border border-[#E0DDD5] text-xs font-medium text-[#1E2420] transition-colors cursor-pointer"
+                    >
+                      Report False Negative
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           }
