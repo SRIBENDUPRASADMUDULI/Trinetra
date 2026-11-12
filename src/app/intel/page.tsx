@@ -5,7 +5,8 @@ import { FAMILY_ENDPOINTS } from '@/data/mock/family-endpoints'
 import { TerminalCard } from '@/components/ui/terminal-card'
 import { StatusBadge } from '@/components/ui/status-badge'
 import { InfoExplain } from '@/components/ui/InfoExplain'
-import { Pause, Play, RefreshCw, Radar, ChevronDown, ChevronUp } from 'lucide-react'
+import { Pause, Play, RefreshCw, Radar, ChevronDown, ChevronUp, Search, Server, Shield } from 'lucide-react'
+import type { ConnectorIoc, DomainOsintResult, OpsHealthSnapshot } from '@/app/api/intel/connectors/route'
 import { ThreatGlobe } from '@/components/three/ThreatGlobe'
 
 const CASE_STUDIES = [
@@ -61,6 +62,54 @@ export default function IntelPage() {
   const [expandedCase, setExpandedCase] = useState<string | null>('CS-001')
   const [scanningAll, setScanningAll] = useState(false)
   const [scanProgress, setScanProgress] = useState(0)
+  const [connectorData, setConnectorData] = useState<{
+    connectors: { misp: string; netdata: string; spiderfoot: string }
+    intelSource: string
+    iocs: ConnectorIoc[]
+    ops: OpsHealthSnapshot | null
+  } | null>(null)
+  const [osintDomain, setOsintDomain] = useState('sbi.co.in')
+  const [osintLoading, setOsintLoading] = useState(false)
+  const [osintResult, setOsintResult] = useState<DomainOsintResult | null>(null)
+  const [osintError, setOsintError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/intel/connectors')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (d?.success) {
+          setConnectorData({
+            connectors: d.connectors,
+            intelSource: d.intelSource,
+            iocs: d.iocs ?? [],
+            ops: d.ops ?? null,
+          })
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  async function runDomainOsint() {
+    if (!osintDomain.trim()) return
+    setOsintLoading(true)
+    setOsintError(null)
+    try {
+      const res = await fetch('/api/intel/connectors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain: osintDomain.trim() }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'OSINT lookup failed')
+      }
+      setOsintResult(data.osint)
+    } catch (err: unknown) {
+      setOsintError(err instanceof Error ? err.message : 'OSINT lookup failed')
+    } finally {
+      setOsintLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (paused) return
@@ -184,6 +233,120 @@ export default function IntelPage() {
         </div>
       </TerminalCard>
 
+        </div>
+      </div>
+
+      {/* God's Eye Connectors: MISP/Abuse.ch IOCs, Netdata/Ops Health & Domain OSINT */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="lg:col-span-7">
+          <TerminalCard
+            title="Live IOC Feed & Infrastructure Connectors (MISP · Abuse.ch · Netdata)"
+            label={connectorData?.connectors.misp === 'CONFIGURED' ? 'MISP Live' : 'Public IOCs'}
+            labelColor="green"
+            noPadding
+          >
+            <div className="p-4 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+                <span className="text-[#444B46]">
+                  Source: <strong className="text-[#1C201D]">{connectorData?.intelSource ?? 'Syncing...'}</strong>
+                </span>
+                {connectorData?.ops && (
+                  <span className="px-2.5 py-1 rounded bg-[#F2F1EC] border border-[#E0DDD5] text-[#1E2420] flex items-center gap-1.5">
+                    <Server size={12} className="text-[#059669]" />
+                    {connectorData.ops.source}: {connectorData.ops.ramUsedMb} MB RSS
+                    {typeof connectorData.ops.cpuPercent === 'number' ? ` · CPU ${connectorData.ops.cpuPercent}%` : ''}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-2 text-[11px] font-mono">
+                <span className="px-2 py-0.5 rounded border border-[#E0DDD5] bg-[#F2F1EC] text-[#1E2420]">
+                  MISP: {connectorData?.connectors.misp ?? 'CHECKING'}
+                </span>
+                <span className="px-2 py-0.5 rounded border border-[#E0DDD5] bg-[#F2F1EC] text-[#1E2420]">
+                  Netdata: {connectorData?.connectors.netdata ?? 'CHECKING'}
+                </span>
+                <span className="px-2 py-0.5 rounded border border-[#E0DDD5] bg-[#F2F1EC] text-[#1E2420]">
+                  SpiderFoot / DoH+RDAP: {connectorData?.connectors.spiderfoot ?? 'CHECKING'}
+                </span>
+              </div>
+
+              <div className="divide-y divide-[#E5E7EB] border border-[#E0DDD5] rounded-lg overflow-hidden max-h-56 overflow-y-auto">
+                {connectorData && connectorData.iocs.length > 0 ? (
+                  connectorData.iocs.map((ioc) => (
+                    <div key={ioc.id} className="px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+                      <span className="font-semibold text-[#DC2626]">{ioc.value}</span>
+                      <span className="text-[#444B46]">{ioc.category}</span>
+                      <span className="text-[11px] text-[#5C645E]">{ioc.firstSeen ?? ioc.type}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-3 py-4 text-xs text-[#5C645E]">Loading live threat indicators...</div>
+                )}
+              </div>
+            </div>
+          </TerminalCard>
+        </div>
+
+        <div className="lg:col-span-5">
+          <TerminalCard
+            title="Live Domain OSINT Enricher (DNS + RDAP)"
+            label="SpiderFoot / DoH"
+            labelColor="cyan"
+            noPadding
+          >
+            <div className="p-4 space-y-3">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={osintDomain}
+                  onChange={(e) => setOsintDomain(e.target.value)}
+                  placeholder="Enter suspicious domain (e.g. sbi-kyc-update.top)"
+                  className="flex-1 px-3 py-2 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] text-xs font-mono text-[#1E2420] focus:outline-none focus:border-[#059669]"
+                />
+                <button
+                  type="button"
+                  onClick={runDomainOsint}
+                  disabled={osintLoading}
+                  className="px-3.5 py-2 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer disabled:opacity-60"
+                >
+                  <Search size={13} />
+                  {osintLoading ? 'Checking...' : 'Enrich'}
+                </button>
+              </div>
+
+              {osintError && (
+                <div className="text-xs text-[#DC2626] font-mono">{osintError}</div>
+              )}
+
+              {osintResult ? (
+                <div className="space-y-2 text-xs font-mono bg-[#F2F1EC] border border-[#E0DDD5] rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-[#1E2420] flex items-center gap-1.5">
+                      <Shield size={13} className="text-[#059669]" />
+                      {osintResult.domain}
+                    </span>
+                    <span className="text-[11px] text-[#5C645E]">
+                      {osintResult.createdAt ? `Reg: ${osintResult.createdAt}` : 'RDAP Checked'}
+                    </span>
+                  </div>
+                  <div className="text-[#444B46]">
+                    Registrar: <strong className="text-[#1E2420]">{osintResult.registrar ?? 'Not disclosed / Privacy'}</strong>
+                  </div>
+                  <div className="text-[#444B46]">
+                    A Records: <strong className="text-[#1E2420]">{osintResult.aRecords.length ? osintResult.aRecords.join(', ') : 'None'}</strong>
+                  </div>
+                  <div className="text-[#444B46] truncate">
+                    MX: <strong className="text-[#1E2420]">{osintResult.mxRecords.length ? osintResult.mxRecords.join(', ') : 'None'}</strong>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-xs text-[#5C645E]">
+                  Query live DNS (A, MX, TXT) and RDAP registrar/creation-date metadata for any suspicious domain.
+                </div>
+              )}
+            </div>
+          </TerminalCard>
         </div>
       </div>
 

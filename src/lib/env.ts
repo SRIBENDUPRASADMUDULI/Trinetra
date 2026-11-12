@@ -14,6 +14,10 @@ export const env = {
   GOOGLE_SAFE_BROWSING_KEY: process.env.GOOGLE_SAFE_BROWSING_KEY ?? '',
   DEEPFAKE_XAI_API_URL: process.env.DEEPFAKE_XAI_API_URL ?? '',
   HF_TOKEN: process.env.HF_TOKEN ?? process.env.HF_API_TOKEN ?? '',
+  MISP_URL: process.env.MISP_URL ?? '',
+  MISP_API_KEY: process.env.MISP_API_KEY ?? '',
+  NETDATA_URL: process.env.NETDATA_URL ?? '',
+  SPIDERFOOT_URL: process.env.SPIDERFOOT_URL ?? '',
   PWNED_API_BASE: 'https://api.pwnedpasswords.com',
   NODE_ENV: process.env.NODE_ENV ?? 'development',
 }
@@ -25,4 +29,7 @@ export const features = {
   safeBrowsingEnabled: !!env.GOOGLE_SAFE_BROWSING_KEY,
   deepfakeRemoteEnabled: !!env.DEEPFAKE_XAI_API_URL,
   hfInferenceEnabled: !!env.HF_TOKEN,
+  mispEnabled: !!(env.MISP_URL && env.MISP_API_KEY),
+  netdataEnabled: !!env.NETDATA_URL,
+  spiderfootEnabled: !!env.SPIDERFOOT_URL,
 }
