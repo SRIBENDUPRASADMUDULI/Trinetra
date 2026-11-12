@@ -140,6 +140,15 @@ export default function DashboardPage() {
     totalCalls: number
   } | null>(null)
 
+  const [livePulse, setLivePulse] = useState<{
+    iocCount: number
+    feedCount: number
+    satCount: number
+    eqCount: number
+    latestAlert?: string
+    syncedAt?: string
+  } | null>(null)
+
   useEffect(() => {
     fetch('/api/telemetry')
       .then((r) => r.json())
@@ -149,6 +158,20 @@ export default function DashboardPage() {
         }
       })
       .catch(() => {})
+
+    Promise.all([
+      fetch('/api/intel/connectors', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch('/api/intel/osint', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    ]).then(([conn, osint]) => {
+      setLivePulse({
+        iocCount: Array.isArray(conn?.iocs) ? conn.iocs.length : 0,
+        feedCount: Array.isArray(conn?.liveFeed) ? conn.liveFeed.length : 0,
+        satCount: Array.isArray(osint?.satellites) ? osint.satellites.length : 0,
+        eqCount: Array.isArray(osint?.seismic) ? osint.seismic.length : 0,
+        latestAlert: conn?.liveFeed?.[0]?.attackType,
+        syncedAt: new Date().toLocaleTimeString('en-IN', { hour12: false }),
+      })
+    })
   }, [])
 
   return (
@@ -281,6 +304,43 @@ export default function DashboardPage() {
               <p className="text-xs text-[#4B5563] leading-relaxed">{item.action}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Live Threat & Spatial OSINT Pulse */}
+      <section className="rounded-xl bg-[#FFFFFF] border border-[#E0DDD5] p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="space-y-1">
+          <div className="text-xs font-bold text-[#1E2420] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[#15803D] animate-pulse" />
+            Live Threat &amp; Spatial OSINT Pulse
+            {livePulse?.syncedAt && (
+              <span className="font-mono text-[11px] font-normal text-[#5C645E]">
+                (Synced {livePulse.syncedAt})
+              </span>
+            )}
+          </div>
+          <div className="text-xs text-[#4B5563] font-mono truncate max-w-2xl">
+            {livePulse?.latestAlert
+              ? `Latest Live Alert: ${livePulse.latestAlert}`
+              : 'Connecting to CISA KEV, Abuse.ch Feodo, CelesTrak & USGS feeds...'}
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 text-xs font-mono shrink-0">
+          <span className="px-2.5 py-1 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] text-[#1E2420]">
+            Live CVEs/IOCs: <strong>{livePulse?.feedCount ?? '—'}</strong>
+          </span>
+          <span className="px-2.5 py-1 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] text-[#1E2420]">
+            Satellites: <strong>{livePulse?.satCount ?? '—'}</strong>
+          </span>
+          <span className="px-2.5 py-1 rounded-lg bg-[#F2F1EC] border border-[#E0DDD5] text-[#1E2420]">
+            Seismic M2.5+: <strong>{livePulse?.eqCount ?? '—'}</strong>
+          </span>
+          <Link
+            href="/intel"
+            className="px-3 py-1 rounded-lg bg-[#059669] hover:bg-[#047857] text-white font-sans font-semibold transition-colors"
+          >
+            Open Radar
+          </Link>
         </div>
       </section>
 
