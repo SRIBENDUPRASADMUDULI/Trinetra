@@ -459,8 +459,8 @@ export default function DeepfakeXaiPage() {
               <ScanFace className="text-[#059669] shrink-0" size={24} />
               <span>Fake Photo &amp; Deepfake Checker</span>
             </h1>
-            <p className="text-xs sm:text-sm text-[#4B5563] leading-relaxed">
-              Upload a suspicious photo or pick a sample below to check for signs of AI editing, see which face zones look manipulated, and inspect cross-generator benchmarks (CGFD / FADI).
+            <p className="text-sm text-[#4B5563] leading-relaxed">
+              Check any photo or video for AI manipulation, run the 2.4s demo clip, or verify live 24-sample accuracy.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -497,11 +497,11 @@ export default function DeepfakeXaiPage() {
       {/* Mode Switcher Tabs */}
       <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-white border border-[#E0DDD5]">
         {[
-          { id: 'overview', label: 'Benchmark Results (CGFD / FADI)', Icon: BarChart3 },
-          { id: 'inspector', label: 'Photo & Video Checker', Icon: Eye },
-          { id: 'accuracy', label: 'Live Accuracy Check (24 Samples)', Icon: Award },
-          { id: 'runner', label: 'Compare Generators', Icon: Play },
-          { id: 'methodology', label: 'How It Works', Icon: BookOpen },
+          { id: 'inspector', label: 'Photo & Video Check', Icon: Eye },
+          { id: 'accuracy', label: 'Accuracy Test (24)', Icon: Award },
+          { id: 'overview', label: 'Benchmark Matrix', Icon: BarChart3 },
+          { id: 'runner', label: 'Train Study', Icon: Play },
+          { id: 'methodology', label: 'Guide', Icon: BookOpen },
         ].map(({ id, label, Icon }) => {
           const active = activeTab === id
           return (
@@ -524,10 +524,8 @@ export default function DeepfakeXaiPage() {
       <div className="p-3 sm:p-3.5 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] text-amber-800 text-xs flex items-start sm:items-center gap-2.5">
         <AlertTriangle size={15} className="text-[#D97706] shrink-0 mt-0.5 sm:mt-0" />
         <span>
-          <strong>{data?.pythonAvailable ? 'AI-Assisted Forensic Indication:' : 'Research Benchmark Viewer:'}</strong>{' '}
-          {data?.pythonAvailable
-            ? 'Probabilistic Grad-CAM & faithfulness estimation â€” verify manually before legal or enforcement action.'
-            : 'Displaying pre-computed research benchmark outputs (StyleGAN2 / FaceSwapAE / StableDiffusion) because the local PyTorch inference server is not attached in serverless mode. AI-assisted indication â€” verify manually before legal action.'}
+          <strong>Multimodal AI Active:</strong>{' '}
+          Runs Open-Source HuggingFace ViT + Frequency + Temporal checks live in browser. Results are probabilistic indicators — verify manually before legal action.
         </span>
       </div>
 
@@ -611,7 +609,7 @@ export default function DeepfakeXaiPage() {
 
             <TerminalCard
               title="Faithfulness-Accuracy Decoupling Index (FADI)"
-              label="norm(CGFD) âˆ’ norm(Î”Acc)"
+              label="norm(CGFD) âˆ’ norm(ΔAcc)"
               labelColor="amber"
             >
               <InteractiveMatrixGrid
@@ -627,13 +625,13 @@ export default function DeepfakeXaiPage() {
 
           {/* Selected Pair Telemetry Inspector */}
           {selectedPair && (
-            <div className="p-5 rounded-2xl bg-gradient-to-r from-indigo-950/50 via-[#0F1523] to-sky-950/30 border border-[#A7F3D0] flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="p-5 rounded-2xl bg-[#ECFDF5] border border-[#A7F3D0] flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="space-y-1">
                 <div className="text-[10px] font-mono uppercase tracking-wider text-[#047857]">
                   Selected Shift Vector Inspection
                 </div>
                 <div className="text-base font-bold text-[#1C201D] font-mono">
-                  {selectedPair.source} <span className="text-[#059669]">â”€â”€â–º</span> {selectedPair.target}
+                  {selectedPair.source} <span className="text-[#059669]">→</span> {selectedPair.target}
                 </div>
                 <p className="text-xs text-[#444B46]">
                   Accuracy shifted from{' '}
@@ -650,13 +648,13 @@ export default function DeepfakeXaiPage() {
                 </p>
               </div>
               <div className="flex items-center gap-4 shrink-0 font-mono text-xs">
-                <div className="px-3.5 py-2 rounded-xl bg-slate-100 border border-white/10 text-center">
+                <div className="px-3.5 py-2 rounded-xl bg-slate-100 border border-[#E0DDD5] text-center">
                   <div className="text-[10px] text-[#5C645E]">CGFD</div>
                   <div className="text-sm font-bold text-[#047857]">
                     {selectedPair.CGFD >= 0 ? `+${selectedPair.CGFD.toFixed(4)}` : selectedPair.CGFD.toFixed(4)}
                   </div>
                 </div>
-                <div className="px-3.5 py-2 rounded-xl bg-slate-100 border border-white/10 text-center">
+                <div className="px-3.5 py-2 rounded-xl bg-slate-100 border border-[#E0DDD5] text-center">
                   <div className="text-[10px] text-[#5C645E]">FADI</div>
                   <div className="text-sm font-bold text-amber-700">
                     {selectedPair.FADI >= 0 ? `+${selectedPair.FADI.toFixed(2)}` : selectedPair.FADI.toFixed(2)}
@@ -670,7 +668,7 @@ export default function DeepfakeXaiPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {data?.matrices.cgfd && (
               <TerminalCard
-                title="Generated Matplotlib Matrix â€” CGFD"
+                title="Generated Matplotlib Matrix — CGFD"
                 label="outputs/cgfd_matrix.png"
                 labelColor="white"
               >
@@ -693,7 +691,7 @@ export default function DeepfakeXaiPage() {
             )}
             {data?.matrices.fadi && (
               <TerminalCard
-                title="Generated Matplotlib Matrix â€” FADI"
+                title="Generated Matplotlib Matrix — FADI"
                 label="outputs/fadi_matrix.png"
                 labelColor="white"
               >
@@ -750,9 +748,9 @@ export default function DeepfakeXaiPage() {
                   <tr className="border-b border-[#E0DDD5] text-[10px] text-[#5C645E] uppercase">
                     <th className="py-2.5 pr-4">Source (Train)</th>
                     <th className="py-2.5 pr-4">Target (Test)</th>
-                    <th className="py-2.5 pr-4">Acc (Src â†’ Tgt)</th>
+                    <th className="py-2.5 pr-4">Acc (Src → Tgt)</th>
                     <th className="py-2.5 pr-4">Acc Drop</th>
-                    <th className="py-2.5 pr-4">Faithfulness (Src â†’ Tgt)</th>
+                    <th className="py-2.5 pr-4">Faithfulness (Src → Tgt)</th>
                     <th className="py-2.5 pr-4">CGFD</th>
                     <th className="py-2.5">FADI</th>
                   </tr>
@@ -766,7 +764,7 @@ export default function DeepfakeXaiPage() {
                       <td className="py-2.5 pr-4 text-[#1C201D] font-semibold">{row.source}</td>
                       <td className="py-2.5 pr-4 text-[#047857]">{row.target}</td>
                       <td className="py-2.5 pr-4 text-[#444B46]">
-                        {(row.src_accuracy * 100).toFixed(0)}% â†’ {(row.target_accuracy * 100).toFixed(0)}%
+                        {(row.src_accuracy * 100).toFixed(0)}% → {(row.target_accuracy * 100).toFixed(0)}%
                       </td>
                       <td className="py-2.5 pr-4">
                         <span
@@ -780,7 +778,7 @@ export default function DeepfakeXaiPage() {
                         </span>
                       </td>
                       <td className="py-2.5 pr-4 text-[#444B46]">
-                        {row.src_faithfulness.toFixed(3)} â†’ {row.target_faithfulness.toFixed(3)}
+                        {row.src_faithfulness.toFixed(3)} → {row.target_faithfulness.toFixed(3)}
                       </td>
                       <td className="py-2.5 pr-4 font-bold text-[#047857]">
                         {row.CGFD >= 0 ? `+${row.CGFD.toFixed(4)}` : row.CGFD.toFixed(4)}
@@ -792,7 +790,7 @@ export default function DeepfakeXaiPage() {
                               ? 'bg-amber-500/15 border-[#FDE68A] text-amber-700'
                               : row.FADI <= -0.5
                               ? 'bg-[#F2F1EC] border-[#E0DDD5] text-[#047857]'
-                              : 'bg-slate-50 border-white/10 text-[#444B46]'
+                              : 'bg-slate-50 border-[#E0DDD5] text-[#444B46]'
                           }`}
                         >
                           {row.FADI >= 0 ? `+${row.FADI.toFixed(2)}` : row.FADI.toFixed(2)}
@@ -850,7 +848,7 @@ export default function DeepfakeXaiPage() {
 
           {/* Grad-CAM Explanation Overlays Gallery */}
           <TerminalCard
-            title="Grad-CAM Saliency Overlays (Research Benchmark â€” FaceForensics++ / Celeb-DF)"
+            title="Grad-CAM Saliency Overlays (Research Benchmark — FaceForensics++ / Celeb-DF)"
             label={`${data?.gradcamSamples.length ?? 0} OVERLAYS`}
             labelColor="amber"
           >
@@ -1042,7 +1040,7 @@ export default function DeepfakeXaiPage() {
                             className={`p-1.5 rounded-xl border text-left transition-all cursor-pointer ${
                               selected
                                 ? 'bg-[#ECFDF5] border-[#059669] text-[#1A1A1A] ring-2 ring-[#059669]/20'
-                                : 'bg-slate-50 border-[#E0DDD5] text-[#5C645E] hover:border-white/20'
+                                : 'bg-slate-50 border-[#E0DDD5] text-[#5C645E] hover:border-[#059669]'
                             }`}
                           >
                             <img
@@ -1564,7 +1562,7 @@ export default function DeepfakeXaiPage() {
                     <option value="ALL">ALL (Full 3Ã—3 Cross-Generator Matrix)</option>
                     {generators.map(g => (
                       <option key={g} value={g}>
-                        {g} (Single Source â†’ All Targets)
+                        {g} (Single Source → All Targets)
                       </option>
                     ))}
                   </select>
@@ -1577,7 +1575,7 @@ export default function DeepfakeXaiPage() {
                     onChange={e => setStudyBackbone(e.target.value as 'simple' | 'efficientnet_b0')}
                     className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-[#E0DDD5] text-[#1C201D] font-mono"
                   >
-                    <option value="simple">simple (3-Layer CNN â€” fast CPU demo)</option>
+                    <option value="simple">simple (3-Layer CNN — fast CPU demo)</option>
                     <option value="efficientnet_b0">efficientnet_b0 (Research Backbone)</option>
                   </select>
                 </div>
@@ -1681,16 +1679,16 @@ export default function DeepfakeXaiPage() {
                       '// Once finished, CSVs, CGFD/FADI heatmaps, and Grad-CAM samples auto-refresh across Panel 11.'}
                 </pre>
                 {studyDurationMs !== null && !studyError && (
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] text-emerald-200 text-xs">
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#065F46] text-xs">
                     <span className="flex items-center gap-2">
                       <CheckCircle2 size={15} />
-                      Study complete â€” static matrices and tables updated with live results.
+                      Study complete — static matrices and tables updated with live results.
                     </span>
                     <button
                       onClick={() => setActiveTab('overview')}
                       className="underline font-semibold hover:text-[#1C201D] cursor-pointer"
                     >
-                      View Updated Matrices â†’
+                      View Updated Matrices →
                     </button>
                   </div>
                 )}
@@ -1738,7 +1736,7 @@ export default function DeepfakeXaiPage() {
                     2. Cross-Generator Faithfulness Drop (CGFD)
                   </div>
                   <div className="font-mono text-amber-700 text-[11px]">
-                    CGFD(src â†’ target) = F_mean(src) âˆ’ F_mean(target)
+                    CGFD(src → target) = F_mean(src) âˆ’ F_mean(target)
                   </div>
                   <p className="text-[#5C645E]">
                     Measures how much explanation faithfulness degrades when a detector trained on one
@@ -1809,7 +1807,7 @@ export default function DeepfakeXaiPage() {
               <span className="text-xs font-mono text-[#1C201D] font-bold">{zoomImage.title}</span>
               <button
                 onClick={() => setZoomImage(null)}
-                className="p-1.5 rounded-lg text-[#5C645E] hover:text-[#1C201D] hover:bg-white/10 cursor-pointer"
+                className="p-1.5 rounded-lg text-[#5C645E] hover:text-[#1C201D] hover:bg-[#E5E2DA] cursor-pointer"
               >
                 <X size={16} />
               </button>

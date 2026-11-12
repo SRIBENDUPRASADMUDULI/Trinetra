@@ -150,23 +150,13 @@ export default function DevSecPage() {
       <div className="flex gap-2 flex-wrap">
         <button
           onClick={() => setTab('sast')}
-          className="px-4 py-2 font-mono text-xs font-bold rounded-xl transition-all"
-          style={{
-            backgroundColor: tab === 'sast' ? 'rgba(99,102,241,0.15)' : 'rgba(15,23,42,0.4)',
-            color: tab === 'sast' ? '#818cf8' : '#94a3b8',
-            border: `1px solid ${tab === 'sast' ? 'rgba(99,102,241,0.35)' : 'rgba(51,65,85,0.4)'}`,
-          }}
+          className={`px-4 py-2.5 text-sm font-semibold rounded-xl border transition-all cursor-pointer ${tab === 'sast' ? 'bg-[#059669] border-[#059669] text-white shadow-xs' : 'bg-white border-[#E0DDD5] text-[#5C645E] hover:text-[#1C201D]'}`}
         >
           🔍 SAST Source Code Auditor
         </button>
         <button
           onClick={() => setTab('privacy')}
-          className="px-4 py-2 font-mono text-xs font-bold rounded-xl transition-all"
-          style={{
-            backgroundColor: tab === 'privacy' ? 'rgba(99,102,241,0.15)' : 'rgba(15,23,42,0.4)',
-            color: tab === 'privacy' ? '#818cf8' : '#94a3b8',
-            border: `1px solid ${tab === 'privacy' ? 'rgba(99,102,241,0.35)' : 'rgba(51,65,85,0.4)'}`,
-          }}
+          className={`px-4 py-2.5 text-sm font-semibold rounded-xl border transition-all cursor-pointer ${tab === 'privacy' ? 'bg-[#059669] border-[#059669] text-white shadow-xs' : 'bg-white border-[#E0DDD5] text-[#5C645E] hover:text-[#1C201D]'}`}
         >
           📜 Privacy & Surveillance Scanner
         </button>
@@ -184,12 +174,7 @@ export default function DevSecPage() {
                 <button
                   key={p.id}
                   onClick={() => { setSelectedPair(p); setCopied(false) }}
-                  className="px-3 py-1.5 font-mono text-xs rounded-sm transition-all flex items-center gap-1.5"
-                  style={{
-                    border: `1px solid ${selectedPair.id === p.id ? '#10b981' : 'rgba(51,65,85,0.7)'}`,
-                    color: selectedPair.id === p.id ? '#34d399' : '#94a3b8',
-                    backgroundColor: selectedPair.id === p.id ? 'rgba(16,185,129,0.12)' : '#07090e',
-                  }}
+                  className={`px-3 py-2 font-mono text-xs rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer ${selectedPair.id === p.id ? 'bg-[#ECFDF5] border-[#059669] text-[#047857] font-semibold' : 'bg-white border-[#E0DDD5] text-[#444B46] hover:bg-slate-50'}`}
                 >
                   <span className="font-bold">{p.cweId}:</span>
                   <span>{p.cweName}</span>
@@ -201,7 +186,7 @@ export default function DevSecPage() {
           {/* Diagnostic Info Bar */}
           <div className="p-3 bg-slate-100 border border-[#E0DDD5] rounded-sm flex flex-wrap items-center justify-between gap-3 font-mono text-xs">
             <div className="flex flex-wrap items-center gap-3">
-              <span><span className="text-slate-500">VULN:</span> <strong className="text-red-400">[{selectedPair.cweId}] {selectedPair.cweName}</strong></span>
+              <span><span className="text-slate-500">VULN:</span> <strong className="text-[#DC2626] dark:text-[#FCA5A5]">[{selectedPair.cweId}] {selectedPair.cweName}</strong></span>
               <span><span className="text-slate-500">SEVERITY CVSS:</span> <strong className="text-[#D97706]">{selectedPair.cvssScore}</strong></span>
               <span><span className="text-slate-500">LANGUAGE:</span> <strong className="text-[#059669]">{selectedPair.language.toUpperCase()}</strong></span>
               <span><span className="text-slate-500">CATEGORY:</span> <span className="text-[#444B46]">{selectedPair.owaspCategory}</span></span>
@@ -229,12 +214,12 @@ export default function DevSecPage() {
               labelColor="red"
               noPadding
             >
-              <div className="p-3 bg-red-50 border-b border-[#E0DDD5] text-xs font-mono text-red-300 flex items-center gap-2">
-                <ShieldAlert size={14} className="text-red-400 flex-shrink-0" />
+              <div className="p-3 bg-[#FEF2F2] border-b border-[#FECACA] text-xs font-mono text-[#991B1B] flex items-center gap-2">
+                <ShieldAlert size={14} className="text-[#DC2626] flex-shrink-0" />
                 <span>Flaw: Unsanitized execution vector detected</span>
               </div>
               <pre
-                className="p-4 overflow-x-auto font-mono text-xs leading-relaxed bg-slate-50 text-red-300 whitespace-pre-wrap select-text max-h-[380px]"
+                className="p-4 overflow-x-auto font-mono text-xs leading-relaxed bg-slate-50 text-[#991B1B] whitespace-pre-wrap select-text max-h-[380px]"
               >
                 {selectedPair.vulnerableCode}
               </pre>
@@ -285,7 +270,7 @@ export default function DevSecPage() {
                 <button
                   onClick={auditCustomCode}
                   disabled={sastLoading || customCode.trim().length < 10}
-                  className="px-4 py-2 bg-indigo-600 hover:bg-[#ECFDF5]0 disabled:opacity-40 text-white font-mono text-xs font-bold rounded-sm cursor-pointer"
+                  className="px-4 py-2 bg-[#059669] hover:bg-[#047857] disabled:opacity-40 text-white font-mono text-xs font-bold rounded-sm cursor-pointer"
                 >
                   {sastLoading ? '[AUDITING SOURCE CODE...]' : '[RUN LIVE SAST AUDIT]'}
                 </button>
@@ -314,7 +299,7 @@ export default function DevSecPage() {
                   className="py-0.5 px-1 rounded-none"
                   style={{
                     backgroundColor: line.startsWith('+') ? 'rgba(16,185,129,0.1)' : line.startsWith('-') ? 'rgba(239,68,68,0.1)' : 'transparent',
-                    color: line.startsWith('+') ? '#4ade80' : line.startsWith('-') ? '#f87171' : line.startsWith('@') ? '#34D399' : '#6B726D',
+                    color: line.startsWith('+') ? '#10B981' : line.startsWith('-') ? '#EF4444' : line.startsWith('@') ? '#34D399' : '#6B726D',
                   }}
                 >
                   {line}
@@ -405,7 +390,7 @@ export default function DevSecPage() {
                     <th className="text-left p-3">INDIAN STATUTORY LAW</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-[#E0DDD5]">
                   {privacyResults.map((r, i) => (
                     <tr key={i} className="hover:bg-slate-100">
                       <td className="p-3 text-[#1C201D] font-semibold whitespace-nowrap">{r.category}</td>

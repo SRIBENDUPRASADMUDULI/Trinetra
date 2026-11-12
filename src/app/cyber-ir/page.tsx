@@ -244,7 +244,7 @@ export default function CyberIRPage() {
           onClick={() => setActiveTab('fir')}
           className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
             activeTab === 'fir'
-              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-[#1C201D] shadow-lg shadow-indigo-950/40 border border-[#A7F3D0]'
+              ? 'bg-[#059669] text-white shadow-lg shadow-indigo-950/40 border border-[#A7F3D0]'
               : 'text-[#5C645E] hover:text-[#1C201D] hover:bg-slate-50'
           }`}
         >
@@ -256,7 +256,7 @@ export default function CyberIRPage() {
           onClick={() => setActiveTab('playbook')}
           className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
             activeTab === 'playbook'
-              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-[#1C201D] shadow-lg shadow-indigo-950/40 border border-[#A7F3D0]'
+              ? 'bg-[#059669] text-white shadow-lg shadow-indigo-950/40 border border-[#A7F3D0]'
               : 'text-[#5C645E] hover:text-[#1C201D] hover:bg-slate-50'
           }`}
         >
@@ -268,7 +268,7 @@ export default function CyberIRPage() {
           onClick={() => setActiveTab('api_docs')}
           className={`px-5 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 ${
             activeTab === 'api_docs'
-              ? 'bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 text-[#1C201D] shadow-lg shadow-indigo-950/40 border border-[#A7F3D0]'
+              ? 'bg-[#059669] text-white shadow-lg shadow-indigo-950/40 border border-[#A7F3D0]'
               : 'text-[#5C645E] hover:text-[#1C201D] hover:bg-slate-50'
           }`}
         >

@@ -13,14 +13,14 @@ interface InteractiveMatrixGridProps {
 
 function getCellStyle(metric: 'CGFD' | 'FADI', value: number): string {
   if (metric === 'CGFD') {
-    if (value > 0.02) return 'bg-rose-500/20 border-rose-500/40 text-rose-200'
-    if (value < -0.02) return 'bg-emerald-500/15 border-emerald-500/35 text-emerald-200'
-    return 'bg-amber-500/15 border-amber-500/30 text-amber-200'
+    if (value > 0.02) return 'bg-[#FEF2F2] border-[#FECACA] text-[#991B1B]'
+    if (value < -0.02) return 'bg-[#ECFDF5] border-[#A7F3D0] text-[#065F46]'
+    return 'bg-[#FFFBEB] border-[#FDE68A] text-[#92400E]'
   }
   // FADI
-  if (value >= 0.5) return 'bg-rose-500/20 border-rose-500/40 text-rose-200'
-  if (value <= -0.5) return 'bg-[#F2F1EC]0/20 border-sky-500/40 text-sky-200'
-  return 'bg-[#ECFDF5]0/15 border-indigo-500/30 text-indigo-200'
+  if (value >= 0.5) return 'bg-[#FEF2F2] border-[#FECACA] text-[#991B1B]'
+  if (value <= -0.5) return 'bg-[#ECFDF5] border-[#A7F3D0] text-[#047857]'
+  return 'bg-[#F2F1EC] border-[#E0DDD5] text-[#1C201D]'
 }
 
 export function InteractiveMatrixGrid({

@@ -48,15 +48,15 @@ export function FaithfulnessCurveChart({
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
         <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1.5 text-rose-300">
+          <span className="flex items-center gap-1.5 text-[#DC2626] dark:text-[#FCA5A5]">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-400" />
             Deletion AUC: <strong>{deletionAuc.toFixed(4)}</strong>
-            <span className="text-slate-500 text-[10px]">(lower = better)</span>
+            <span className="text-[#5C645E] text-[11px]">(lower = better)</span>
           </span>
-          <span className="flex items-center gap-1.5 text-emerald-300">
+          <span className="flex items-center gap-1.5 text-[#059669] dark:text-[#6EE7B7]">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
             Insertion AUC: <strong>{insertionAuc.toFixed(4)}</strong>
-            <span className="text-slate-500 text-[10px]">(higher = better)</span>
+            <span className="text-[#5C645E] text-[11px]">(higher = better)</span>
           </span>
         </div>
       </div>

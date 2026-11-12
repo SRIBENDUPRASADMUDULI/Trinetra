@@ -37,15 +37,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${interSans.variable} ${jetbrainsMono.variable} ${notoDevanagari.variable}`}
+      className={`dark ${interSans.variable} ${jetbrainsMono.variable} ${notoDevanagari.variable}`}
       suppressHydrationWarning
     >
       <head>
-        <meta name="color-scheme" content="light dark" />
-        <meta name="theme-color" content="#1E2420" />
+        <meta name="color-scheme" content="dark light" />
+        <meta name="theme-color" content="#090D0A" />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('trinetra-theme');var d=t==='dark'||(!t&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('trinetra-theme');if(t==='light'){document.documentElement.classList.remove('dark');document.documentElement.style.colorScheme='light';}else{document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}}catch(e){document.documentElement.classList.add('dark');}})();`,
           }}
         />
       </head>

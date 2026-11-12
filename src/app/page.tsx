@@ -170,75 +170,122 @@ export default function DashboardPage() {
               />
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#1E2420] tracking-tight">
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#1E2420] tracking-tight leading-tight">
               {t(
-                'Stay Safe Online: Check Scams, Verify Files & Get Help',
-                'ऑनलाइन सुरक्षित रहें: धोखाधड़ी जांचें, फ़ाइल सत्यापित करें और सहायता पाएं'
+                'Sovereign Cyber Defense for Every Citizen',
+                'हर नागरिक के लिए सुरक्षित डिजिटल रक्षा'
               )}
             </h1>
-            <p className="text-sm text-[#4B5563] leading-relaxed">
+            <p className="text-sm sm:text-base text-[#4B5563] leading-relaxed">
               {t(
-                'Not sure if a message, link, or photo is real or a scam? Pick any simple tool below to check it before you click, share, or send money.',
-                'यदि आप सुनिश्चित नहीं हैं कि कोई संदेश, लिंक या फ़ोटो असली है या धोखाधड़ी, तो क्लिक करने से पहले नीचे दिए गए किसी भी टूल से जांचें।'
+                'Verify suspicious links, spot deepfake videos, audit code, and draft 1930 complaints in seconds.',
+                'संदिग्ध लिंक, नकली वीडियो और धोखाधड़ी की तुरंत जांच करें।'
               )}
             </p>
 
             {/* Primary Clear Buttons with Text + Icons */}
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
                 href="/nlp"
-                className="px-4 py-2.5 rounded-lg bg-[#059669] hover:bg-[#047857] text-white text-xs font-semibold flex items-center gap-2 transition-colors"
+                className="px-5 py-3 rounded-xl bg-[#059669] hover:bg-[#047857] text-white text-sm font-semibold flex items-center gap-2 transition-colors shadow-xs"
               >
                 <MessageSquare className="w-4 h-4" />
-                {t('Check a Suspicious Message', 'संदेश जांचें')}
+                {t('Check Message', 'संदेश जांचें')}
+              </Link>
+              <Link
+                href="/deepfake-xai"
+                className="px-5 py-3 rounded-xl bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E0DDD5] text-[#1E2420] text-sm font-semibold flex items-center gap-2 transition-colors"
+              >
+                <ScanFace className="w-4 h-4 text-[#D97706]" />
+                {t('Fake Video Lab', 'डीपफेक जांच')}
               </Link>
               <Link
                 href="/incident"
-                className="px-4 py-2.5 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E0DDD5] text-[#1E2420] text-xs font-semibold flex items-center gap-2 transition-colors"
+                className="px-5 py-3 rounded-xl bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E0DDD5] text-[#1E2420] text-sm font-semibold flex items-center gap-2 transition-colors"
               >
                 <FileText className="w-4 h-4 text-[#DC2626]" />
-                {t('File Police Complaint', 'पुलिस शिकायत दर्ज करें')}
-              </Link>
-              <Link
-                href="/mentor"
-                className="px-4 py-2.5 rounded-lg bg-[#FFFFFF] hover:bg-[#F3F4F6] border border-[#E0DDD5] text-[#1E2420] text-xs font-semibold flex items-center gap-2 transition-colors"
-              >
-                <Bot className="w-4 h-4 text-[#059669]" />
-                {t('Ask AI Assistant', 'एआई सहायक से पूछें')}
+                {t('File 1930 Report', '1930 शिकायत')}
               </Link>
             </div>
           </div>
 
-          {/* Right Quick Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 lg:w-72 shrink-0">
+          {/* Right Sovereign India Gate Monument + Helpline */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3 lg:w-80 shrink-0">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-b from-[#132019] via-[#0E1712] to-[#0A100D] border border-[#2C3F33] p-4 text-white">
+              <div className="flex items-center justify-between text-[11px] font-mono text-[#34D399] mb-2">
+                <span className="flex items-center gap-1.5 font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-[#F59E0B] animate-pulse" />
+                  INDIA GATE SHIELD
+                </span>
+                <span className="text-[#F59E0B]">
+                  {telemetry && telemetry.totalCalls > 0 ? `${telemetry.totalCalls} SCANS` : 'LIVE GRID'}
+                </span>
+              </div>
+
+              <svg
+                viewBox="0 0 260 112"
+                className="w-full h-24 mx-auto"
+                role="img"
+                aria-label="India Gate Cyber Defense Monument"
+              >
+                <defs>
+                  <linearGradient id="igStone" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#FDE68A" />
+                    <stop offset="60%" stopColor="#D97706" />
+                    <stop offset="100%" stopColor="#78350F" />
+                  </linearGradient>
+                  <radialGradient id="igGlow" cx="50%" cy="62%" r="55%">
+                    <stop offset="0%" stopColor="#10B981" stopOpacity="0.35" />
+                    <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
+                  </radialGradient>
+                </defs>
+                {/* Horizon glow & tricolor cyber grid base */}
+                <circle cx="130" cy="68" r="54" fill="url(#igGlow)" />
+                <line x1="16" y1="98" x2="244" y2="98" stroke="#10B981" strokeOpacity="0.45" strokeWidth="1.2" />
+                <line x1="36" y1="103" x2="224" y2="103" stroke="#F59E0B" strokeOpacity="0.45" strokeWidth="1.2" />
+
+                {/* Top crown & cornice steps */}
+                <rect x="76" y="16" width="108" height="7" rx="1.5" fill="url(#igStone)" opacity="0.92" />
+                <rect x="66" y="23" width="128" height="8" rx="1" fill="url(#igStone)" opacity="0.96" />
+                <rect x="72" y="31" width="116" height="9" fill="#B45309" opacity="0.85" />
+
+                {/* Left & Right Pillars */}
+                <rect x="76" y="40" width="32" height="58" fill="url(#igStone)" />
+                <rect x="152" y="40" width="32" height="58" fill="url(#igStone)" />
+
+                {/* Central Archway */}
+                <path d="M 108 98 L 108 58 A 22 22 0 0 1 152 58 L 152 98 Z" fill="#0B120E" stroke="#FCD34D" strokeOpacity="0.45" strokeWidth="1" />
+                <path d="M 113 98 L 113 61 A 17 17 0 0 1 147 61 L 147 98" fill="none" stroke="#34D399" strokeOpacity="0.35" strokeWidth="1" />
+
+                {/* Amar Jawan Eternal Flame */}
+                <path d="M130 78 C127 83 128 88 130 88 C132 88 133 83 130 78 Z" fill="#FBBF24" />
+                <rect x="124" y="89" width="12" height="9" rx="1" fill="#92400E" />
+
+                {/* Side architectural niches */}
+                <rect x="86" y="54" width="10" height="24" rx="5" fill="#0E1712" opacity="0.65" />
+                <rect x="164" y="54" width="10" height="24" rx="5" fill="#0E1712" opacity="0.65" />
+              </svg>
+
+              <div className="mt-1 flex items-center justify-between text-[11px] text-[#CBD5E1]">
+                <span>National Cyber Grid · New Delhi</span>
+                <span className="font-mono text-[#34D399]">99.9% UP</span>
+              </div>
+            </div>
+
             <a
               href="tel:1930"
-              className="p-4 rounded-xl bg-[#FEF2F2] border border-[#FECACA] hover:bg-[#FEE2E2] transition-colors flex items-center gap-3"
+              className="p-3.5 rounded-xl bg-[#FEF2F2] border border-[#FECACA] hover:bg-[#FEE2E2] transition-colors flex items-center gap-3"
             >
               <div className="w-10 h-10 rounded-lg bg-[#DC2626] text-white flex items-center justify-center shrink-0">
                 <PhoneCall className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-xs font-bold text-[#991B1B]">Lost Money Online? Call 1930</div>
-                <div className="text-[11px] text-[#7F1D1D]">
-                  24x7 National Cyber Helpline · cybercrime.gov.in
+                <div className="text-sm font-bold text-[#991B1B]">Cyber Helpline: 1930</div>
+                <div className="text-xs text-[#7F1D1D]">
+                  24x7 Fraud Freeze · cybercrime.gov.in
                 </div>
               </div>
             </a>
-
-            <div className="p-4 rounded-xl bg-[#F2F1EC] border border-[#E0DDD5] flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-[#ECFDF5] border border-[#A7F3D0] text-[#059669] flex items-center justify-center shrink-0">
-                <Cpu className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="text-xs font-bold text-[#1E2420]">BharatCode AI Gateway</div>
-                <div className="text-[11px] text-[#5C645E] truncate">
-                  {telemetry && telemetry.totalCalls > 0
-                    ? `${telemetry.totalCalls} live checks · ${telemetry.latencyMs}ms`
-                    : 'Ready · Privacy shield active'}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -318,10 +365,10 @@ export default function DashboardPage() {
                       {tool.badge}
                     </span>
                   </div>
-                  <h3 className="text-sm font-bold text-[#1E2420] group-hover:text-[#059669] transition-colors">
+                  <h3 className="text-base font-bold text-[#1E2420] group-hover:text-[#059669] transition-colors">
                     {t(tool.name, tool.hiName)}
                   </h3>
-                  <p className="text-xs text-[#5C645E] leading-relaxed">{tool.summary}</p>
+                  <p className="text-sm text-[#5C645E] leading-relaxed">{tool.summary}</p>
                 </div>
 
                 <div className="pt-3 border-t border-[#E0DDD5] flex items-center justify-between text-xs font-semibold text-[#059669]">

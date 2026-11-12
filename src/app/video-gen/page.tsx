@@ -466,7 +466,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
           onClick={() => setActiveTab('generator')}
           className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all ${
             activeTab === 'generator'
-              ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] shadow-sm shadow-indigo-950/20'
+              ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] shadow-sm shadow-xs'
               : 'text-[#5C645E] hover:text-[#1C201D] bg-slate-100 border border-transparent'
           }`}
         >
@@ -477,13 +477,13 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
           onClick={() => setActiveTab('vault')}
           className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-mono text-xs font-bold transition-all ${
             activeTab === 'vault'
-              ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] shadow-sm shadow-indigo-950/20'
+              ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] shadow-sm shadow-xs'
               : 'text-[#5C645E] hover:text-[#1C201D] bg-slate-100 border border-transparent'
           }`}
         >
           <Database size={14} />
           <span>Document Vault &amp; History</span>
-          <span className="px-1.5 py-0.2 rounded-full bg-white/10 text-[10px] text-[#1C201D]">
+          <span className="px-1.5 py-0.2 rounded-full bg-slate-100 text-[10px] text-[#1C201D]">
             {documents.length}
           </span>
         </button>
@@ -519,14 +519,14 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                     setIsPlaying(true)
                     setCurrentTimeSec(0)
                   }}
-                  className="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-black font-mono text-xs font-bold hover:bg-emerald-400 transition-colors flex items-center gap-1.5"
+                  className="px-3.5 py-1.5 rounded-xl bg-[#059669] text-white font-mono text-xs font-bold hover:bg-emerald-400 transition-colors flex items-center gap-1.5"
                 >
                   <Play size={12} />
                   <span>PLAY NOW</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('vault')}
-                  className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-[#1C201D] font-mono text-xs transition-colors"
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-[#E5E2DA] text-[#1C201D] font-mono text-xs transition-colors"
                 >
                   VIEW IN VAULT →
                 </button>
@@ -566,11 +566,11 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
               <div className="absolute inset-0 bg-[radial-gradient(#e11d48_1px,transparent_1px)] [background-size:24px_24px] opacity-15 pointer-events-none" />
 
               {/* Watermark Top Bar */}
-              <div className="relative z-20 flex items-center justify-between p-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
-                <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-slate-100 border border-white/10 backdrop-blur-md">
-                  <div className="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse" />
-                  <span className="font-mono text-[10px] sm:text-xs font-bold text-[#047857] tracking-wider uppercase">
-                    TRINETRA SOVEREIGN INTEL // {selectedDoc.sector}
+              <div className="relative z-20 flex items-center justify-between p-4 bg-[#F2F1EC]/90 border-b border-[#E0DDD5]">
+                <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-slate-100 border border-[#E0DDD5] backdrop-blur-md">
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#059669] animate-pulse" />
+                  <span className="font-mono text-xs font-bold text-[#047857] tracking-wider uppercase">
+                    TRINETRA BRIEFING · {selectedDoc.sector}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -591,7 +591,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                     <div className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center bg-[#ECFDF5] border border-[#A7F3D0] text-[#047857] shadow-lg shadow-indigo-950/30">
                       <Shield size={32} className="text-[#059669]" />
                     </div>
-                    <div className="inline-block px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-[#444B46]">
+                    <div className="inline-block px-3 py-1 rounded-full bg-slate-50 border border-[#E0DDD5] text-xs font-mono text-[#444B46]">
                       OPERATIONAL BRIEFING DOSSIER
                     </div>
                     <h2 className="text-2xl sm:text-4xl font-extrabold text-[#1C201D] tracking-tight leading-tight max-w-2xl">
@@ -613,7 +613,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                 {/* SCENE TYPE: EXPLAINER */}
                 {activeScene.type === 'explainer' && (
                   <div className="space-y-4 w-full text-left animate-in fade-in duration-500">
-                    <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                    <div className="flex items-center justify-between border-b border-[#E0DDD5] pb-2">
                       <h3 className="text-lg sm:text-2xl font-bold text-[#1C201D] font-sans flex items-center gap-2">
                         <Cpu size={20} className="text-[#059669]" />
                         {activeScene.title}
@@ -685,7 +685,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                           <CheckCircle2 size={14} />
                           {activeScene.rightTitle}
                         </h4>
-                        <ul className="space-y-2 text-xs text-emerald-200">
+                        <ul className="space-y-2 text-xs text-[#065F46]">
                           {activeScene.rightPoints?.map((p, idx) => (
                             <li key={idx} className="flex items-start gap-2">
                               <span className="text-[#15803D] font-bold">✓</span>
@@ -707,7 +707,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                     <div className="flex flex-wrap sm:flex-nowrap items-center justify-center gap-2 pt-4">
                       {activeScene.steps?.map((step, idx) => (
                         <React.Fragment key={idx}>
-                          <div className="flex-1 min-w-[140px] p-3 rounded-xl bg-slate-100 border border-white/10 text-center space-y-1 shadow-lg">
+                          <div className="flex-1 min-w-[140px] p-3 rounded-xl bg-slate-100 border border-[#E0DDD5] text-center space-y-1 shadow-lg">
                             <div className="w-6 h-6 rounded-full mx-auto bg-rose-500/20 border border-[#FECACA] text-[#DC2626] font-mono text-[11px] flex items-center justify-center font-bold">
                               {idx + 1}
                             </div>
@@ -751,7 +751,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
 
               {/* PiP Avatar / AI Instructor in Bottom-Right Corner */}
               <div className="absolute bottom-16 right-4 sm:right-6 z-30 flex items-center gap-3 p-2.5 rounded-2xl bg-slate-100 border border-[#A7F3D0] backdrop-blur-xl shadow-2xl">
-                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600/30 to-slate-900 border border-[#A7F3D0] flex items-center justify-center overflow-hidden">
+                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-[#ECFDF5] to-[#F2F1EC] border border-[#A7F3D0] flex items-center justify-center overflow-hidden">
                   <User size={24} className="text-[#047857]" />
                   {/* Speaking pulse indicator */}
                   {isPlaying && audioEnabled && (
@@ -792,7 +792,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
               <div className="relative z-20 px-4 py-3 bg-slate-50 border-t border-[#E0DDD5] flex flex-col gap-2">
                 {/* Scrub Progress Bar */}
                 <div
-                  className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden cursor-pointer relative group"
+                  className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden cursor-pointer relative group"
                   onClick={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect()
                     const pos = (e.clientX - rect.left) / rect.width
@@ -813,7 +813,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setIsPlaying(p => !p)}
-                      className="p-2 rounded-lg bg-indigo-600 hover:bg-[#ECFDF5]0 text-white transition-transform active:scale-95 shadow-md shadow-indigo-950/40"
+                      className="p-2 rounded-lg bg-[#059669] hover:bg-[#047857] text-white transition-transform active:scale-95 shadow-md shadow-indigo-950/40"
                     >
                       {isPlaying ? <Pause size={14} /> : <Play size={14} />}
                     </button>
@@ -822,7 +822,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                         setCurrentTimeSec(0)
                         setCurrentSceneIdx(0)
                       }}
-                      className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-[#444B46] transition-colors"
+                      className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-[#444B46] transition-colors"
                       title="Replay from Start"
                     >
                       <RotateCcw size={14} />
@@ -848,7 +848,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                         className={`px-2.5 py-1 rounded-md text-[10px] transition-all ${
                           currentSceneIdx === idx
                             ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0] font-semibold'
-                            : 'bg-white/5 text-[#5C645E] hover:text-[#1C201D] border border-transparent'
+                            : 'bg-slate-50 text-[#5C645E] hover:text-[#1C201D] border border-transparent'
                         }`}
                       >
                         {idx + 1}. {s.type.slice(0, 4)}
@@ -863,7 +863,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                       className={`p-1.5 rounded-lg border text-xs flex items-center gap-1 transition-colors ${
                         audioEnabled
                           ? 'border-[#A7F3D0] text-[#15803D] bg-emerald-50'
-                          : 'border-white/10 text-slate-500 bg-white/5'
+                          : 'border-[#E0DDD5] text-slate-500 bg-slate-50'
                       }`}
                       title={audioEnabled ? 'Voiceover TTS active' : 'Voiceover TTS muted'}
                     >
@@ -877,14 +877,14 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                         const nextIdx = (speeds.indexOf(playbackSpeed) + 1) % speeds.length
                         setPlaybackSpeed(speeds[nextIdx])
                       }}
-                      className="px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#444B46] text-[10px]"
+                      className="px-2 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-[#E0DDD5] text-[#444B46] text-[10px]"
                     >
                       {playbackSpeed}x
                     </button>
 
                     <button
                       onClick={() => downloadScriptMarkdown(currentScript)}
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[#444B46] text-[10px]"
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-[#E0DDD5] text-[#444B46] text-[10px]"
                       title="Download Storyboard Markdown"
                     >
                       <Download size={12} />
@@ -902,7 +902,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
 
                     <button
                       onClick={() => setIsFullscreen(f => !f)}
-                      className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-[#444B46]"
+                      className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-[#444B46]"
                       title="Toggle Fullscreen"
                     >
                       {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
@@ -935,7 +935,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                       className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all ${
                         inputMode === 'upload'
                           ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]'
-                          : 'bg-white/5 text-[#5C645E] border border-transparent'
+                          : 'bg-slate-50 text-[#5C645E] border border-transparent'
                       }`}
                     >
                       📎 Upload PPT / PDF / TXT
@@ -950,7 +950,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                       className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all ${
                         inputMode === 'preset'
                           ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]'
-                          : 'bg-white/5 text-[#5C645E] border border-transparent'
+                          : 'bg-slate-50 text-[#5C645E] border border-transparent'
                       }`}
                     >
                       ⚡ Threat Presets
@@ -960,7 +960,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                       className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold transition-all ${
                         inputMode === 'text'
                           ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]'
-                          : 'bg-white/5 text-[#5C645E] border border-transparent'
+                          : 'bg-slate-50 text-[#5C645E] border border-transparent'
                       }`}
                     >
                       ✍️ Direct Incident Text
@@ -1042,12 +1042,12 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                             }}
                             className={`p-3 rounded-xl border cursor-pointer transition-all ${
                               rawText === preset.text
-                                ? 'bg-[#ECFDF5] border-[#A7F3D0] shadow-sm shadow-indigo-950/20'
-                                : 'bg-slate-50 border-[#E0DDD5] hover:border-white/20'
+                                ? 'bg-[#ECFDF5] border-[#A7F3D0] shadow-sm shadow-xs'
+                                : 'bg-slate-50 border-[#E0DDD5] hover:border-[#CBD5E1]'
                             }`}
                           >
                             <div className="flex items-center gap-2 mb-1">
-                              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-white/10 text-[#1C201D]">
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-slate-100 text-[#1C201D]">
                                 {preset.fileType}
                               </span>
                               <span className="text-[10px] font-mono text-[#047857] truncate">
@@ -1211,7 +1211,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                         setActiveTab('vault')
                         window.scrollTo({ top: 120, behavior: 'smooth' })
                       }}
-                      className="w-full py-2 px-3 rounded-xl bg-[#ECFDF5] hover:bg-[#ECFDF5]0 text-[#065F46] hover:text-white border border-[#A7F3D0] text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
+                      className="w-full py-2 px-3 rounded-xl bg-[#ECFDF5] hover:bg-[#047857] text-[#065F46] hover:text-white border border-[#A7F3D0] text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer"
                     >
                       <Database size={13} />
                       <span>VIEW VAULT ({documents.length} SAVED VIDEOS) →</span>
@@ -1241,7 +1241,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                   className={`px-3 py-1 rounded-lg font-mono text-xs font-semibold transition-all ${
                     vaultFilter === fmt
                       ? 'bg-[#ECFDF5] text-[#065F46] border border-[#A7F3D0]'
-                      : 'bg-white/5 text-[#5C645E] hover:text-[#1C201D] border border-transparent'
+                      : 'bg-slate-50 text-[#5C645E] hover:text-[#1C201D] border border-transparent'
                   }`}
                 >
                   {fmt}
@@ -1272,8 +1272,8 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                   key={doc.id}
                   className={`p-5 rounded-2xl border transition-all flex flex-col justify-between group ${
                     isSelected
-                      ? 'bg-gradient-to-br from-indigo-950/30 via-[#0F1523] to-[#0A0E17] border-[#A7F3D0] shadow-xl shadow-indigo-950/20'
-                      : 'bg-slate-50 border-[#E0DDD5] hover:border-white/20'
+                      ? 'bg-[#ECFDF5] border-[#059669] shadow-md'
+                      : 'bg-slate-50 border-[#E0DDD5] hover:border-[#CBD5E1]'
                   }`}
                 >
                   <div className="space-y-3.5">
@@ -1343,7 +1343,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                   <div className="pt-4 mt-4 border-t border-[#E0DDD5] space-y-2">
                     <button
                       onClick={() => loadDocToPlayer(doc)}
-                      className="w-full py-2 px-3 rounded-xl bg-[#ECFDF5] hover:bg-[#ECFDF5]0 text-[#065F46] hover:text-white border border-[#A7F3D0] text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
+                      className="w-full py-2 px-3 rounded-xl bg-[#ECFDF5] hover:bg-[#047857] text-[#065F46] hover:text-white border border-[#A7F3D0] text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all shadow-sm"
                     >
                       <Play size={13} />
                       <span>LOAD &amp; PLAY BRIEFING</span>
@@ -1352,7 +1352,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => setViewTextModal(doc)}
-                        className="flex-1 py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/10 text-[#444B46] text-[11px] font-mono flex items-center justify-center gap-1 transition-colors"
+                        className="flex-1 py-1.5 px-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-[#444B46] text-[11px] font-mono flex items-center justify-center gap-1 transition-colors"
                         title="Inspect raw extracted text"
                       >
                         <Eye size={12} />
@@ -1360,7 +1360,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                       </button>
                       <button
                         onClick={() => setViewScriptModal(doc)}
-                        className="flex-1 py-1.5 px-2 rounded-lg bg-white/5 hover:bg-white/10 text-[#444B46] text-[11px] font-mono flex items-center justify-center gap-1 transition-colors"
+                        className="flex-1 py-1.5 px-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-[#444B46] text-[11px] font-mono flex items-center justify-center gap-1 transition-colors"
                         title="Inspect storyboard script"
                       >
                         <Layers size={12} />
@@ -1395,8 +1395,8 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
       {/* ========================================================================= */}
       {viewTextModal && (
         <div className="fixed inset-0 z-50 bg-slate-100 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-50 border border-white/10 rounded-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          <div className="bg-slate-50 border border-[#E0DDD5] rounded-2xl max-w-2xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#E0DDD5] pb-3">
               <div className="flex items-center gap-2">
                 <FileText size={18} className="text-[#059669]" />
                 <h3 className="font-bold text-base text-[#1C201D] font-mono truncate max-w-md">
@@ -1405,7 +1405,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
               </div>
               <button
                 onClick={() => setViewTextModal(null)}
-                className="text-[#5C645E] hover:text-[#1C201D] text-xs font-mono px-2 py-1 rounded bg-white/5"
+                className="text-[#5C645E] hover:text-[#1C201D] text-xs font-mono px-2 py-1 rounded bg-slate-50"
               >
                 ✕ CLOSE
               </button>
@@ -1420,7 +1420,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                   navigator.clipboard.writeText(viewTextModal.rawText)
                   alert('Source text copied to clipboard!')
                 }}
-                className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-[#1C201D] font-bold"
+                className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-white/15 text-[#1C201D] font-bold"
               >
                 COPY TEXT
               </button>
@@ -1434,8 +1434,8 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
       {/* ========================================================================= */}
       {viewScriptModal && (
         <div className="fixed inset-0 z-50 bg-slate-100 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-50 border border-white/10 rounded-2xl max-w-3xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+          <div className="bg-slate-50 border border-[#E0DDD5] rounded-2xl max-w-3xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between border-b border-[#E0DDD5] pb-3">
               <div className="flex items-center gap-2">
                 <Layers size={18} className="text-[#059669]" />
                 <h3 className="font-bold text-base text-[#1C201D] font-mono truncate max-w-lg">
@@ -1444,7 +1444,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
               </div>
               <button
                 onClick={() => setViewScriptModal(null)}
-                className="text-[#5C645E] hover:text-[#1C201D] text-xs font-mono px-2 py-1 rounded bg-white/5"
+                className="text-[#5C645E] hover:text-[#1C201D] text-xs font-mono px-2 py-1 rounded bg-slate-50"
               >
                 ✕ CLOSE
               </button>
@@ -1454,7 +1454,7 @@ SLIDE 3: COUNTERMEASURES & COMPLIANCE
                 <div key={sc.id || i} className="p-3.5 rounded-xl bg-slate-50 border border-[#E0DDD5] space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-[#047857]">SCENE {i + 1}: {sc.title}</span>
-                    <span className="px-2 py-0.5 rounded bg-white/10 text-[10px] text-[#444B46] uppercase">{sc.type} · {sc.durationSec}s</span>
+                    <span className="px-2 py-0.5 rounded bg-slate-100 text-[10px] text-[#444B46] uppercase">{sc.type} · {sc.durationSec}s</span>
                   </div>
                   <div className="text-[#444B46] font-sans italic bg-slate-100 p-2.5 rounded-lg border border-white/5">
                     &ldquo;{sc.narrationText}&rdquo;

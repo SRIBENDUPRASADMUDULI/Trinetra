@@ -37,23 +37,19 @@ function applyThemeToDom(mode: ThemeMode) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<ThemeMode>('light')
+  const [theme, setThemeState] = useState<ThemeMode>('dark')
 
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(STORAGE_KEY)
-      let resolved: ThemeMode = 'light'
-      if (saved === 'dark' || saved === 'light') {
+      let resolved: ThemeMode = 'dark'
+      if (saved === 'light' || saved === 'dark') {
         resolved = saved
-      } else if (document.documentElement.classList.contains('dark')) {
-        resolved = 'dark'
-      } else if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
-        resolved = 'dark'
       }
       setThemeState(resolved)
       applyThemeToDom(resolved)
     } catch {
-      applyThemeToDom('light')
+      applyThemeToDom('dark')
     }
   }, [])
 
