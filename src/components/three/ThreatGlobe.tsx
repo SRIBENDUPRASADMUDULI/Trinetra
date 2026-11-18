@@ -75,6 +75,8 @@ function GlobeMesh({
   const groupRef = useRef<THREE.Group>(null)
   const cloudsRef = useRef<THREE.Mesh>(null)
   const targetRingRef = useRef<THREE.Group>(null)
+  const packetsGroupRef = useRef<THREE.Group>(null)
+  const satGroupRef = useRef<THREE.Group>(null)
   const radius = 1.65
 
   // Load NASA / Google Earth photorealistic satellite textures
@@ -132,6 +134,26 @@ function GlobeMesh({
     if (targetRingRef.current) {
       const s = 1 + Math.sin(Date.now() * 0.007) * 0.25
       targetRingRef.current.scale.set(s, s, s)
+    }
+
+    // Animate traveling attack energy packets along ballistic arcs in real-time
+    if (packetsGroupRef.current) {
+      const time = Date.now() * 0.001
+      packetsGroupRef.current.children.forEach((child, i) => {
+        const arc = plotted.arcs[i]
+        if (arc && arc.curve) {
+          const progress = (time * 0.42 + i * 0.26) % 1
+          const pos = arc.curve.getPoint(progress)
+          child.position.set(pos.x, pos.y, pos.z)
+          const s = 0.8 + Math.sin(progress * Math.PI) * 0.7
+          child.scale.set(s, s, s)
+        }
+      })
+    }
+
+    // Continuously rotate satellites along orbital paths
+    if (satGroupRef.current) {
+      satGroupRef.current.rotation.y += delta * 0.04
     }
   })
 
@@ -192,6 +214,7 @@ function GlobeMesh({
         const curve = new THREE.QuadraticBezierCurve3(n.pos, mid, delhiPos)
         return {
           id: n.id,
+          curve,
           points: curve.getPoints(28).map((p) => [p.x, p.y, p.z] as [number, number, number]),
         }
       })
@@ -288,6 +311,18 @@ function GlobeMesh({
           />
         ))}
 
+      {/* 6.1 Real-Time Traveling Attack Energy Beacons */}
+      {layers.cyber && (
+        <group ref={packetsGroupRef}>
+          {plotted.arcs.map((arc) => (
+            <mesh key={`beacon-${arc.id}`}>
+              <sphereGeometry args={[0.038, 12, 12]} />
+              <meshBasicMaterial color={palette.arcColor} />
+            </mesh>
+          ))}
+        </group>
+      )}
+
       {/* 7. Target Reticle / Radar Pulse over Currently Selected Threat */}
       <group ref={targetRingRef} position={plotted.selectedPos}>
         <mesh>
@@ -335,37 +370,40 @@ function GlobeMesh({
           )
         })}
 
-      {/* 9. Live CelesTrak Satellites (Diamond Meshes) */}
-      {layers.satellites &&
-        plotted.satPoints.map((sat) => {
-          const isSelected = sat.id === selectedId
-          return (
-            <mesh
-              key={sat.id}
-              position={sat.pos}
-              onClick={(e) => {
-                e.stopPropagation()
-                onSelectEntity({
-                  id: sat.id,
-                  kind: 'SATELLITE',
-                  title: `${sat.name} (NORAD ${sat.noradId})`,
-                  subtitle: `Live CelesTrak Orbital Vector · Alt ${sat.altKm} km · Speed ${sat.velocityKms} km/s`,
-                  badge: 'ORBITAL ASSET',
-                  coords: `${sat.lat.toFixed(2)}°, ${sat.lon.toFixed(2)}°`,
-                  lat: sat.lat,
-                  lon: sat.lon,
-                  severity: 'INFO',
-                  category: 'Space-Based Reconnaissance',
-                  status: 'TRACKED ORBIT',
-                })
-              }}
-              scale={isSelected ? 1.9 : 1}
-            >
-              <octahedronGeometry args={[0.038, 0]} />
-              <meshBasicMaterial color="#38BDF8" />
-            </mesh>
-          )
-        })}
+      {/* 9. Live CelesTrak Satellites (Diamond Meshes) in Real-Time Orbit */}
+      {layers.satellites && (
+        <group ref={satGroupRef}>
+          {plotted.satPoints.map((sat) => {
+            const isSelected = sat.id === selectedId
+            return (
+              <mesh
+                key={sat.id}
+                position={sat.pos}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onSelectEntity({
+                    id: sat.id,
+                    kind: 'SATELLITE',
+                    title: `${sat.name} (NORAD ${sat.noradId})`,
+                    subtitle: `Live CelesTrak Orbital Vector · Alt ${sat.altKm} km · Speed ${sat.velocityKms} km/s`,
+                    badge: 'ORBITAL ASSET',
+                    coords: `${sat.lat.toFixed(2)}°, ${sat.lon.toFixed(2)}°`,
+                    lat: sat.lat,
+                    lon: sat.lon,
+                    severity: 'INFO',
+                    category: 'Space-Based Reconnaissance',
+                    status: 'TRACKED ORBIT',
+                  })
+                }}
+                scale={isSelected ? 1.9 : 1}
+              >
+                <octahedronGeometry args={[0.038, 0]} />
+                <meshBasicMaterial color="#38BDF8" />
+              </mesh>
+            )
+          })}
+        </group>
+      )}
 
       {/* 10. Live USGS Seismic Disruptions */}
       {layers.seismic &&
@@ -524,6 +562,66 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
     }
   }, [])
 
+  const [nextSyncIn, setNextSyncIn] = useState(10)
+  const [livePulseFlash, setLivePulseFlash] = useState(false)
+
+  // Automatic real-time polling loop every 10 seconds
+  useEffect(() => {
+    const pollInterval = setInterval(() => {
+      loadOsint()
+      setLivePulseFlash(true)
+      setTimeout(() => setLivePulseFlash(false), 1200)
+      setNextSyncIn(10)
+    }, 10000)
+
+    const countdownInterval = setInterval(() => {
+      setNextSyncIn((prev) => (prev <= 1 ? 10 : prev - 1))
+    }, 1000)
+
+    return () => {
+      clearInterval(pollInterval)
+      clearInterval(countdownInterval)
+    }
+  }, [loadOsint])
+
+  // Simulate an incoming live APT / Ransomware burst attack
+  const simulateIncomingAttack = useCallback(() => {
+    const newThreatId = `APT-${Date.now().toString().slice(-4)}`
+    const attackCoords = [
+      { city: 'Bucharest Proxy', lat: 44.42, lon: 26.10 },
+      { city: 'Shenzhen C2 Relay', lat: 22.54, lon: 114.05 },
+      { city: 'Tehran Scanning Node', lat: 35.68, lon: 51.38 },
+      { city: 'Chicago Botnet Cluster', lat: 41.87, lon: -87.62 },
+    ]
+    const pick = attackCoords[Math.floor(Math.random() * attackCoords.length)]
+
+    const newThreat: OsintCyberNode = {
+      id: newThreatId,
+      name: `${pick.city} · LIVE APT BEACON`,
+      lat: pick.lat,
+      lon: pick.lon,
+      kind: 'THREAT',
+      detail: `Real-time C2 outbound beacon detected. T1071 C2 Communication underway.`,
+      ttps: 'T1071 LIVE ACTIVE',
+    }
+
+    setCyberNodes((prev) => [newThreat, ...prev])
+    setLivePulseFlash(true)
+    setTimeout(() => setLivePulseFlash(false), 2000)
+
+    handleSelectEntity({
+      id: newThreat.id,
+      kind: 'THREAT',
+      title: newThreat.name,
+      subtitle: newThreat.detail,
+      badge: 'LIVE APT BURST',
+      coords: `${newThreat.lat.toFixed(2)}°, ${newThreat.lon.toFixed(2)}°`,
+      lat: newThreat.lat,
+      lon: newThreat.lon,
+      severity: 'CRITICAL',
+    })
+  }, [handleSelectEntity])
+
   useEffect(() => {
     try {
       const c = document.createElement('canvas')
@@ -611,15 +709,29 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
 
   return (
     <div className="rounded-xl bg-[#07090E] border border-[#1E293B] overflow-hidden shadow-[0_0_32px_rgba(0,212,255,0.14)]">
-      {/* 1. Header Bar: Title + Sensor View Toggle + Sync */}
+      {/* 1. Header Bar: Title + Sensor View Toggle + Live Polling Status + Sync */}
       <div className="px-4 py-2.5 border-b border-[#1E293B] bg-[#030508] flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <Globe className="w-4 h-4 text-[#00D4FF]" />
           <span className="font-mono text-[11px] font-bold tracking-wider text-[#F8FAFC] uppercase">
-            God&apos;s Eye · Google Earth 3D Telemetry Globe
+            God&apos;s Eye · Google Earth 3D Sovereign Globe
+          </span>
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold flex items-center gap-1.5 transition-colors ${
+            livePulseFlash ? 'bg-rose-500/30 text-rose-300 border border-rose-500' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${livePulseFlash ? 'bg-rose-400 animate-ping' : 'bg-emerald-400 animate-pulse'}`} />
+            {livePulseFlash ? 'NEW ATTACK DETECTED' : `REAL-TIME SYNC IN ${nextSyncIn}s`}
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            onClick={simulateIncomingAttack}
+            className="px-2 py-0.5 rounded bg-rose-500/15 border border-rose-500/40 text-[10px] font-mono text-rose-400 hover:bg-rose-500/30 flex items-center gap-1 cursor-pointer transition-colors"
+          >
+            <Zap className="w-3 h-3 text-rose-400" />
+            <span>TEST ATTACK BURST</span>
+          </button>
           {(['EARTH', 'FLIR', 'NVG', 'RADAR'] as SensorMode[]).map((mode) => (
             <button
               key={mode}
@@ -756,12 +868,13 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
       </div>
 
       {/* 4. Interactive 3D Canvas with Google Earth Texture & Camera Tracking */}
-      <div className={compact ? 'h-72 relative' : 'h-96 relative'}>
+      <div className={compact ? 'h-80 relative' : 'h-[490px] relative'}>
         {webglReady ? (
           <Canvas camera={{ position: [0, 0, 4.35], fov: 44 }} dpr={[1, 1.75]}>
-            <ambientLight intensity={sensorMode === 'EARTH' ? 0.95 : 0.6} />
-            <pointLight position={[6, 4, 5]} intensity={1.5} color="#FFFFFF" />
-            <pointLight position={[-6, -3, -4]} intensity={0.8} color="#00D4FF" />
+            <ambientLight intensity={sensorMode === 'EARTH' ? 1.4 : 0.8} />
+            <directionalLight position={[6, 4, 6]} intensity={2.6} color="#FFFFFF" />
+            <directionalLight position={[-6, -2, -4]} intensity={1.1} color="#38BDF8" />
+            <pointLight position={[0, 8, 2]} intensity={0.9} color="#FFFFFF" />
             <GlobeMesh
               selectedId={selected.id}
               selectedEntity={selected}

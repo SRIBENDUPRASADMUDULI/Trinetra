@@ -58,6 +58,7 @@ export default function IntelPage() {
   const [feedItems, setFeedItems] = useState<LiveThreatFeedItem[]>([])
   const [feedLoading, setFeedLoading] = useState(true)
   const [filter, setFilter] = useState<SectorFilter>('ALL')
+  const [selectedThreatId, setSelectedThreatId] = useState<string | null>(null)
   // Pre-expand CS-001 by default so kill-chain, attribution, and TTPs are visible on load
   const [expandedCase, setExpandedCase] = useState<string | null>('CS-001')
   const [scanningAll, setScanningAll] = useState(false)
@@ -185,7 +186,7 @@ export default function IntelPage() {
       {/* 3D Geospatial Threat Globe + Live Feed Split */}
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
         <div className="xl:col-span-5">
-          <ThreatGlobe />
+          <ThreatGlobe externalSelectedId={selectedThreatId ?? undefined} onThreatSelect={(ent) => setSelectedThreatId(ent.id)} />
         </div>
         <div className="xl:col-span-7">
       <TerminalCard title="Live Sector Attack Telemetry Feed"
@@ -231,6 +232,7 @@ export default function IntelPage() {
                 {evt.sector}
               </span>
               <span className="text-[#1C201D] flex-1 truncate font-sans text-xs">{evt.attackType}</span>
+              <button type="button" onClick={(e) => { e.stopPropagation(); setSelectedThreatId(evt.id); }} className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#00D4FF]/10 text-[#00D4FF] border border-[#00D4FF]/30 hover:bg-[#00D4FF]/20 flex items-center gap-1 transition-colors cursor-pointer">🎯 FOCUS 3D</button>
               <StatusBadge label={evt.status} variant={evt.status === 'ACTIVE' ? 'critical' : evt.status === 'INVESTIGATING' ? 'warning' : 'ok'} />
             </div>
           ))}
