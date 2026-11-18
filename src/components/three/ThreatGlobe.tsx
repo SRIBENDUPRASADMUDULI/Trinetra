@@ -2,11 +2,12 @@
 
 import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Line } from '@react-three/drei'
+import { OrbitControls, Line, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import {
   Globe, ShieldAlert, Radio, RefreshCw, Satellite, Activity, Flame,
-  Search, Crosshair, ChevronRight, AlertTriangle, ShieldCheck, Zap
+  Search, Crosshair, ChevronRight, AlertTriangle, ShieldCheck, Zap,
+  Plane, Ship, Eye, EyeOff, Layers, Compass, Maximize2, Shield, AlertOctagon
 } from 'lucide-react'
 import type { OsintCyberNode, OsintHazard, OsintSatellite, OsintSeismic } from '@/app/api/intel/osint/route'
 
@@ -14,7 +15,7 @@ export type SensorMode = 'EARTH' | 'FLIR' | 'NVG' | 'RADAR'
 
 export interface SelectedEntity {
   id: string
-  kind: 'DEFENSE' | 'THREAT' | 'ADVISORY' | 'SATELLITE' | 'SEISMIC' | 'HAZARD'
+  kind: 'DEFENSE' | 'THREAT' | 'ADVISORY' | 'SATELLITE' | 'SEISMIC' | 'HAZARD' | 'AIRCRAFT' | 'VESSEL'
   title: string
   subtitle: string
   badge: string
@@ -24,8 +25,118 @@ export interface SelectedEntity {
   severity?: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'INFO'
   category?: string
   status?: string
+  detail?: string
+  speed?: string
+  alt?: string
 }
 
+// ✈️ Live Aircraft Flight Data (Bilawal Sidhu God's Eye View Style)
+export interface IntelAircraft {
+  id: string
+  flightNo: string
+  aircraft: string
+  from: string
+  to: string
+  altFt: number
+  speedKmh: number
+  startLat: number
+  startLon: number
+  endLat: number
+  endLon: number
+  progress: number
+}
+
+const LIVE_AIRCRAFT: IntelAircraft[] = [
+  {
+    id: 'FLT-AI284',
+    flightNo: 'AI284',
+    aircraft: 'Boeing 787-8 Dreamliner',
+    from: 'DEL',
+    to: 'LHR',
+    altFt: 35000,
+    speedKmh: 842,
+    startLat: 28.61,
+    startLon: 77.21,
+    endLat: 51.50,
+    endLon: -0.12,
+    progress: 0.38,
+  },
+  {
+    id: 'FLT-6E204',
+    flightNo: '6E204',
+    aircraft: 'Airbus A321neo',
+    from: 'BLR',
+    to: 'SIN',
+    altFt: 38000,
+    speedKmh: 810,
+    startLat: 12.97,
+    startLon: 77.59,
+    endLat: 1.35,
+    endLon: 103.82,
+    progress: 0.52,
+  },
+  {
+    id: 'FLT-EK501',
+    flightNo: 'EK501',
+    aircraft: 'Boeing 777-300ER',
+    from: 'BOM',
+    to: 'DXB',
+    altFt: 34000,
+    speedKmh: 860,
+    startLat: 19.07,
+    startLon: 72.87,
+    endLat: 25.20,
+    endLon: 55.27,
+    progress: 0.65,
+  },
+]
+
+// 🚢 Live Maritime Vessels & Subsea Security Data
+export interface IntelVessel {
+  id: string
+  name: string
+  type: string
+  destination: string
+  speedKn: number
+  lat: number
+  lon: number
+  status: string
+}
+
+const LIVE_VESSELS: IntelVessel[] = [
+  {
+    id: 'VES-01',
+    name: 'INS Vikrant Battle Group',
+    type: 'Sovereign Aircraft Carrier',
+    destination: 'Arabian Sea EEZ Patrol',
+    speedKn: 22.0,
+    lat: 16.52,
+    lon: 70.85,
+    status: 'ACTIVE SOVEREIGN GUARD',
+  },
+  {
+    id: 'VES-02',
+    name: 'Maersk Singapore Carrier',
+    type: 'Ultra Large Container Vessel',
+    destination: 'Nhava Sheva (BOM)',
+    speedKn: 18.5,
+    lat: 5.82,
+    lon: 95.12,
+    status: 'TRANSITING MALACCA CHOKEPOINT',
+  },
+  {
+    id: 'VES-03',
+    name: 'i2i Subsea Fiber Sentinel',
+    type: 'Subsea Cable Defense Vessel',
+    destination: 'Bay of Bengal Deepwater Guard',
+    speedKn: 13.8,
+    lat: 12.45,
+    lon: 84.10,
+    status: 'CRITICAL INFRASTRUCTURE PATROL',
+  },
+]
+
+// 🛡️ Live Sovereign Cyber Attack & Defense Nodes
 const FALLBACK_CYBER_NODES: OsintCyberNode[] = [
   { id: 'DEL', name: 'New Delhi · National SOC (CII Core)', lat: 28.61, lon: 77.21, kind: 'DEFENSE', detail: 'CERT-In / NCIIPC Statutory Defense Hub', ttps: 'DEF CON 3 Watch' },
   { id: 'BOM', name: 'Mumbai · BFSI Payment & Subsea Gateway', lat: 19.07, lon: 72.87, kind: 'ADVISORY', detail: 'NPCI, RBI Core & Subsea Cable Landing', ttps: 'T1566.002 Spearphish Watch' },
@@ -38,7 +149,7 @@ const FALLBACK_CYBER_NODES: OsintCyberNode[] = [
   { id: 'C2-QAK', name: 'US East · QakBot C2 Botnet IP 50.16.16.211', lat: 38.90, lon: -77.03, kind: 'THREAT', detail: 'Abuse.ch Feodo Tracker Active C2 Beacon: Port 443', ttps: 'T1071 C2 Communication' },
 ]
 
-function latLonToVec3(lat: number, lon: number, radius: number): THREE.Vector3 {
+export function latLonToVec3(lat: number, lon: number, radius: number): THREE.Vector3 {
   const phi = (90 - lat) * (Math.PI / 180)
   const theta = (lon + 180) * (Math.PI / 180)
   const x = -(radius * Math.sin(phi) * Math.cos(theta))
@@ -53,7 +164,14 @@ interface GlobeSceneProps {
   onSelectEntity: (entity: SelectedEntity) => void
   autoRotate: boolean
   sensorMode: SensorMode
-  layers: { cyber: boolean; satellites: boolean; seismic: boolean; hazards: boolean }
+  layers: {
+    cyber: boolean
+    satellites: boolean
+    seismic: boolean
+    aircraft: boolean
+    ships: boolean
+    callouts: boolean
+  }
   cyberNodes: OsintCyberNode[]
   satellites: OsintSatellite[]
   seismic: OsintSeismic[]
@@ -70,35 +188,48 @@ function GlobeMesh({
   cyberNodes,
   satellites,
   seismic,
-  hazards,
 }: GlobeSceneProps) {
   const groupRef = useRef<THREE.Group>(null)
   const cloudsRef = useRef<THREE.Mesh>(null)
   const targetRingRef = useRef<THREE.Group>(null)
   const packetsGroupRef = useRef<THREE.Group>(null)
   const satGroupRef = useRef<THREE.Group>(null)
+  const aircraftGroupRef = useRef<THREE.Group>(null)
+  const shockwavesRef = useRef<THREE.Group>(null)
   const radius = 1.65
 
-  // Load NASA / Google Earth photorealistic satellite textures
-  const { earthTexture, cloudsTexture } = useMemo(() => {
+  // NASA Blue Marble Photorealistic Texture Loader with CDN Fallbacks
+  const { earthTexture, nightTexture, cloudsTexture } = useMemo(() => {
     const loader = new THREE.TextureLoader()
-    const earth = loader.load('/textures/earth_atmos_2048.jpg')
+    loader.setCrossOrigin('anonymous')
+
+    // Local files with high-res Cloudflare CDN fallbacks
+    const earth = loader.load(
+      '/textures/earth_blue_marble.jpg',
+      () => {},
+      undefined,
+      () => loader.load('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+    )
+    const night = loader.load(
+      '/textures/earth_night.jpg',
+      () => {},
+      undefined,
+      () => loader.load('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+    )
     const clouds = loader.load('/textures/earth_clouds_1024.png')
+
     earth.colorSpace = THREE.SRGBColorSpace
-    return { earthTexture: earth, cloudsTexture: clouds }
+    night.colorSpace = THREE.SRGBColorSpace
+    return { earthTexture: earth, nightTexture: night, cloudsTexture: clouds }
   }, [])
 
-  // Calculate target rotation to face selected entity directly
+  // Camera orientation angle calculations
   const targetEuler = useMemo(() => {
-    // When group.rotation is 'YXZ':
-    // rotX = -(lat * Math.PI) / 180
-    // rotY = -((lon + 90) * Math.PI) / 180
     const rotX = -((selectedEntity.lat || 28.61) * Math.PI) / 180
     const rotY = -(((selectedEntity.lon || 77.21) + 90) * Math.PI) / 180
     return { rotX, rotY }
   }, [selectedEntity.lat, selectedEntity.lon])
 
-  // Set initial orientation on mount
   useEffect(() => {
     if (groupRef.current) {
       groupRef.current.rotation.y = -2.7
@@ -106,58 +237,7 @@ function GlobeMesh({
     }
   }, [])
 
-  useFrame((_, delta) => {
-    if (!groupRef.current) return
-
-    if (autoRotate) {
-      groupRef.current.rotation.y += delta * 0.1
-    } else {
-      // Smoothly slerp/lerp camera view to center the target
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(
-        groupRef.current.rotation.y,
-        targetEuler.rotY,
-        Math.min(1, delta * 3.2)
-      )
-      groupRef.current.rotation.x = THREE.MathUtils.lerp(
-        groupRef.current.rotation.x,
-        targetEuler.rotX,
-        Math.min(1, delta * 3.2)
-      )
-    }
-
-    // Slowly drift realistic cloud layer
-    if (cloudsRef.current) {
-      cloudsRef.current.rotation.y += delta * 0.04
-    }
-
-    // Pulse target reticle ring
-    if (targetRingRef.current) {
-      const s = 1 + Math.sin(Date.now() * 0.007) * 0.25
-      targetRingRef.current.scale.set(s, s, s)
-    }
-
-    // Animate traveling attack energy packets along ballistic arcs in real-time
-    if (packetsGroupRef.current) {
-      const time = Date.now() * 0.001
-      packetsGroupRef.current.children.forEach((child, i) => {
-        const arc = plotted.arcs[i]
-        if (arc && arc.curve) {
-          const progress = (time * 0.42 + i * 0.26) % 1
-          const pos = arc.curve.getPoint(progress)
-          child.position.set(pos.x, pos.y, pos.z)
-          const s = 0.8 + Math.sin(progress * Math.PI) * 0.7
-          child.scale.set(s, s, s)
-        }
-      })
-    }
-
-    // Continuously rotate satellites along orbital paths
-    if (satGroupRef.current) {
-      satGroupRef.current.rotation.y += delta * 0.04
-    }
-  })
-
-  // Visual Palette depending on sensor mode
+  // Visual Palette
   const palette = useMemo(() => {
     if (sensorMode === 'FLIR') {
       return {
@@ -189,7 +269,7 @@ function GlobeMesh({
         useTexture: false,
       }
     }
-    // Default 'EARTH': Google Earth realistic photorealistic texture
+    // Default 'EARTH': Photorealistic Blue Marble Earth
     return {
       baseColor: '#0B1426',
       wireColor: '#38BDF8',
@@ -200,13 +280,17 @@ function GlobeMesh({
     }
   }, [sensorMode])
 
+  // Process plotted entities
   const plotted = useMemo(() => {
     const delhiPos = latLonToVec3(28.61, 77.21, radius + 0.03)
+
+    // Cyber Nodes
     const nodes = cyberNodes.map((n) => ({
       ...n,
       pos: latLonToVec3(n.lat, n.lon, radius + 0.03),
     }))
 
+    // Cyber Attack Arcs
     const arcs = nodes
       .filter((n) => n.kind === 'THREAT')
       .map((n) => {
@@ -219,129 +303,353 @@ function GlobeMesh({
         }
       })
 
+    // Aircraft Flight Arcs & Positions
+    const aircraftData = LIVE_AIRCRAFT.map((a) => {
+      const start = latLonToVec3(a.startLat, a.startLon, radius + 0.04)
+      const end = latLonToVec3(a.endLat, a.endLon, radius + 0.04)
+      const mid = start.clone().add(end).multiplyScalar(0.5).normalize().multiplyScalar(radius + 0.28)
+      const flightCurve = new THREE.QuadraticBezierCurve3(start, mid, end)
+      const currentPos = flightCurve.getPoint(a.progress)
+      return {
+        ...a,
+        curve: flightCurve,
+        points: flightCurve.getPoints(24).map((p) => [p.x, p.y, p.z] as [number, number, number]),
+        pos: currentPos,
+      }
+    })
+
+    // Maritime Vessels
+    const vessels = LIVE_VESSELS.map((v) => ({
+      ...v,
+      pos: latLonToVec3(v.lat, v.lon, radius + 0.025),
+    }))
+
+    // Satellites
     const satPoints = satellites.map((s) => {
       const orbitOffset = Math.min(0.45, Math.max(0.14, (s.altKm / 36000) * 0.45 + 0.14))
       return { ...s, pos: latLonToVec3(s.lat, s.lon, radius + orbitOffset) }
     })
 
+    // Seismic Disruptions
     const eqPoints = seismic.map((e) => ({
       ...e,
       pos: latLonToVec3(e.lat, e.lon, radius + 0.025),
     }))
 
-    const hazPoints = hazards.map((h) => ({
-      ...h,
-      pos: latLonToVec3(h.lat, h.lon, radius + 0.035),
-    }))
-
-    // Calculate selected entity 3D position
     const selectedPos = latLonToVec3(selectedEntity.lat || 28.61, selectedEntity.lon || 77.21, radius + 0.04)
 
-    return { nodes, arcs, satPoints, eqPoints, hazPoints, selectedPos }
-  }, [cyberNodes, satellites, seismic, hazards, selectedEntity.lat, selectedEntity.lon])
+    return { nodes, arcs, aircraftData, vessels, satPoints, eqPoints, selectedPos }
+  }, [cyberNodes, satellites, seismic, selectedEntity.lat, selectedEntity.lon])
+
+  // Animation Loop (Three.js useFrame)
+  useFrame(({ clock }, delta) => {
+    if (!groupRef.current) return
+
+    if (autoRotate) {
+      groupRef.current.rotation.y += delta * 0.08
+    } else {
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetEuler.rotY, Math.min(1, delta * 3.2))
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetEuler.rotX, Math.min(1, delta * 3.2))
+    }
+
+    // Drift realistic cloud layer
+    if (cloudsRef.current) {
+      cloudsRef.current.rotation.y += delta * 0.03
+    }
+
+    // Pulse target reticle
+    if (targetRingRef.current) {
+      const s = 1 + Math.sin(Date.now() * 0.007) * 0.25
+      targetRingRef.current.scale.set(s, s, s)
+    }
+
+    // Real-Time Traveling Attack Energy Beacons
+    if (packetsGroupRef.current) {
+      const time = clock.getElapsedTime()
+      packetsGroupRef.current.children.forEach((child, i) => {
+        const arc = plotted.arcs[i]
+        if (arc && arc.curve) {
+          const progress = (time * 0.42 + i * 0.26) % 1
+          const pos = arc.curve.getPoint(progress)
+          child.position.set(pos.x, pos.y, pos.z)
+          const s = 0.8 + Math.sin(progress * Math.PI) * 0.7
+          child.scale.set(s, s, s)
+        }
+      })
+    }
+
+    // Real-Time Aircraft Motion along flight vectors
+    if (aircraftGroupRef.current) {
+      const time = clock.getElapsedTime()
+      aircraftGroupRef.current.children.forEach((child, i) => {
+        const plane = plotted.aircraftData[i]
+        if (plane && plane.curve) {
+          const progress = (plane.progress + time * 0.015) % 1
+          const pos = plane.curve.getPoint(progress)
+          child.position.set(pos.x, pos.y, pos.z)
+        }
+      })
+    }
+
+    // Continuously rotate satellites in real-time orbit
+    if (satGroupRef.current) {
+      satGroupRef.current.rotation.y += delta * 0.05
+    }
+
+    // Expanding Seismic Shockwaves
+    if (shockwavesRef.current) {
+      const waveScale = 1 + (Math.sin(Date.now() * 0.004) + 1) * 0.5
+      shockwavesRef.current.children.forEach((child) => {
+        child.scale.set(waveScale, waveScale, waveScale)
+      })
+    }
+  })
 
   return (
     <group ref={groupRef}>
-      {/* 1. Photorealistic Earth Satellite Globe Surface (Google Earth Style) */}
+      {/* 1. PHOTOREALISTIC BLUE MARBLE EARTH SURFACE */}
       <mesh>
-        <sphereGeometry args={[radius - 0.015, 64, 64]} />
+        <sphereGeometry args={[radius - 0.012, 64, 64]} />
         {palette.useTexture ? (
           <meshStandardMaterial
             map={earthTexture}
-            roughness={0.7}
-            metalness={0.12}
+            emissiveMap={nightTexture}
+            emissive={new THREE.Color('#FFD166')}
+            emissiveIntensity={0.28}
+            roughness={0.48}
+            metalness={0.06}
           />
         ) : (
           <meshStandardMaterial color={palette.baseColor} roughness={0.8} metalness={0.3} />
         )}
       </mesh>
 
-      {/* 2. Realistic Dynamic Cloud Layer (Visible in EARTH mode) */}
+      {/* 2. REALISTIC DYNAMIC CLOUD LAYER */}
       {palette.useTexture && (
         <mesh ref={cloudsRef}>
-          <sphereGeometry args={[radius + 0.008, 48, 48]} />
+          <sphereGeometry args={[radius + 0.012, 48, 48]} />
           <meshStandardMaterial
             map={cloudsTexture}
             transparent={true}
-            opacity={0.34}
+            opacity={0.32}
             blending={THREE.AdditiveBlending}
             depthWrite={false}
           />
         </mesh>
       )}
 
-      {/* 3. Outer Atmospheric Halo Glow */}
+      {/* 3. ATMOSPHERIC HALO GLOW */}
       <mesh>
-        <sphereGeometry args={[radius + 0.045, 36, 36]} />
+        <sphereGeometry args={[radius + 0.055, 36, 36]} />
         <meshBasicMaterial
           color={sensorMode === 'NVG' ? '#22C55E' : sensorMode === 'FLIR' ? '#FF6B00' : '#00D4FF'}
           transparent
-          opacity={0.12}
+          opacity={0.16}
           side={THREE.BackSide}
         />
       </mesh>
 
-      {/* 4. Coordinate Lat/Long Grid Wireframe */}
-      <mesh>
-        <sphereGeometry args={[radius, 32, 24]} />
-        <meshBasicMaterial
-          color={palette.wireColor}
-          wireframe
-          transparent
-          opacity={palette.wireOpacity}
-        />
-      </mesh>
-
-      {/* 5. Orbital Surveillance Equator Ring */}
+      {/* 4. TACTICAL EQUATOR ORBIT RING */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[radius + 0.22, 0.006, 12, 90]} />
-        <meshBasicMaterial color={palette.ringColor} transparent opacity={0.4} />
+        <meshBasicMaterial color={palette.ringColor} transparent opacity={0.35} />
       </mesh>
 
-      {/* 6. Active Attack Bezier Arcs from Threat C2 to National SOC */}
+      {/* 5. ACTIVE CYBER ATTACK ARCS (RED BALLISTIC BEZIERS) */}
       {layers.cyber &&
         plotted.arcs.map((arc) => (
           <Line
             key={arc.id}
             points={arc.points}
             color={palette.arcColor}
-            lineWidth={1.6}
+            lineWidth={1.8}
             transparent
-            opacity={0.82}
+            opacity={0.85}
           />
         ))}
 
-      {/* 6.1 Real-Time Traveling Attack Energy Beacons */}
+      {/* 5.1 REAL-TIME TRAVELING ATTACK ENERGY BEACONS */}
       {layers.cyber && (
         <group ref={packetsGroupRef}>
           {plotted.arcs.map((arc) => (
             <mesh key={`beacon-${arc.id}`}>
-              <sphereGeometry args={[0.038, 12, 12]} />
+              <sphereGeometry args={[0.04, 12, 12]} />
               <meshBasicMaterial color={palette.arcColor} />
             </mesh>
           ))}
         </group>
       )}
 
-      {/* 7. Target Reticle / Radar Pulse over Currently Selected Threat */}
-      <group ref={targetRingRef} position={plotted.selectedPos}>
-        <mesh>
-          <ringGeometry args={[0.07, 0.09, 24]} />
-          <meshBasicMaterial
-            color={selectedEntity.kind === 'THREAT' ? '#FF1B1B' : '#00D4FF'}
-            side={THREE.DoubleSide}
+      {/* 6. ✈️ LIVE AIRCRAFT FLIGHT TRAILS & MOVING PLANES */}
+      {layers.aircraft &&
+        plotted.aircraftData.map((plane) => (
+          <Line
+            key={`flight-trail-${plane.id}`}
+            points={plane.points}
+            color="#38BDF8"
+            lineWidth={1.2}
             transparent
-            opacity={0.85}
+            opacity={0.4}
+            dashed
           />
-        </mesh>
-      </group>
+        ))}
 
-      {/* 8. Cyber & Threat Nodes */}
+      {layers.aircraft && (
+        <group ref={aircraftGroupRef}>
+          {plotted.aircraftData.map((plane) => (
+            <mesh
+              key={`plane-marker-${plane.id}`}
+              position={plane.pos}
+              onClick={(e) => {
+                e.stopPropagation()
+                onSelectEntity({
+                  id: plane.id,
+                  kind: 'AIRCRAFT',
+                  title: `${plane.flightNo} · ${plane.from} ➔ ${plane.to}`,
+                  subtitle: `${plane.aircraft} · Altitude: ${plane.altFt.toLocaleString()} ft · Speed: ${plane.speedKmh} km/h`,
+                  badge: 'COMMERCIAL FLIGHT TRACKER',
+                  coords: `${plane.pos.x.toFixed(2)}, ${plane.pos.y.toFixed(2)}`,
+                  lat: plane.startLat,
+                  lon: plane.startLon,
+                  severity: 'INFO',
+                  status: 'IN FLIGHT',
+                  speed: `${plane.speedKmh} km/h`,
+                  alt: `${plane.altFt} ft`,
+                })
+              }}
+            >
+              <coneGeometry args={[0.038, 0.08, 4]} />
+              <meshBasicMaterial color="#FBBF24" />
+
+              {/* 3D Anchored Callout Card like Bilawal Sidhu's God's Eye View */}
+              {layers.callouts && (
+                <Html distanceFactor={11} zIndexRange={[100, 0]}>
+                  <div className="pointer-events-none select-none -translate-x-1/2 -translate-y-12 whitespace-nowrap rounded-lg border border-amber-400/80 bg-slate-950/90 p-2 font-mono text-[10px] text-amber-200 shadow-2xl backdrop-blur-md">
+                    <div className="flex items-center gap-1 font-bold text-amber-400">
+                      <Plane className="h-3 w-3" />
+                      <span>{plane.flightNo}</span>
+                      <span className="text-slate-400">({plane.from} ➔ {plane.to})</span>
+                    </div>
+                    <div className="text-[9px] text-slate-300">
+                      Alt: {plane.altFt.toLocaleString()} ft · {plane.speedKmh} km/h
+                    </div>
+                  </div>
+                </Html>
+              )}
+            </mesh>
+          ))}
+        </group>
+      )}
+
+      {/* 7. 🚢 MARITIME VESSELS & SUBSEA PATROL */}
+      {layers.ships &&
+        plotted.vessels.map((vessel) => (
+          <mesh
+            key={vessel.id}
+            position={vessel.pos}
+            onClick={(e) => {
+              e.stopPropagation()
+              onSelectEntity({
+                id: vessel.id,
+                kind: 'VESSEL',
+                title: vessel.name,
+                subtitle: `${vessel.type} · Speed: ${vessel.speedKn} kn · Destination: ${vessel.destination}`,
+                badge: 'MARITIME AIS / SUBSEA DEFENSE',
+                coords: `${vessel.lat.toFixed(2)}°, ${vessel.lon.toFixed(2)}°`,
+                lat: vessel.lat,
+                lon: vessel.lon,
+                severity: 'INFO',
+                status: vessel.status,
+                speed: `${vessel.speedKn} kn`,
+              })
+            }}
+          >
+            <cylinderGeometry args={[0.035, 0.035, 0.02, 6]} />
+            <meshBasicMaterial color="#34D399" />
+
+            {/* 3D Anchored Ship Card */}
+            {layers.callouts && (
+              <Html distanceFactor={11} zIndexRange={[100, 0]}>
+                <div className="pointer-events-none select-none -translate-x-1/2 -translate-y-12 whitespace-nowrap rounded-lg border border-emerald-400/80 bg-slate-950/90 p-2 font-mono text-[10px] text-emerald-200 shadow-2xl backdrop-blur-md">
+                  <div className="flex items-center gap-1 font-bold text-emerald-400">
+                    <Ship className="h-3 w-3" />
+                    <span>{vessel.name.split(' ')[0]} {vessel.name.split(' ')[1] || ''}</span>
+                  </div>
+                  <div className="text-[9px] text-slate-300">
+                    Speed: {vessel.speedKn} kn · {vessel.destination}
+                  </div>
+                </div>
+              </Html>
+            )}
+          </mesh>
+        ))}
+
+      {/* 8. 🌋 LIVE USGS SEISMIC PULSES (EXPANDING SHOCKWAVES) */}
+      {layers.seismic && (
+        <group ref={shockwavesRef}>
+          {plotted.eqPoints.slice(0, 6).map((eq) => (
+            <mesh key={`eq-${eq.id}`} position={eq.pos}>
+              <ringGeometry args={[0.04, 0.065, 24]} />
+              <meshBasicMaterial color="#EF4444" side={THREE.DoubleSide} transparent opacity={0.7} />
+
+              {/* 3D Anchored Earthquake Card */}
+              {layers.callouts && (
+                <Html distanceFactor={11} zIndexRange={[100, 0]}>
+                  <div className="pointer-events-none select-none -translate-x-1/2 -translate-y-12 whitespace-nowrap rounded-lg border border-rose-500/80 bg-slate-950/90 p-2 font-mono text-[10px] text-rose-200 shadow-2xl backdrop-blur-md">
+                    <div className="flex items-center gap-1 font-bold text-rose-400">
+                      <Activity className="h-3 w-3" />
+                      <span>M {eq.mag} Quake</span>
+                    </div>
+                    <div className="text-[9px] text-slate-300">
+                      Depth: {eq.depthKm} km · {eq.title.split('of')[1] || eq.title}
+                    </div>
+                  </div>
+                </Html>
+              )}
+            </mesh>
+          ))}
+        </group>
+      )}
+
+      {/* 9. 🛰️ LIVE CELESTRAK SATELLITES IN CONTINUOUS ORBIT */}
+      {layers.satellites && (
+        <group ref={satGroupRef}>
+          {plotted.satPoints.map((sat) => {
+            const isSelected = sat.id === selectedId
+            return (
+              <mesh
+                key={sat.id}
+                position={sat.pos}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onSelectEntity({
+                    id: sat.id,
+                    kind: 'SATELLITE',
+                    title: `${sat.name} (NORAD ${sat.noradId})`,
+                    subtitle: `Live CelesTrak Orbital Vector · Alt: ${sat.altKm} km · Speed: ${sat.velocityKms} km/s`,
+                    badge: 'ORBITAL SURVEILLANCE',
+                    coords: `${sat.lat.toFixed(2)}°, ${sat.lon.toFixed(2)}°`,
+                    lat: sat.lat,
+                    lon: sat.lon,
+                    severity: 'INFO',
+                    status: 'ACTIVE ORBIT',
+                  })
+                }}
+                scale={isSelected ? 2.0 : 1}
+              >
+                <octahedronGeometry args={[0.042, 0]} />
+                <meshBasicMaterial color={isSelected ? '#FFFFFF' : '#38BDF8'} />
+              </mesh>
+            )
+          })}
+        </group>
+      )}
+
+      {/* 10. 🛡️ CYBER ATTACK & NATIONAL CII CORE NODES */}
       {layers.cyber &&
         plotted.nodes.map((node) => {
           const isSelected = node.id === selectedId
-          const color =
-            node.kind === 'DEFENSE' ? '#00D4FF' : node.kind === 'THREAT' ? '#FF1B1B' : '#FF9F1C'
+          const color = node.kind === 'DEFENSE' ? '#00D4FF' : node.kind === 'THREAT' ? '#FF1B1B' : '#FF9F1C'
           return (
             <mesh
               key={node.id}
@@ -358,7 +666,6 @@ function GlobeMesh({
                   lat: node.lat,
                   lon: node.lon,
                   severity: node.kind === 'THREAT' ? 'CRITICAL' : node.kind === 'ADVISORY' ? 'HIGH' : 'INFO',
-                  category: 'Cyber Warfare & CII',
                   status: node.kind === 'THREAT' ? 'ACTIVE ATTACK' : 'SECURED CORE',
                 })
               }}
@@ -366,143 +673,70 @@ function GlobeMesh({
             >
               <sphereGeometry args={[0.048, 16, 16]} />
               <meshBasicMaterial color={color} />
+
+              {/* 3D Callout Card for Active Threats like QakBot */}
+              {layers.callouts && node.kind === 'THREAT' && (
+                <Html distanceFactor={11} zIndexRange={[100, 0]}>
+                  <div className="pointer-events-none select-none -translate-x-1/2 -translate-y-12 whitespace-nowrap rounded-lg border border-red-500/80 bg-slate-950/90 p-2 font-mono text-[10px] text-red-200 shadow-2xl backdrop-blur-md animate-pulse">
+                    <div className="flex items-center gap-1 font-bold text-red-400">
+                      <AlertOctagon className="h-3 w-3" />
+                      <span>{node.name.split('·')[0]}</span>
+                    </div>
+                    <div className="text-[9px] text-slate-300">{node.detail.slice(0, 32)}...</div>
+                  </div>
+                </Html>
+              )}
             </mesh>
           )
         })}
 
-      {/* 9. Live CelesTrak Satellites (Diamond Meshes) in Real-Time Orbit */}
-      {layers.satellites && (
-        <group ref={satGroupRef}>
-          {plotted.satPoints.map((sat) => {
-            const isSelected = sat.id === selectedId
-            return (
-              <mesh
-                key={sat.id}
-                position={sat.pos}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onSelectEntity({
-                    id: sat.id,
-                    kind: 'SATELLITE',
-                    title: `${sat.name} (NORAD ${sat.noradId})`,
-                    subtitle: `Live CelesTrak Orbital Vector · Alt ${sat.altKm} km · Speed ${sat.velocityKms} km/s`,
-                    badge: 'ORBITAL ASSET',
-                    coords: `${sat.lat.toFixed(2)}°, ${sat.lon.toFixed(2)}°`,
-                    lat: sat.lat,
-                    lon: sat.lon,
-                    severity: 'INFO',
-                    category: 'Space-Based Reconnaissance',
-                    status: 'TRACKED ORBIT',
-                  })
-                }}
-                scale={isSelected ? 1.9 : 1}
-              >
-                <octahedronGeometry args={[0.038, 0]} />
-                <meshBasicMaterial color="#38BDF8" />
-              </mesh>
-            )
-          })}
-        </group>
-      )}
-
-      {/* 10. Live USGS Seismic Disruptions */}
-      {layers.seismic &&
-        plotted.eqPoints.map((eq) => {
-          const isSelected = eq.id === selectedId
-          return (
-            <mesh
-              key={eq.id}
-              position={eq.pos}
-              onClick={(e) => {
-                e.stopPropagation()
-                onSelectEntity({
-                  id: eq.id,
-                  kind: 'SEISMIC',
-                  title: eq.title,
-                  subtitle: `USGS Live Seismic Event · Depth ${eq.depthKm} km (Submarine Fiber/Power Grid Impact)`,
-                  badge: `M${eq.mag} QUAKE`,
-                  coords: `${eq.lat.toFixed(2)}°, ${eq.lon.toFixed(2)}°`,
-                  lat: eq.lat,
-                  lon: eq.lon,
-                  severity: eq.mag >= 5.0 ? 'CRITICAL' : 'HIGH',
-                  category: 'Geophysical Subsea Cable Risk',
-                  status: 'TELEMETRY RECORDED',
-                })
-              }}
-              scale={isSelected ? 1.8 : 1}
-            >
-              <sphereGeometry args={[0.034, 12, 12]} />
-              <meshBasicMaterial color="#F59E0B" />
-            </mesh>
-          )
-        })}
-
-      {/* 11. NASA EONET Hazards */}
-      {layers.hazards &&
-        plotted.hazPoints.map((haz) => {
-          const isSelected = haz.id === selectedId
-          return (
-            <mesh
-              key={haz.id}
-              position={haz.pos}
-              onClick={(e) => {
-                e.stopPropagation()
-                onSelectEntity({
-                  id: haz.id,
-                  kind: 'HAZARD',
-                  title: haz.title,
-                  subtitle: `NASA EONET Active Event · Category: ${haz.category}`,
-                  badge: haz.category.toUpperCase(),
-                  coords: `${haz.lat.toFixed(2)}°, ${haz.lon.toFixed(2)}°`,
-                  lat: haz.lat,
-                  lon: haz.lon,
-                  severity: 'HIGH',
-                  category: 'Environmental Hazard',
-                  status: 'OPEN EVENT',
-                })
-              }}
-              scale={isSelected ? 1.7 : 1}
-            >
-              <boxGeometry args={[0.045, 0.045, 0.045]} />
-              <meshBasicMaterial color="#A855F7" />
-            </mesh>
-          )
-        })}
+      {/* 11. TARGET RETICLE OVER CURRENTLY FOCUSED ENTITY */}
+      <group ref={targetRingRef} position={plotted.selectedPos}>
+        <mesh>
+          <ringGeometry args={[0.07, 0.09, 24]} />
+          <meshBasicMaterial
+            color={selectedEntity.kind === 'THREAT' ? '#FF1B1B' : '#00D4FF'}
+            side={THREE.DoubleSide}
+            transparent
+            opacity={0.85}
+          />
+        </mesh>
+      </group>
     </group>
   )
 }
 
 interface ThreatGlobeProps {
   compact?: boolean
+  onThreatSelect?: (entity: SelectedEntity) => void
   externalSelectedId?: string
-  onThreatSelect?: (threat: SelectedEntity) => void
 }
 
-export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelect }: ThreatGlobeProps) {
-  const [cyberNodes, setCyberNodes] = useState<OsintCyberNode[]>(FALLBACK_CYBER_NODES)
-  const [satellites, setSatellites] = useState<OsintSatellite[]>([])
-  const [seismic, setSeismic] = useState<OsintSeismic[]>([])
-  const [hazards, setHazards] = useState<OsintHazard[]>([])
-  const [sources, setSources] = useState<{ celestrak: string; usgs: string; eonet: string }>({
-    celestrak: 'SYNCING',
-    usgs: 'SYNCING',
-    eonet: 'SYNCING',
-  })
-  const [loadingOsint, setLoadingOsint] = useState(false)
-  const [autoRotate, setAutoRotate] = useState(false) // Default paused so user can search & examine threats!
+export function ThreatGlobe({ compact = false, onThreatSelect, externalSelectedId }: ThreatGlobeProps) {
+  const [webglReady, setWebglReady] = useState(false)
+  const [autoRotate, setAutoRotate] = useState(false)
   const [sensorMode, setSensorMode] = useState<SensorMode>('EARTH')
   const [searchQuery, setSearchQuery] = useState('')
+  const [loadingOsint, setLoadingOsint] = useState(false)
+
   const [layers, setLayers] = useState({
     cyber: true,
     satellites: true,
     seismic: true,
-    hazards: true,
+    aircraft: true,
+    ships: true,
+    callouts: true,
   })
-  const [webglReady, setWebglReady] = useState(false)
+
+  const [cyberNodes, setCyberNodes] = useState<OsintCyberNode[]>(FALLBACK_CYBER_NODES)
+  const [satellites, setSatellites] = useState<OsintSatellite[]>([])
+  const [seismic, setSeismic] = useState<OsintSeismic[]>([])
+  const [hazards, setHazards] = useState<OsintHazard[]>([])
+  const [sources, setSources] = useState({ celestrak: 'LIVE', usgs: 'LIVE' })
 
   const [selected, setSelected] = useState<SelectedEntity>({
-    id: 'DEL',
-    kind: 'DEFENSE',
+    id: FALLBACK_CYBER_NODES[0].id,
+    kind: FALLBACK_CYBER_NODES[0].kind,
     title: FALLBACK_CYBER_NODES[0].name,
     subtitle: FALLBACK_CYBER_NODES[0].detail,
     badge: FALLBACK_CYBER_NODES[0].ttps,
@@ -510,18 +744,22 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
     lat: 28.61,
     lon: 77.21,
     severity: 'INFO',
-    category: 'National Cyber Grid Core',
     status: 'OPERATIONAL',
   })
 
-  // Handle entity selection
-  const handleSelectEntity = useCallback((ent: SelectedEntity) => {
-    setSelected(ent)
-    setAutoRotate(false)
-    if (onThreatSelect) onThreatSelect(ent)
-  }, [onThreatSelect])
+  const [nextSyncIn, setNextSyncIn] = useState(10)
+  const [livePulseFlash, setLivePulseFlash] = useState(false)
 
-  // Sync external selection if provided
+  const handleSelectEntity = useCallback(
+    (ent: SelectedEntity) => {
+      setSelected(ent)
+      setAutoRotate(false)
+      if (onThreatSelect) onThreatSelect(ent)
+    },
+    [onThreatSelect]
+  )
+
+  // Sync external selection from parent feed
   useEffect(() => {
     if (!externalSelectedId) return
     const matched: (OsintCyberNode | OsintSatellite | OsintSeismic) | undefined =
@@ -544,6 +782,7 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
     }
   }, [externalSelectedId, cyberNodes, satellites, seismic, handleSelectEntity])
 
+  // Fetch Live OSINT feeds
   const loadOsint = useCallback(async () => {
     setLoadingOsint(true)
     try {
@@ -562,10 +801,7 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
     }
   }, [])
 
-  const [nextSyncIn, setNextSyncIn] = useState(10)
-  const [livePulseFlash, setLivePulseFlash] = useState(false)
-
-  // Automatic real-time polling loop every 10 seconds
+  // Auto-polling loop
   useEffect(() => {
     const pollInterval = setInterval(() => {
       loadOsint()
@@ -584,16 +820,16 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
     }
   }, [loadOsint])
 
-  // Simulate an incoming live APT / Ransomware burst attack
+  // Test simulated live attack burst
   const simulateIncomingAttack = useCallback(() => {
     const newThreatId = `APT-${Date.now().toString().slice(-4)}`
-    const attackCoords = [
-      { city: 'Bucharest Proxy', lat: 44.42, lon: 26.10 },
+    const attackOrigins = [
+      { city: 'Bucharest Proxy', lat: 44.42, lon: 26.1 },
       { city: 'Shenzhen C2 Relay', lat: 22.54, lon: 114.05 },
       { city: 'Tehran Scanning Node', lat: 35.68, lon: 51.38 },
       { city: 'Chicago Botnet Cluster', lat: 41.87, lon: -87.62 },
     ]
-    const pick = attackCoords[Math.floor(Math.random() * attackCoords.length)]
+    const pick = attackOrigins[Math.floor(Math.random() * attackOrigins.length)]
 
     const newThreat: OsintCyberNode = {
       id: newThreatId,
@@ -601,7 +837,7 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
       lat: pick.lat,
       lon: pick.lon,
       kind: 'THREAT',
-      detail: `Real-time C2 outbound beacon detected. T1071 C2 Communication underway.`,
+      detail: 'Real-time C2 outbound beacon detected. Active T1071 exfiltration attempt.',
       ttps: 'T1071 LIVE ACTIVE',
     }
 
@@ -634,7 +870,7 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
     loadOsint()
   }, [loadOsint])
 
-  // Combined searchable catalog of all threats, nodes, satellites, and events
+  // Search Catalog
   const allSearchableTargets = useMemo(() => {
     const list: SelectedEntity[] = []
     for (const n of cyberNodes) {
@@ -648,8 +884,32 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
         lat: n.lat,
         lon: n.lon,
         severity: n.kind === 'THREAT' ? 'CRITICAL' : n.kind === 'ADVISORY' ? 'HIGH' : 'INFO',
-        category: 'Cyber Attack / CII Node',
-        status: n.kind === 'THREAT' ? 'ACTIVE ATTACK' : 'SECURED CORE',
+      })
+    }
+    for (const plane of LIVE_AIRCRAFT) {
+      list.push({
+        id: plane.id,
+        kind: 'AIRCRAFT',
+        title: `${plane.flightNo} (${plane.from} ➔ ${plane.to})`,
+        subtitle: `${plane.aircraft} · Alt ${plane.altFt.toLocaleString()} ft · ${plane.speedKmh} km/h`,
+        badge: 'FLIGHT',
+        coords: `${plane.startLat.toFixed(2)}°, ${plane.startLon.toFixed(2)}°`,
+        lat: plane.startLat,
+        lon: plane.startLon,
+        severity: 'INFO',
+      })
+    }
+    for (const vessel of LIVE_VESSELS) {
+      list.push({
+        id: vessel.id,
+        kind: 'VESSEL',
+        title: vessel.name,
+        subtitle: `${vessel.type} · ${vessel.speedKn} kn`,
+        badge: 'MARITIME',
+        coords: `${vessel.lat.toFixed(2)}°, ${vessel.lon.toFixed(2)}°`,
+        lat: vessel.lat,
+        lon: vessel.lon,
+        severity: 'INFO',
       })
     }
     for (const sat of satellites.slice(0, 10)) {
@@ -658,13 +918,11 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
         kind: 'SATELLITE',
         title: `${sat.name} (NORAD ${sat.noradId})`,
         subtitle: `Orbital Vector · Alt ${sat.altKm} km · ${sat.velocityKms} km/s`,
-        badge: 'ORBITAL ASSET',
+        badge: 'ORBITAL',
         coords: `${sat.lat.toFixed(2)}°, ${sat.lon.toFixed(2)}°`,
         lat: sat.lat,
         lon: sat.lon,
         severity: 'INFO',
-        category: 'Satellite Telemetry',
-        status: 'ORBITAL',
       })
     }
     for (const eq of seismic.slice(0, 8)) {
@@ -678,120 +936,117 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
         lat: eq.lat,
         lon: eq.lon,
         severity: eq.mag >= 5.0 ? 'CRITICAL' : 'HIGH',
-        category: 'Subsea Cable Disruption',
-        status: 'SEISMIC IMPACT',
       })
     }
     return list
   }, [cyberNodes, satellites, seismic])
 
-  // Filtered threats based on search input
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return []
     const q = searchQuery.toLowerCase().trim()
-    return allSearchableTargets.filter(
-      (t) =>
-        t.title.toLowerCase().includes(q) ||
-        t.subtitle.toLowerCase().includes(q) ||
-        t.badge.toLowerCase().includes(q) ||
-        t.id.toLowerCase().includes(q)
-    ).slice(0, 5)
+    return allSearchableTargets
+      .filter((t) => t.title.toLowerCase().includes(q) || t.subtitle.toLowerCase().includes(q) || t.id.toLowerCase().includes(q))
+      .slice(0, 5)
   }, [searchQuery, allSearchableTargets])
 
-  const badgeTone =
-    selected.kind === 'DEFENSE' || selected.kind === 'SATELLITE'
-      ? 'text-[#00D4FF] border-[#00D4FF]/40 bg-[#00D4FF]/10'
-      : selected.kind === 'THREAT'
-        ? 'text-[#FF1B1B] border-[#FF1B1B]/40 bg-[#FF1B1B]/10'
-        : selected.kind === 'HAZARD'
-          ? 'text-[#C084FC] border-[#A855F7]/40 bg-[#A855F7]/15'
-          : 'text-[#FF9F1C] border-[#FF9F1C]/40 bg-[#FF9F1C]/10'
-
   return (
-    <div className="rounded-xl bg-[#07090E] border border-[#1E293B] overflow-hidden shadow-[0_0_32px_rgba(0,212,255,0.14)]">
-      {/* 1. Header Bar: Title + Sensor View Toggle + Live Polling Status + Sync */}
-      <div className="px-4 py-2.5 border-b border-[#1E293B] bg-[#030508] flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2.5">
-          <Globe className="w-4 h-4 text-[#00D4FF]" />
-          <span className="font-mono text-[11px] font-bold tracking-wider text-[#F8FAFC] uppercase">
-            God&apos;s Eye · Google Earth 3D Sovereign Globe
-          </span>
-          <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold flex items-center gap-1.5 transition-colors ${
-            livePulseFlash ? 'bg-rose-500/30 text-rose-300 border border-rose-500' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-          }`}>
-            <span className={`w-1.5 h-1.5 rounded-full ${livePulseFlash ? 'bg-rose-400 animate-ping' : 'bg-emerald-400 animate-pulse'}`} />
-            {livePulseFlash ? 'NEW ATTACK DETECTED' : `REAL-TIME SYNC IN ${nextSyncIn}s`}
-          </span>
+    <div className="relative overflow-hidden rounded-2xl border border-sky-500/30 bg-[#030712] shadow-[0_0_50px_rgba(14,165,233,0.18)]">
+      {/* ── TOP MILITARY COMMAND HEADER (Bilawal Sidhu Style) ── */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-sky-500/20 bg-slate-950/90 px-6 py-3.5 backdrop-blur-md">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/10 border border-sky-500/30">
+            <Globe className="h-5 w-5 text-sky-400" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-sm font-black tracking-wider text-slate-100 uppercase">
+                God&apos;s Eye View · 3D Earth Spatial Intelligence
+              </span>
+              <span
+                className={`flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[10px] font-bold transition-all ${
+                  livePulseFlash
+                    ? 'border border-rose-500 bg-rose-500/30 text-rose-300'
+                    : 'border border-emerald-500/40 bg-emerald-500/15 text-emerald-400'
+                }`}
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${livePulseFlash ? 'animate-ping bg-rose-400' : 'animate-pulse bg-emerald-400'}`} />
+                {livePulseFlash ? 'ATTACK DETECTED' : `LIVE SYNC: ${nextSyncIn}s`}
+              </span>
+            </div>
+            <p className="font-mono text-[11px] text-slate-400">
+              Live Sovereign Radar · Aircraft ADS-B · Subsea Maritime · CelesTrak Orbitals · USGS Seismics · APT C2 Beacons
+            </p>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-1.5">
+
+        {/* Right Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={simulateIncomingAttack}
-            className="px-2 py-0.5 rounded bg-rose-500/15 border border-rose-500/40 text-[10px] font-mono text-rose-400 hover:bg-rose-500/30 flex items-center gap-1 cursor-pointer transition-colors"
+            className="flex items-center gap-1.5 rounded-lg border border-rose-500/50 bg-rose-500/15 px-3 py-1 font-mono text-xs font-bold text-rose-300 hover:bg-rose-500/25 transition-colors cursor-pointer"
           >
-            <Zap className="w-3 h-3 text-rose-400" />
+            <Zap className="h-3.5 w-3.5 text-rose-400" />
             <span>TEST ATTACK BURST</span>
           </button>
+
           {(['EARTH', 'FLIR', 'NVG', 'RADAR'] as SensorMode[]).map((mode) => (
             <button
               key={mode}
               type="button"
               onClick={() => setSensorMode(mode)}
-              className={`px-2 py-0.5 rounded text-[10px] font-mono border cursor-pointer transition-colors ${
+              className={`rounded-lg border px-3 py-1 font-mono text-xs font-bold transition-colors cursor-pointer ${
                 sensorMode === mode
-                  ? 'bg-[#00D4FF] text-[#030508] border-[#00D4FF] font-bold'
-                  : 'bg-[#0A0E17] text-[#94A3B8] border-[#1E293B] hover:text-[#F8FAFC]'
+                  ? 'border-sky-400 bg-sky-400 text-slate-950'
+                  : 'border-slate-800 bg-slate-900 text-slate-400 hover:text-slate-100'
               }`}
             >
               {mode}
             </button>
           ))}
+
           <button
             type="button"
             onClick={() => setAutoRotate((r) => !r)}
-            className="px-2 py-0.5 rounded bg-[#0A0E17] border border-[#1E293B] hover:border-[#00D4FF]/50 text-[10px] font-mono text-[#00D4FF] cursor-pointer"
+            className="rounded-lg border border-slate-800 bg-slate-900 px-3 py-1 font-mono text-xs font-semibold text-sky-400 hover:border-sky-500/50 cursor-pointer"
           >
-            {autoRotate ? 'ORBIT: ON' : 'LOCKED ON TARGET'}
+            {autoRotate ? 'ORBIT: ON' : 'CAMERA LOCKED'}
           </button>
+
           <button
             type="button"
             onClick={loadOsint}
             disabled={loadingOsint}
-            className="px-2 py-0.5 rounded bg-[#0A0E17] border border-[#1E293B] hover:border-[#00FF9D]/50 text-[10px] font-mono text-[#00FF9D] flex items-center gap-1 cursor-pointer disabled:opacity-60"
+            className="flex items-center gap-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 font-mono text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 disabled:opacity-50 cursor-pointer"
           >
-            <RefreshCw className={`w-3 h-3 ${loadingOsint ? 'animate-spin' : ''}`} />
-            SYNC
+            <RefreshCw className={`h-3 w-3 ${loadingOsint ? 'animate-spin' : ''}`} />
+            <span>SYNC</span>
           </button>
         </div>
       </div>
 
-      {/* 2. DYNAMIC THREAT FINDER SEARCH BAR */}
-      <div className="px-4 py-2 bg-[#090D16] border-b border-[#1E293B] relative">
-        <div className="flex items-center gap-2">
+      {/* ── SEARCH & FILTER STRIP ── */}
+      <div className="relative border-b border-sky-500/20 bg-slate-950/70 px-6 py-2.5 backdrop-blur-md">
+        <div className="flex items-center gap-3">
           <div className="relative flex-1">
-            <Search className="w-3.5 h-3.5 text-[#00D4FF] absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Find threat dynamically: enter IP, CVE, C2, city, or keyword (e.g. QakBot, Delhi, MOW, ISS)..."
-              className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-[#030508] border border-[#1E293B] text-xs font-mono text-[#F8FAFC] placeholder:text-[#64748B] focus:outline-none focus:border-[#00D4FF]"
+              placeholder="Find threat dynamically: enter IP, Flight No, Vessel, CVE, City (e.g. AI284, QakBot, Delhi, INS Vikrant, ISS)..."
+              className="w-full rounded-xl border border-sky-500/30 bg-slate-900/90 py-2 pl-9 pr-4 font-mono text-xs text-slate-100 placeholder-slate-500 focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-400"
             />
           </div>
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              className="px-2 py-1 rounded bg-[#1E293B] text-[10px] font-mono text-[#94A3B8] hover:text-white"
-            >
-              CLEAR
-            </button>
-          )}
+          <div className="hidden sm:flex items-center gap-1 font-mono text-[11px] text-slate-400">
+            <Radio className="h-3.5 w-3.5 animate-pulse text-emerald-400" />
+            <span>CelesTrak: {sources.celestrak} · USGS: {sources.usgs}</span>
+          </div>
         </div>
 
-        {/* Dynamic Search Autocomplete Dropdown */}
+        {/* Autocomplete Dropdown */}
         {searchResults.length > 0 && (
-          <div className="absolute top-full left-4 right-4 z-30 mt-1 bg-[#030508] border border-[#00D4FF]/50 rounded-lg shadow-2xl divide-y divide-[#1E293B] overflow-hidden">
+          <div className="absolute left-6 right-6 top-full z-40 mt-1 divide-y divide-slate-800 rounded-xl border border-sky-500/50 bg-slate-950 shadow-2xl overflow-hidden">
             {searchResults.map((res) => (
               <button
                 key={res.id}
@@ -800,81 +1055,32 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
                   handleSelectEntity(res)
                   setSearchQuery('')
                 }}
-                className="w-full px-3 py-2 text-left hover:bg-[#00D4FF]/10 flex items-center justify-between gap-2 text-xs font-mono cursor-pointer transition-colors"
+                className="flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left font-mono text-xs hover:bg-sky-500/10 cursor-pointer transition-colors"
               >
                 <div className="truncate">
-                  <div className="font-bold text-[#F8FAFC] flex items-center gap-1.5">
-                    <Crosshair className="w-3 h-3 text-[#00D4FF]" />
-                    {res.title}
+                  <div className="flex items-center gap-2 font-bold text-slate-100">
+                    <Crosshair className="h-3.5 w-3.5 text-sky-400" />
+                    <span>{res.title}</span>
                   </div>
-                  <div className="text-[11px] text-[#94A3B8] truncate">{res.subtitle}</div>
+                  <div className="text-[11px] text-slate-400 truncate">{res.subtitle}</div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-[10px] text-[#00FF9D]">{res.coords}</span>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#FF1B1B]/15 text-[#FF1B1B] border border-[#FF1B1B]/40">
-                    FOCUS 3D
-                  </span>
-                </div>
+                <span className="shrink-0 rounded-md border border-red-500/40 bg-red-500/15 px-2 py-0.5 text-[10px] font-bold text-red-400">
+                  FOCUS 3D
+                </span>
               </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* 3. Layer Toggles Strip */}
-      <div className="px-4 py-1.5 border-b border-[#1E293B] bg-[#05070D] flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setLayers((l) => ({ ...l, cyber: !l.cyber }))}
-            className={`px-2 py-0.5 rounded border cursor-pointer ${
-              layers.cyber ? 'bg-[#00D4FF]/15 border-[#00D4FF]/50 text-[#00D4FF]' : 'bg-[#0A0E17] border-[#1E293B] text-[#64748B]'
-            }`}
-          >
-            Cyber Targets ({cyberNodes.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setLayers((l) => ({ ...l, satellites: !l.satellites }))}
-            className={`px-2 py-0.5 rounded border flex items-center gap-1 cursor-pointer ${
-              layers.satellites ? 'bg-[#38BDF8]/15 border-[#38BDF8]/50 text-[#38BDF8]' : 'bg-[#0A0E17] border-[#1E293B] text-[#64748B]'
-            }`}
-          >
-            <Satellite className="w-3 h-3" /> Satellites ({satellites.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setLayers((l) => ({ ...l, seismic: !l.seismic }))}
-            className={`px-2 py-0.5 rounded border flex items-center gap-1 cursor-pointer ${
-              layers.seismic ? 'bg-[#F59E0B]/15 border-[#F59E0B]/50 text-[#F59E0B]' : 'bg-[#0A0E17] border-[#1E293B] text-[#64748B]'
-            }`}
-          >
-            <Activity className="w-3 h-3" /> Seismic M2.5+ ({seismic.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setLayers((l) => ({ ...l, hazards: !l.hazards }))}
-            className={`px-2 py-0.5 rounded border flex items-center gap-1 cursor-pointer ${
-              layers.hazards ? 'bg-[#A855F7]/15 border-[#A855F7]/50 text-[#C084FC]' : 'bg-[#0A0E17] border-[#1E293B] text-[#64748B]'
-            }`}
-          >
-            <Flame className="w-3 h-3" /> NASA Hazards ({hazards.length})
-          </button>
-        </div>
-        <span className="flex items-center gap-1 text-[10px] text-[#00FF9D]">
-          <Radio className="w-3 h-3 animate-pulse" />
-          CelesTrak: {sources.celestrak} · USGS: {sources.usgs}
-        </span>
-      </div>
-
-      {/* 4. Interactive 3D Canvas with Google Earth Texture & Camera Tracking */}
-      <div className={compact ? 'h-80 relative' : 'h-[490px] relative'}>
+      {/* ── MAIN 3D GLOBE CANVAS (EXPANSIVE BILAWAL SIDHU THEATER) ── */}
+      <div className={compact ? 'relative h-[420px]' : 'relative h-[560px] sm:h-[620px]'}>
         {webglReady ? (
           <Canvas camera={{ position: [0, 0, 4.35], fov: 44 }} dpr={[1, 1.75]}>
-            <ambientLight intensity={sensorMode === 'EARTH' ? 1.4 : 0.8} />
-            <directionalLight position={[6, 4, 6]} intensity={2.6} color="#FFFFFF" />
-            <directionalLight position={[-6, -2, -4]} intensity={1.1} color="#38BDF8" />
-            <pointLight position={[0, 8, 2]} intensity={0.9} color="#FFFFFF" />
+            <ambientLight intensity={sensorMode === 'EARTH' ? 1.5 : 0.8} />
+            <directionalLight position={[6, 4, 6]} intensity={2.8} color="#FFFFFF" />
+            <directionalLight position={[-6, -2, -4]} intensity={1.2} color="#38BDF8" />
+            <pointLight position={[0, 8, 2]} intensity={1.0} color="#FFFFFF" />
             <GlobeMesh
               selectedId={selected.id}
               selectedEntity={selected}
@@ -887,128 +1093,161 @@ export function ThreatGlobe({ compact = false, externalSelectedId, onThreatSelec
               seismic={seismic}
               hazards={hazards}
             />
-            <OrbitControls enableZoom={true} minDistance={2.6} maxDistance={6.5} enablePan={false} rotateSpeed={0.65} />
+            <OrbitControls enableZoom={true} minDistance={2.4} maxDistance={6.8} enablePan={false} rotateSpeed={0.7} />
           </Canvas>
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-center p-4 space-y-2">
-            <div className="w-28 h-28 rounded-full border-2 border-dashed border-[#00D4FF]/60 flex items-center justify-center animate-[spin_20s_linear_infinite]">
-              <ShieldAlert className="w-8 h-8 text-[#FF1B1B]" />
+          <div className="flex h-full flex-col items-center justify-center p-6 text-center space-y-3">
+            <div className="flex h-28 w-28 items-center justify-center rounded-full border-2 border-dashed border-sky-400 animate-spin">
+              <ShieldAlert className="h-10 w-10 text-rose-500" />
             </div>
-            <div className="font-mono text-xs text-[#00D4FF]">3D GEOSPATIAL VECTOR FALLBACK</div>
+            <p className="font-mono text-xs text-sky-400">INITIALIZING 3D SOVEREIGN VECTOR PIPELINE...</p>
           </div>
         )}
 
-        {/* Dynamic Target Reticle HUD Overlay */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none text-[10px] font-mono">
-          <div className="px-2.5 py-1 rounded bg-[#030508]/85 border border-[#00D4FF]/40 text-[#00D4FF] backdrop-blur-xs flex items-center gap-1.5 shadow-md">
-            <Crosshair className="w-3 h-3 animate-spin text-[#00D4FF]" />
-            <span>TARGET LOCKED: {selected.title.split('·')[0]}</span>
-          </div>
-          <div className="px-2 py-0.5 rounded bg-[#030508]/80 border border-[#64748B]/40 text-[#94A3B8]">
-            COORDINATES: {selected.coords}
-          </div>
-        </div>
-
-        {/* Legend Overlay */}
-        <div className="absolute top-3 right-3 flex flex-wrap gap-1.5 pointer-events-none text-[10px] font-mono">
-          <span className="px-2 py-0.5 rounded bg-[#030508]/85 border border-[#00D4FF]/40 text-[#00D4FF]">
-            ● Defense Core
-          </span>
-          <span className="px-2 py-0.5 rounded bg-[#030508]/85 border border-[#FF1B1B]/40 text-[#FF1B1B]">
-            ● Threat Origin
-          </span>
-          <span className="px-2 py-0.5 rounded bg-[#030508]/85 border border-[#38BDF8]/40 text-[#38BDF8]">
-            ◆ Satellite
-          </span>
-          <span className="px-2 py-0.5 rounded bg-[#030508]/85 border border-[#F59E0B]/40 text-[#F59E0B]">
-            ● Seismic
-          </span>
-        </div>
-      </div>
-
-      {/* 5. Dynamic Quick Threat Targets Navigation Strip */}
-      <div className="p-3 border-t border-[#1E293B] bg-[#030508] space-y-2.5">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-[10px] font-mono text-[#64748B] mr-1">QUICK TARGETS:</span>
-          {cyberNodes.map((n) => {
-            const active = n.id === selected.id
-            const isThreat = n.kind === 'THREAT'
-            return (
-              <button
-                key={n.id}
-                type="button"
-                onClick={() =>
-                  handleSelectEntity({
-                    id: n.id,
-                    kind: n.kind,
-                    title: n.name,
-                    subtitle: n.detail,
-                    badge: n.ttps,
-                    coords: `${n.lat.toFixed(2)}°, ${n.lon.toFixed(2)}°`,
-                    lat: n.lat,
-                    lon: n.lon,
-                    severity: isThreat ? 'CRITICAL' : 'INFO',
-                    category: 'Cyber Attack / CII Node',
-                    status: isThreat ? 'ACTIVE ATTACK' : 'SECURED CORE',
-                  })
-                }
-                className={`px-2 py-0.5 rounded font-mono text-[10px] border transition-colors cursor-pointer ${
-                  active
-                    ? isThreat
-                      ? 'bg-[#FF1B1B] text-white border-[#FF1B1B] font-bold shadow-xs'
-                      : 'bg-[#00D4FF] text-[#030508] border-[#00D4FF] font-bold shadow-xs'
-                    : isThreat
-                      ? 'bg-[#0A0E17] text-[#FF6B6B] border-[#FF1B1B]/30 hover:border-[#FF1B1B]'
-                      : 'bg-[#0A0E17] text-[#94A3B8] border-[#1E293B] hover:text-[#F8FAFC]'
-                }`}
-              >
-                {n.id}
-              </button>
-            )
-          })}
-        </div>
-
-        {/* 6. Active Target Telemetry Dossier Card */}
-        <div className="p-3 rounded-lg bg-[#090D16] border border-[#1E293B] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-[#F8FAFC] text-sm flex items-center gap-1.5">
-                {selected.kind === 'THREAT' ? (
-                  <AlertTriangle className="w-4 h-4 text-[#FF1B1B]" />
-                ) : (
-                  <ShieldCheck className="w-4 h-4 text-[#00D4FF]" />
-                )}
-                {selected.title}
-              </span>
-              <span className={`px-2 py-0.5 rounded border font-mono text-[10px] font-bold ${badgeTone}`}>
-                {selected.badge}
-              </span>
+        {/* ── LEFT TACTICAL LAYER SELECTOR DRAWER (Bilawal Sidhu Style) ── */}
+        <div className="absolute left-4 top-4 z-20 flex flex-col gap-2 font-mono text-[11px]">
+          <div className="rounded-xl border border-sky-500/30 bg-slate-950/85 p-3 shadow-2xl backdrop-blur-md space-y-2">
+            <div className="flex items-center gap-1.5 font-bold text-sky-400 uppercase tracking-wider text-[10px] border-b border-slate-800 pb-1.5">
+              <Layers className="h-3.5 w-3.5" />
+              <span>Intelligence Layers</span>
             </div>
-            <div className="text-[11px] text-[#94A3B8] font-mono">{selected.subtitle}</div>
-          </div>
 
-          <div className="flex items-center gap-3 shrink-0 font-mono text-xs">
-            <div className="text-right">
-              <div className="text-[#00FF9D] font-bold">{selected.coords}</div>
-              <div className="text-[10px] text-[#64748B]">{selected.status || 'ACTIVE SIGNAL'}</div>
-            </div>
             <button
               type="button"
-              onClick={() => {
-                // Focus / trigger view
-                setAutoRotate(false)
-              }}
-              className="px-3 py-1.5 rounded-lg bg-[#00D4FF] hover:bg-[#00B4D8] text-[#030508] text-xs font-bold font-sans flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+              onClick={() => setLayers((l) => ({ ...l, aircraft: !l.aircraft }))}
+              className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1 text-left transition-colors cursor-pointer ${
+                layers.aircraft ? 'bg-amber-500/20 text-amber-300 font-bold' : 'text-slate-500 hover:text-slate-300'
+              }`}
             >
-              <Zap className="w-3.5 h-3.5" />
-              Focus Threat
+              <span className="flex items-center gap-1.5">
+                <Plane className="h-3 w-3" />
+                <span>Aircraft Tracking</span>
+              </span>
+              <span className="text-[10px] font-bold text-amber-400">3 Live</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLayers((l) => ({ ...l, ships: !l.ships }))}
+              className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1 text-left transition-colors cursor-pointer ${
+                layers.ships ? 'bg-emerald-500/20 text-emerald-300 font-bold' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                <Ship className="h-3 w-3" />
+                <span>Ship & Vessel Data</span>
+              </span>
+              <span className="text-[10px] font-bold text-emerald-400">3 Live</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLayers((l) => ({ ...l, satellites: !l.satellites }))}
+              className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1 text-left transition-colors cursor-pointer ${
+                layers.satellites ? 'bg-sky-500/20 text-sky-300 font-bold' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                <Satellite className="h-3 w-3" />
+                <span>Satellite Tracking</span>
+              </span>
+              <span className="text-[10px] font-bold text-sky-400">{satellites.length || 16} Live</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLayers((l) => ({ ...l, seismic: !l.seismic }))}
+              className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1 text-left transition-colors cursor-pointer ${
+                layers.seismic ? 'bg-rose-500/20 text-rose-300 font-bold' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                <Activity className="h-3 w-3" />
+                <span>Earthquake Data</span>
+              </span>
+              <span className="text-[10px] font-bold text-rose-400">{seismic.length || 18} Live</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLayers((l) => ({ ...l, cyber: !l.cyber }))}
+              className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1 text-left transition-colors cursor-pointer ${
+                layers.cyber ? 'bg-red-500/20 text-red-300 font-bold' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                <ShieldAlert className="h-3 w-3" />
+                <span>Cyber Attacks & C2</span>
+              </span>
+              <span className="text-[10px] font-bold text-red-400">{cyberNodes.length} Live</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setLayers((l) => ({ ...l, callouts: !l.callouts }))}
+              className={`flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1 text-left transition-colors cursor-pointer border-t border-slate-800 pt-1.5 ${
+                layers.callouts ? 'text-sky-300 font-bold' : 'text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                {layers.callouts ? <Eye className="h-3 w-3 text-sky-400" /> : <EyeOff className="h-3 w-3" />}
+                <span>3D Floating Cards</span>
+              </span>
+              <span className="text-[10px] text-sky-400">{layers.callouts ? 'ON' : 'OFF'}</span>
             </button>
           </div>
         </div>
 
-        <div className="text-[10px] font-mono text-[#64748B] pt-1 flex items-center justify-between">
-          <span>NASA Blue Marble / Photorealistic Earth Map · Three.js Vector Orbit Engine</span>
-          <span className="text-[#00D4FF]">Click any node or live feed item to lock target</span>
+        {/* ── TOP RIGHT TARGET HUD RETICLE ── */}
+        <div className="pointer-events-none absolute right-4 top-4 z-20 flex flex-col gap-2 font-mono text-[11px]">
+          <div className="rounded-xl border border-sky-500/30 bg-slate-950/85 p-3 shadow-2xl backdrop-blur-md space-y-1">
+            <div className="flex items-center gap-2 font-bold text-sky-400">
+              <Crosshair className="h-4 w-4 animate-spin text-sky-400" />
+              <span>TARGET LOCKED: {selected.title.split('·')[0]}</span>
+            </div>
+            <div className="text-[10px] text-slate-300">{selected.subtitle}</div>
+            <div className="flex items-center justify-between text-[10px] text-emerald-400 pt-1 border-t border-slate-800">
+              <span>COORDS: {selected.coords}</span>
+              <span className="font-bold text-rose-400">{selected.status || 'ACTIVE'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── BOTTOM HUD TELEMETRY CONTROLS ── */}
+        <div className="absolute bottom-4 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
+          <div className="flex flex-wrap items-center gap-1.5 pointer-events-auto">
+            {FALLBACK_CYBER_NODES.slice(0, 6).map((node) => (
+              <button
+                key={node.id}
+                type="button"
+                onClick={() =>
+                  handleSelectEntity({
+                    id: node.id,
+                    kind: node.kind,
+                    title: node.name,
+                    subtitle: node.detail,
+                    badge: node.ttps,
+                    coords: `${node.lat.toFixed(2)}°, ${node.lon.toFixed(2)}°`,
+                    lat: node.lat,
+                    lon: node.lon,
+                    severity: node.kind === 'THREAT' ? 'CRITICAL' : 'INFO',
+                  })
+                }
+                className={`rounded-lg border px-2.5 py-1 font-mono text-[11px] font-bold transition-all cursor-pointer ${
+                  selected.id === node.id
+                    ? 'border-sky-400 bg-sky-400 text-slate-950 shadow-lg'
+                    : 'border-slate-800 bg-slate-950/80 text-slate-300 hover:border-sky-500/50 backdrop-blur-md'
+                }`}
+              >
+                {node.id}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2 font-mono text-[10px] text-slate-400 bg-slate-950/80 border border-slate-800 px-3 py-1.5 rounded-xl backdrop-blur-md">
+            <Compass className="h-3.5 w-3.5 text-sky-400 animate-spin" />
+            <span>GOD&apos;S EYE OSINT KERNEL · 3D PHOTOREALISTIC BLUE MARBLE MESH</span>
+          </div>
         </div>
       </div>
     </div>

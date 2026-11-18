@@ -183,12 +183,13 @@ export default function IntelPage() {
         </div>
       </div>
 
-      {/* 3D Geospatial Threat Globe + Live Feed Split */}
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-        <div className="xl:col-span-5">
-          <ThreatGlobe externalSelectedId={selectedThreatId ?? undefined} onThreatSelect={(ent) => setSelectedThreatId(ent.id)} />
-        </div>
-        <div className="xl:col-span-7">
+      {/* ── 1. GOD'S EYE VIEW: FULL-WIDTH 3D EARTH INTELLIGENCE HERO (Bilawal Sidhu Style) ── */}
+      <div className="w-full">
+        <ThreatGlobe externalSelectedId={selectedThreatId ?? undefined} onThreatSelect={(ent) => setSelectedThreatId(ent.id)} />
+      </div>
+
+      {/* ── 2. LIVE SECTOR ATTACK TELEMETRY FEED ── */}
+      <div className="w-full">
       <TerminalCard title="Live Sector Attack Telemetry Feed"
         label="Live Feed" labelColor="red" noPadding
         headerRight={
