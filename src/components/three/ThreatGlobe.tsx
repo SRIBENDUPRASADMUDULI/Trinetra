@@ -767,16 +767,16 @@ export function ThreatGlobe({ compact = false, onThreatSelect, externalSelectedI
       (satellites.find((s) => s.id === externalSelectedId) as OsintSatellite | undefined) ||
       (seismic.find((e) => e.id === externalSelectedId) as OsintSeismic | undefined)
     if (matched) {
-      const m = matched as OsintCyberNode & OsintSatellite & OsintSeismic
+      const anyM = matched as any
       handleSelectEntity({
-        id: m.id,
-        kind: 'kind' in m ? (m.kind as SelectedEntity['kind']) : 'THREAT',
-        title: 'name' in m ? m.name : 'title' in m ? (m as any).title : m.id,
-        subtitle: 'detail' in m ? m.detail : 'Live Telemetry',
-        badge: 'ttps' in m ? m.ttps : 'LIVE TARGET',
-        coords: `${m.lat.toFixed(2)}°, ${m.lon.toFixed(2)}°`,
-        lat: m.lat,
-        lon: m.lon,
+        id: anyM.id || 'TARGET',
+        kind: anyM.kind || 'THREAT',
+        title: anyM.name || anyM.title || anyM.id || 'Threat Target',
+        subtitle: anyM.detail || 'Live Telemetry',
+        badge: anyM.ttps || 'LIVE TARGET',
+        coords: `${Number(anyM.lat || 0).toFixed(2)}°, ${Number(anyM.lon || 0).toFixed(2)}°`,
+        lat: anyM.lat || 0,
+        lon: anyM.lon || 0,
         severity: 'CRITICAL',
       })
     }

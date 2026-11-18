@@ -240,8 +240,6 @@ export default function IntelPage() {
           ))}
         </div>
       </TerminalCard>
-
-        </div>
       </div>
 
       {/* God's Eye Connectors: MISP/Abuse.ch IOCs, Netdata/Ops Health & Domain OSINT */}
