@@ -222,6 +222,7 @@ export async function GET() {
       netdata: features.netdataEnabled ? 'CONFIGURED' : 'RUNTIME_FALLBACK',
       spiderfoot: features.spiderfootEnabled ? 'CONFIGURED' : 'SERVERLESS_DNS_RDAP',
       huggingface: features.hfInferenceEnabled ? 'CONFIGURED' : 'NOT_CONFIGURED',
+      virustotal: features.virusTotalEnabled ? 'CONFIGURED' : 'NOT_CONFIGURED',
     },
     intelSource: intel.source,
     iocs: intel.iocs,

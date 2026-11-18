@@ -1,7 +1,108 @@
 'use client'
 import React from 'react'
 import { TerminalCard } from '@/components/ui/terminal-card'
-import { BookOpen, ExternalLink, ShieldCheck, Layers, AlertTriangle } from 'lucide-react'
+import {
+  BookOpen, ExternalLink, ShieldCheck, Layers, AlertTriangle, Key, Cpu, Radio, ShieldAlert, CheckCircle2
+} from 'lucide-react'
+
+export interface ApiIntegrationEntry {
+  keyEnv: string
+  provider: string
+  route: string
+  status: string
+  statusType: 'success' | 'info' | 'warning'
+  badge: string
+  purpose: string
+  howItWorks: string
+  link: string
+}
+
+const LIVE_API_REGISTRY: ApiIntegrationEntry[] = [
+  {
+    keyEnv: 'VIRUSTOTAL_API_KEY',
+    provider: 'VirusTotal v3 REST API (Google Chronicle)',
+    route: '/nlp (Message & Link Checker) & /api/analyze',
+    status: 'ACTIVE & LIVE',
+    statusType: 'success',
+    badge: '90+ Antivirus Engines',
+    purpose: 'Real-time multi-engine URL reputation & threat scoring',
+    howItWorks:
+      'Extracts any URL or short link from citizen messages, computes its SHA-256 identifier, and queries 90+ global security scanners (Kaspersky, Bitdefender, Google Safe Browsing, Sophos) to detect 0-day malicious domains, malware distribution hosts, and phishing campaigns.',
+    link: 'https://www.virustotal.com/',
+  },
+  {
+    keyEnv: 'HF_TOKEN',
+    provider: 'Hugging Face Hosted Inference API',
+    route: '/deepfake-xai (Deepfake Checker) & /api/deepfake-xai/run',
+    status: 'ACTIVE & LIVE',
+    statusType: 'success',
+    badge: 'ViT + PyTorch Transformers',
+    purpose: 'Deepfake visual artifact detection & SMS scam classification',
+    howItWorks:
+      'Queries state-of-the-art computer vision models (prithivMLmods/Deep-Fake-Detector-v2-Model) and SMS fraud classifiers directly on Hugging Face infrastructure to evaluate facial manipulation, GAN generative seams, and deceptive urgency.',
+    link: 'https://huggingface.co/',
+  },
+  {
+    keyEnv: 'BHARATCODE_API_KEY',
+    provider: 'BharatCode Sovereign AI Gateway (Qwen 3.8 27B)',
+    route: '/mentor, /incident (e-FIR), /cyber-ir, /devsec',
+    status: 'ACTIVE & LIVE',
+    statusType: 'success',
+    badge: 'Sovereign Indic LLM',
+    purpose: 'Indian statutory legal playbooks, e-FIR drafts & code security',
+    howItWorks:
+      'Powers citizen guidance and police complaint drafting under Bharatiya Nyaya Sanhita (BNS 2023), BNSS 2023, and BSA 2023 §63 cryptographic certificates, alongside secure code vulnerability remediation.',
+    link: 'https://bharatcode.ai/',
+  },
+  {
+    keyEnv: 'PUBLIC_STREAM',
+    provider: 'CelesTrak / NORAD Space Telemetry',
+    route: '/intel (God\'s Eye Spatial OSINT Globe)',
+    status: 'STREAMING',
+    statusType: 'info',
+    badge: 'NORAD Two-Line Elements (TLE)',
+    purpose: 'Real-time space situational awareness & satellite orbit tracking',
+    howItWorks:
+      'Fetches live orbital state vectors and SGP4 propagation parameters for sovereign defense and communication satellites, projecting real-time orbital paths directly onto the 3D photorealistic Earth.',
+    link: 'https://celestrak.org/',
+  },
+  {
+    keyEnv: 'PUBLIC_STREAM',
+    provider: 'USGS Real-time GeoJSON Earthquake Stream',
+    route: '/intel (God\'s Eye Spatial OSINT Globe)',
+    status: 'STREAMING',
+    statusType: 'info',
+    badge: 'M2.5+ Global Seismic Feed',
+    purpose: 'Physical disaster & undersea cable cut hazard correlation',
+    howItWorks:
+      'Streams live global seismic activity to project expanding shockwaves over the 3D globe, enabling security analysts to correlate physical tremors with undersea fiber breaks and sudden routing failovers.',
+    link: 'https://earthquake.usgs.gov/',
+  },
+  {
+    keyEnv: 'PUBLIC_STREAM',
+    provider: 'Abuse.ch URLhaus & OpenPhish Live Feeds',
+    route: '/nlp & /api/analyze, /intel',
+    status: 'STREAMING',
+    statusType: 'info',
+    badge: 'Botnet C2 & Phish Feeds',
+    purpose: 'Instant signature matching against active phishing campaigns',
+    howItWorks:
+      'Validates extracted URLs against community-verified malicious payloads, ransomware droppers, and credential harvesting kits updated every 15 minutes.',
+    link: 'https://urlhaus.abuse.ch/',
+  },
+  {
+    keyEnv: 'CLOUDMERSIVE_API_KEY',
+    provider: 'Cloudmersive Image & AI Recognition API (Swagger 2.0)',
+    route: '/deepfake-xai & /exif',
+    status: 'SUPPORTED VIA SWAGGER',
+    statusType: 'warning',
+    badge: 'AI Detection & Landmarks',
+    purpose: 'Direct AI image generation detection (/image/ai-detection/file)',
+    howItWorks:
+      'Provides cloud-based AI generation risk scoring (Midjourney/DALL-E detection), 68-point facial landmark analysis, and automated cloud EXIF metadata stripping.',
+    link: 'https://account.cloudmersive.com/',
+  },
+]
 
 const ACADEMIC_PAPERS = [
   {
@@ -158,6 +259,72 @@ export default function ResearchPage() {
           <strong>Honest Scope &amp; Limitations:</strong> Pure cryptographic operations (SHA-256, k-anonymity, Shannon entropy) are deterministic. AI phishing and deepfake classification outputs are probabilistic indications — verify manually before legal or enforcement action.
         </span>
       </div>
+
+      {/* LIVE API KEYS & THREAT INTEL INTEGRATIONS DIRECTORY */}
+      <TerminalCard
+        title="Live API Keys & Intelligence Integrations Directory"
+        label="LIVE KEYS"
+        labelColor="green"
+      >
+        <div className="space-y-4">
+          <p className="text-xs text-[#5C645E]">
+            A transparent disclosure of all external threat intelligence feeds, machine learning inference endpoints, and sovereign AI keys integrated into the TRINETRA console.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            {LIVE_API_REGISTRY.map((api) => (
+              <div
+                key={api.keyEnv + api.provider}
+                className="p-4 rounded-xl border border-[#E0DDD5] bg-white hover:border-[#A7F3D0] transition-all space-y-3"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-[#1E2420]">
+                    <Key size={13} className="text-[#059669]" />
+                    <span>{api.keyEnv}</span>
+                  </div>
+                  <span
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                      api.statusType === 'success'
+                        ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                        : api.statusType === 'warning'
+                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                        : 'bg-sky-100 text-sky-800 border border-sky-200'
+                    }`}
+                  >
+                    {api.status}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 className="font-bold text-[#1C201D] text-sm flex items-center justify-between gap-1">
+                    <span>{api.provider}</span>
+                    <a
+                      href={api.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-400 hover:text-emerald-700"
+                    >
+                      <ExternalLink size={12} />
+                    </a>
+                  </h3>
+                  <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F2F1EC] text-[#444B46]">
+                      Panel: {api.route}
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#ECFDF5] text-[#047857]">
+                      {api.badge}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-1 pt-1 border-t border-[#F2F1EC]">
+                  <div className="text-[11px] font-semibold text-[#1E2420]">{api.purpose}</div>
+                  <p className="text-[11px] text-[#5C645E] leading-relaxed">{api.howItWorks}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </TerminalCard>
 
       <TerminalCard title="Peer-Reviewed Literature & Legal References" label="10 Citations" labelColor="cyan" noPadding>
         <div className="overflow-x-auto text-xs">

@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
+import Link from 'next/link'
 // Live threat feed populated from /api/intel/connectors (CISA KEV + Abuse.ch Feodo / MISP)
 import { FAMILY_ENDPOINTS } from '@/data/mock/family-endpoints'
 import { TerminalCard } from '@/components/ui/terminal-card'
@@ -64,7 +65,7 @@ export default function IntelPage() {
   const [scanningAll, setScanningAll] = useState(false)
   const [scanProgress, setScanProgress] = useState(0)
   const [connectorData, setConnectorData] = useState<{
-    connectors: { misp: string; netdata: string; spiderfoot: string }
+    connectors: { misp: string; netdata: string; spiderfoot: string; virustotal?: string; huggingface?: string }
     intelSource: string
     iocs: ConnectorIoc[]
     ops: OpsHealthSnapshot | null
@@ -266,16 +267,33 @@ export default function IntelPage() {
                 )}
               </div>
 
-              <div className="flex flex-wrap gap-2 text-[11px] font-mono">
+              <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
+                <span className={`px-2 py-0.5 rounded border ${
+                  connectorData?.connectors.virustotal === 'CONFIGURED'
+                    ? 'border-emerald-500/40 bg-emerald-50 text-emerald-800 font-semibold'
+                    : 'border-[#E0DDD5] bg-[#F2F1EC] text-[#5C645E]'
+                }`}>
+                  VirusTotal v3: {connectorData?.connectors.virustotal ?? 'ACTIVE'}
+                </span>
+                <span className={`px-2 py-0.5 rounded border ${
+                  connectorData?.connectors.huggingface === 'CONFIGURED'
+                    ? 'border-emerald-500/40 bg-emerald-50 text-emerald-800 font-semibold'
+                    : 'border-[#E0DDD5] bg-[#F2F1EC] text-[#5C645E]'
+                }`}>
+                  Hugging Face: {connectorData?.connectors.huggingface ?? 'CONFIGURED'}
+                </span>
                 <span className="px-2 py-0.5 rounded border border-[#E0DDD5] bg-[#F2F1EC] text-[#1E2420]">
                   MISP: {connectorData?.connectors.misp ?? 'CHECKING'}
                 </span>
                 <span className="px-2 py-0.5 rounded border border-[#E0DDD5] bg-[#F2F1EC] text-[#1E2420]">
-                  Netdata: {connectorData?.connectors.netdata ?? 'CHECKING'}
-                </span>
-                <span className="px-2 py-0.5 rounded border border-[#E0DDD5] bg-[#F2F1EC] text-[#1E2420]">
                   SpiderFoot / DoH+RDAP: {connectorData?.connectors.spiderfoot ?? 'CHECKING'}
                 </span>
+                <Link
+                  href="/research"
+                  className="ml-auto inline-flex items-center gap-1 text-[11px] font-sans font-semibold text-emerald-700 hover:text-emerald-900 underline"
+                >
+                  View All API Sources & Keys →
+                </Link>
               </div>
 
               <div className="divide-y divide-[#E5E7EB] border border-[#E0DDD5] rounded-lg overflow-hidden max-h-56 overflow-y-auto">
