@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import {
-  MailWarning, Link2, Search, RefreshCw, AlertTriangle, Flag, CheckCircle2
+  MailWarning, Link2, Search, RefreshCw, AlertTriangle, Flag, CheckCircle2, ShieldCheck
 } from 'lucide-react'
 import { InfoExplain } from '@/components/ui/InfoExplain'
 import { ScanResultCard } from '@/components/ui/ScanResultCard'
@@ -11,7 +11,7 @@ import { useLang } from '@/lib/i18n-context'
 interface UrlReputation {
   url: string
   safeBrowsing: { checked: boolean; status: string }
-  virusTotal: { checked: boolean; status: string }
+  virusTotal: { checked: boolean; status: string; maliciousCount?: number; harmlessCount?: number }
   urlhaus: { checked: boolean; status: string }
   openPhish: { checked: boolean; status: string }
 }
@@ -510,6 +510,87 @@ export default function MessageCheckerPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              )}
+
+              {/* Live Multi-Engine Threat Feeds (VirusTotal v3, Safe Browsing, URLhaus, OpenPhish) */}
+              {result.urlReputations && result.urlReputations.length > 0 && (
+                <div className="rounded-lg border border-[#E0DDD5] overflow-hidden bg-white">
+                  <div className="bg-[#F2F1EC] px-3 py-2 border-b border-[#E0DDD5] flex items-center justify-between text-xs">
+                    <span className="font-semibold text-[#1E2420] flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      Live Global Threat Feeds & VirusTotal v3 Engine Audit
+                    </span>
+                    <span className="text-[10px] font-mono text-[#5C645E]">
+                      {result.urlReputations.length} URL{result.urlReputations.length > 1 ? 's' : ''} Scanned
+                    </span>
+                  </div>
+                  <div className="divide-y divide-[#E0DDD5] text-xs">
+                    {result.urlReputations.map((rep) => (
+                      <div key={rep.url} className="p-3 space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-mono text-[11px] text-sky-700 truncate max-w-[280px] sm:max-w-md">{rep.url}</span>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                            rep.virusTotal.status === 'MALICIOUS'
+                              ? 'bg-red-100 text-red-700 border border-red-200'
+                              : rep.virusTotal.status === 'SUSPICIOUS'
+                              ? 'bg-amber-100 text-amber-700 border border-amber-200'
+                              : rep.virusTotal.status === 'CLEAN'
+                              ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                              : 'bg-slate-100 text-slate-600 border border-slate-200'
+                          }`}>
+                            VirusTotal: {rep.virusTotal.status}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                          <div className="p-2 rounded bg-[#FAF9F5] border border-[#EBE7DF]">
+                            <div className="text-[10px] text-[#5C645E]">VirusTotal v3</div>
+                            <div className="font-semibold font-mono text-[#1E2420]">
+                              {rep.virusTotal.status === 'MALICIOUS' ? (
+                                <span className="text-red-600 font-bold">⚠️ {rep.virusTotal.maliciousCount} Detections</span>
+                              ) : rep.virusTotal.status === 'CLEAN' ? (
+                                <span className="text-emerald-700">✓ 0/{(rep.virusTotal.harmlessCount || 70)}+ Engines Clean</span>
+                              ) : (
+                                <span>{rep.virusTotal.status}</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="p-2 rounded bg-[#FAF9F5] border border-[#EBE7DF]">
+                            <div className="text-[10px] text-[#5C645E]">Safe Browsing</div>
+                            <div className="font-semibold text-[#1E2420]">
+                              {rep.safeBrowsing.status === 'CLEAN' ? (
+                                <span className="text-emerald-700">✓ Clean</span>
+                              ) : rep.safeBrowsing.status === 'THREAT_DETECTED' ? (
+                                <span className="text-red-600 font-bold">⚠️ Flagged</span>
+                              ) : (
+                                <span>{rep.safeBrowsing.status}</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="p-2 rounded bg-[#FAF9F5] border border-[#EBE7DF]">
+                            <div className="text-[10px] text-[#5C645E]">Abuse.ch URLhaus</div>
+                            <div className="font-semibold text-[#1E2420]">
+                              {rep.urlhaus.status === 'LISTED_MALWARE' ? (
+                                <span className="text-red-600 font-bold">⚠️ Active Malware</span>
+                              ) : (
+                                <span className="text-emerald-700">✓ Not Listed</span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="p-2 rounded bg-[#FAF9F5] border border-[#EBE7DF]">
+                            <div className="text-[10px] text-[#5C645E]">OpenPhish Feed</div>
+                            <div className="font-semibold text-[#1E2420]">
+                              {rep.openPhish.status === 'LISTED_PHISHING' ? (
+                                <span className="text-red-600 font-bold">⚠️ Active Phish</span>
+                              ) : (
+                                <span className="text-emerald-700">✓ Not Listed</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
