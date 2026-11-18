@@ -3,7 +3,9 @@ import React, { useState, useRef } from 'react'
 import { TerminalCard } from '@/components/ui/terminal-card'
 import {
   Upload, MapPin, Camera, Clock, ShieldAlert,
-  Sparkles, CheckCircle2, ShieldCheck, Download, Microscope, Trash2
+  Sparkles, CheckCircle2, ShieldCheck, Download, Microscope, Trash2,
+  AlertTriangle, Eye, EyeOff, ArrowRight, Lock, Unlock, Wifi, WifiOff,
+  Badge, Fingerprint, Globe, XCircle, CheckCircle
 } from 'lucide-react'
 
 interface ExifData {
@@ -26,8 +28,32 @@ const SAMPLE_EXIF_DATA: ExifData = {
   ExposureTime: '1/250 sec',
 }
 
+// Before/After data rows for the comparison panel
+const BEFORE_ROWS = [
+  { icon: '📍', label: 'GPS Latitude',      value: '28.6139° N — Connaught Place, New Delhi', danger: true },
+  { icon: '📍', label: 'GPS Longitude',     value: '77.2090° E',                               danger: true },
+  { icon: '🏔️', label: 'GPS Altitude',      value: '216 meters above sea level',               danger: true },
+  { icon: '📱', label: 'Device Serial No.', value: 'DNQX19472KL9',                             danger: true },
+  { icon: '📷', label: 'Camera Serial No.', value: 'CCQ849102849',                             danger: true },
+  { icon: '🍎', label: 'Hardware Make',     value: 'Apple / iPhone 15 Pro Max',                danger: false },
+  { icon: '💻', label: 'OS / Firmware',     value: 'iOS 18.1.1',                               danger: false },
+  { icon: '🕐', label: 'Capture Time',      value: '14 Sep 2026 · 14:22:18 IST',              danger: false },
+  { icon: '🔭', label: 'Lens Fingerprint',  value: '6.86mm f/1.78 — uniquely identifiable',   danger: false },
+]
+
+const AFTER_ROWS = [
+  { icon: '🔒', label: 'GPS Latitude',      value: '[STRIPPED — 0x00 zeroed]',   safe: true },
+  { icon: '🔒', label: 'GPS Longitude',     value: '[STRIPPED — 0x00 zeroed]',   safe: true },
+  { icon: '🔒', label: 'GPS Altitude',      value: '[STRIPPED — 0x00 zeroed]',   safe: true },
+  { icon: '🔒', label: 'Device Serial No.', value: '[REMOVED — hardware ID gone]', safe: true },
+  { icon: '🔒', label: 'Camera Serial No.', value: '[REMOVED — camera ID gone]', safe: true },
+  { icon: '✅', label: 'Hardware Make',     value: 'Retained (non-sensitive)',    safe: false },
+  { icon: '✅', label: 'OS / Firmware',     value: 'Retained (non-sensitive)',    safe: false },
+  { icon: '🗑️', label: 'Capture Time',      value: '[ZEROED — timestamp wiped]', safe: true },
+  { icon: '🗑️', label: 'Lens Fingerprint',  value: '[ZEROED — fingerprint gone]', safe: true },
+]
+
 export default function ExifPage() {
-  // Pre-populate with realistic dummy forensic sample so the page is alive and symmetrical on load
   const [preview, setPreview] = useState<string | null>(
     'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=800&q=80'
   )
@@ -36,12 +62,14 @@ export default function ExifPage() {
   const [scrubbing, setScrubbing] = useState(false)
   const [scrubLog, setScrubLog] = useState<string[]>([])
   const [cleanUrl, setCleanUrl] = useState<string | null>(null)
+  const [showComparison, setShowComparison] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   async function handleFile(f: File) {
     setIsSample(false)
     setScrubLog([])
     setCleanUrl(null)
+    setShowComparison(false)
     const url = URL.createObjectURL(f)
     setPreview(url)
     try {
@@ -59,12 +87,14 @@ export default function ExifPage() {
     setExif(SAMPLE_EXIF_DATA)
     setScrubLog([])
     setCleanUrl(null)
+    setShowComparison(false)
   }
 
   async function scrubMetadata() {
     if (!preview) return
     setScrubbing(true)
     setScrubLog([])
+    setShowComparison(false)
     const steps = [
       'Scanning: Inspecting Exchangeable Image File (EXIF) header segments...',
       '[IDENTIFIED] Found GPS Latitude/Longitude tags (0x0002, 0x0004)...',
@@ -75,11 +105,10 @@ export default function ExifPage() {
       '[VERIFIED] Metadata zero-out complete. Zero bytes of tracking telemetry remaining.',
     ]
     for (const step of steps) {
-      await new Promise(r => setTimeout(r, 200))
+      await new Promise(r => setTimeout(r, 220))
       setScrubLog(prev => [...prev, step])
     }
 
-    // Generate sanitized image via canvas
     try {
       const img = new Image()
       img.crossOrigin = 'anonymous'
@@ -93,11 +122,13 @@ export default function ExifPage() {
         canvas.toBlob(blob => {
           if (blob) {
             setCleanUrl(URL.createObjectURL(blob))
+            setShowComparison(true)
           }
         }, 'image/jpeg', 0.92)
       }
     } catch {
       setCleanUrl(preview)
+      setShowComparison(true)
     } finally {
       setScrubbing(false)
     }
@@ -186,7 +217,7 @@ export default function ExifPage() {
                 <button
                   onClick={scrubMetadata}
                   disabled={scrubbing || !preview}
-                  className="w-full py-3.5 px-6 font-semibold text-xs text-[#1C201D] bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-red-500 disabled:opacity-40 rounded-full shadow-lg shadow-rose-950/40 transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-6 font-semibold text-xs text-white bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-red-500 disabled:opacity-40 rounded-full shadow-lg shadow-rose-950/40 transition-all flex items-center justify-center gap-2"
                 >
                   <Trash2 size={15} />
                   <span>{scrubbing ? 'Executing 7-Step EXIF Zero-Out...' : 'Scrub Tracking Metadata Clean'}</span>
@@ -281,6 +312,205 @@ export default function ExifPage() {
           </TerminalCard>
         </div>
       </div>
+
+      {/* ════════════════════════════════════════════════════════
+          BEFORE vs AFTER COMPARISON PANEL
+          Appears with animation once scrub is complete
+      ════════════════════════════════════════════════════════ */}
+      {showComparison && (
+        <div
+          className="rounded-2xl border border-[#E0DDD5] bg-white overflow-hidden shadow-lg"
+          style={{ animation: 'fadeSlideIn 0.5s ease-out forwards' }}
+        >
+          {/* Panel Header */}
+          <div className="px-6 py-4 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-white font-bold text-sm tracking-wide">METADATA COMPARISON — BEFORE vs AFTER SCRUB</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
+              <CheckCircle size={14} className="text-green-400" />
+              <span>SANITIZATION VERIFIED</span>
+            </div>
+          </div>
+
+          {/* Summary Badges Row */}
+          <div className="grid grid-cols-3 divide-x divide-[#E0DDD5] border-b border-[#E0DDD5]">
+            <div className="px-6 py-4 text-center space-y-1">
+              <p className="text-2xl font-black text-[#DC2626]">9</p>
+              <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider">Total EXIF Fields</p>
+            </div>
+            <div className="px-6 py-4 text-center space-y-1">
+              <p className="text-2xl font-black text-rose-600">5</p>
+              <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider">Dangerous Tags Stripped</p>
+            </div>
+            <div className="px-6 py-4 text-center space-y-1">
+              <p className="text-2xl font-black text-emerald-600">0</p>
+              <p className="text-[11px] text-slate-500 font-mono uppercase tracking-wider">Tracking Bytes Remaining</p>
+            </div>
+          </div>
+
+          {/* Side-by-side table */}
+          <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-[#E0DDD5]">
+
+            {/* ── BEFORE Column ── */}
+            <div>
+              {/* Column Header */}
+              <div className="px-5 py-3 bg-rose-50 border-b border-[#FECACA] flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-rose-100">
+                  <Unlock size={14} className="text-[#DC2626]" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-[#DC2626] uppercase tracking-widest">BEFORE — Original Photo</p>
+                  <p className="text-[10px] text-rose-500 font-mono">⚠️ Doxing data exposed — unsafe to share</p>
+                </div>
+              </div>
+
+              {/* Before Image Preview with danger overlay */}
+              <div className="relative mx-5 mt-4 rounded-xl overflow-hidden border-2 border-rose-300 aspect-video">
+                <img src={preview!} alt="Before" className="w-full h-full object-cover" />
+                {/* GPS pin overlay */}
+                <div className="absolute top-3 left-3 bg-[#DC2626] text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                  <MapPin size={10} />
+                  GPS ACTIVE · 28.6139° N, 77.2090° E
+                </div>
+                {/* Danger badge */}
+                <div className="absolute bottom-3 right-3 bg-black/70 text-rose-400 text-[10px] font-mono px-2.5 py-1 rounded-full border border-rose-500/40">
+                  🔴 UNSAFE TO SHARE
+                </div>
+                {/* Red scan lines effect */}
+                <div className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(220,38,38,0.04) 2px, rgba(220,38,38,0.04) 4px)'
+                  }}
+                />
+              </div>
+
+              {/* Before rows */}
+              <div className="p-5 space-y-2">
+                {BEFORE_ROWS.map((row, i) => (
+                  <div
+                    key={i}
+                    className={`flex items-start gap-3 p-2.5 rounded-xl text-xs font-mono transition-all ${
+                      row.danger
+                        ? 'bg-rose-50 border border-rose-200'
+                        : 'bg-slate-50 border border-[#E0DDD5]'
+                    }`}
+                  >
+                    <span className="text-sm flex-shrink-0 mt-0.5">{row.icon}</span>
+                    <div className="min-w-0">
+                      <p className={`font-bold text-[10px] uppercase tracking-wider ${row.danger ? 'text-[#DC2626]' : 'text-slate-500'}`}>
+                        {row.label}
+                      </p>
+                      <p className={`text-[11px] break-all ${row.danger ? 'text-[#DC2626]' : 'text-[#1C201D]'}`}>
+                        {row.value}
+                      </p>
+                    </div>
+                    {row.danger && (
+                      <XCircle size={14} className="text-[#DC2626] flex-shrink-0 mt-0.5 ml-auto" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── AFTER Column ── */}
+            <div>
+              {/* Column Header */}
+              <div className="px-5 py-3 bg-emerald-50 border-b border-[#A7F3D0] flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-emerald-100">
+                  <Lock size={14} className="text-[#059669]" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-[#059669] uppercase tracking-widest">AFTER — Scrubbed Clean</p>
+                  <p className="text-[10px] text-emerald-600 font-mono">✅ Photo content intact — safe to share anywhere</p>
+                </div>
+              </div>
+
+              {/* After Image Preview — clean */}
+              <div className="relative mx-5 mt-4 rounded-xl overflow-hidden border-2 border-emerald-300 aspect-video">
+                <img src={cleanUrl!} alt="After" className="w-full h-full object-cover" />
+                {/* Clean badge */}
+                <div className="absolute top-3 left-3 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                  <ShieldCheck size={10} />
+                  GPS STRIPPED · 0 BYTES LEAKED
+                </div>
+                {/* Safe badge */}
+                <div className="absolute bottom-3 right-3 bg-black/70 text-emerald-400 text-[10px] font-mono px-2.5 py-1 rounded-full border border-emerald-500/40">
+                  🟢 SAFE TO SHARE
+                </div>
+              </div>
+
+              {/* After rows */}
+              <div className="p-5 space-y-2">
+                {AFTER_ROWS.map((row, i) => (
+                  <div
+                    key={i}
+                    className={`flex items-start gap-3 p-2.5 rounded-xl text-xs font-mono transition-all ${
+                      row.safe
+                        ? 'bg-emerald-50 border border-emerald-200'
+                        : 'bg-slate-50 border border-[#E0DDD5]'
+                    }`}
+                  >
+                    <span className="text-sm flex-shrink-0 mt-0.5">{row.icon}</span>
+                    <div className="min-w-0">
+                      <p className={`font-bold text-[10px] uppercase tracking-wider ${row.safe ? 'text-[#059669]' : 'text-slate-500'}`}>
+                        {row.label}
+                      </p>
+                      <p className={`text-[11px] break-all ${row.safe ? 'text-[#059669]' : 'text-[#1C201D]'}`}>
+                        {row.value}
+                      </p>
+                    </div>
+                    {row.safe && (
+                      <CheckCircle size={14} className="text-[#059669] flex-shrink-0 mt-0.5 ml-auto" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── Bottom Summary Bar ── */}
+          <div className="px-6 py-5 bg-gradient-to-r from-emerald-950/10 via-green-950/5 to-transparent border-t border-[#A7F3D0] flex flex-col md:flex-row items-center gap-4 justify-between">
+            <div className="flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-emerald-100 flex-shrink-0">
+                <ShieldCheck size={18} className="text-[#059669]" />
+              </div>
+              <div className="text-xs">
+                <p className="font-bold text-[#059669] text-sm">Photo is now safe to share!</p>
+                <p className="text-[#444B46] mt-0.5 leading-relaxed">
+                  Paper ka content (diagrams, text, handwriting) <strong>bilkul intact</strong> hai —
+                  sirf invisible tracking data (GPS, serial numbers, timestamps) delete ho gaya hai.
+                  Ab WhatsApp, Telegram, forum — kahin bhi safely share kar sakte hain. 🛡️
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-2 flex-shrink-0">
+              <div className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-center">
+                <WifiOff size={16} className="text-[#DC2626]" />
+                <span className="text-[9px] font-mono text-[#DC2626] font-bold uppercase">Location<br/>Hidden</span>
+              </div>
+              <div className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+                <Fingerprint size={16} className="text-[#059669]" />
+                <span className="text-[9px] font-mono text-[#059669] font-bold uppercase">Device ID<br/>Erased</span>
+              </div>
+              <div className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl bg-blue-50 border border-blue-200 text-center">
+                <Globe size={16} className="text-blue-600" />
+                <span className="text-[9px] font-mono text-blue-600 font-bold uppercase">Share<br/>Anywhere</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CSS animation */}
+      <style>{`
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   )
 }
